@@ -5,11 +5,10 @@ A SendIT editor and shell
 
 ## Deployment
 
-To deploy this project run
+To run this project exec:
 
 ```bash
-    sudo apt install forego docker ttyd nginx python3
-    forego start
+    ./setup.sh
 ```
 
 ## Authors

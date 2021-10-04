@@ -1,0 +1,174 @@
+* {
+    box-sizing: border-box;
+    margin: 0 0;
+    padding: 0 0;
+    border: 0;
+}
+
+:root {
+    --base00: #151515;
+    --base01: #202020;
+    --base02: #303030;
+    --base03: #505050;
+    --base04: #B0B0B0;
+    --base05: #D0D0D0;
+    --base06: #E0E0E0;
+    --base07: #F5F5F5;
+    --base08: #AC4142;
+    --base09: #D28445;
+    --base0A: #F4BF75;
+    --base0B: #90A959;
+    --base0C: #75B5AA;
+    --base0D: #6A9FB5;
+    --base0E: #AA759F;
+    --base0F: #8F5536;
+    
+    --black: var(--base00);
+    --white: var(--base07);
+    --red-dark: var(--base08);
+    --red-light: var(--base08);
+    --orange-dark: var(--base09);
+    --orange-light: var(--base09);
+    --yellow-dark: var(--base0A);
+    --yellow-light: var(--base0A) ;
+    --green-dark: var(--base0B);
+    --green-light: var(--base0B);
+    --blue-dark: var(--base0D);
+    --blue-light: var(--base0D);
+    --purple-dark: var(--base0E);
+    --purple-light: var(--base0E);
+    --cyan-dark: var(--base0C);
+    --cyan-light: var(--base0C);
+
+    /* --black: #002635;
+    --white: #E6E6DC;
+    --red-dark: #c43060;
+    --red-light: #ff5a67;
+    --yellow-dark: #F08E48;
+    --yellow-light: #FFCC1B;
+    --green-dark: #7FC06E;
+    --green-light: #9CF087;
+    --blue-dark: #1C8DB2;
+    --blue-light: #7EB2DD;
+    --purple-dark: #C694FF;
+    --purple-light: #FB94FF;
+    --cyan-dark: #00CCCC;
+    --cyan-light: #00FFFF; */
+
+}
+
+html,
+body, button, select, input {
+    font-size: 18px;
+}
+
+[data-theme=dark] {
+    --bg: var(--black);
+    --fg: var(--white);
+
+    --red: var(--red-dark);
+    --orange: var(--orange-dark);
+    --yellow: var(--yellow-dark);
+    --green: var(--green-dark);
+    --blue: var(--blue-dark);
+    --purple: var(--purple-dark);
+    --cyan: var(--cyan-dark);
+
+    background-color: var(--bg);
+    color: var(--fg);
+}
+
+[data-theme=light] {
+    --bg: var(--white);
+    --fg: var(--black);
+
+    --red: var(--red-light);
+    --orange: var(--orange-light);
+    --yellow: var(--yellow-light);
+    --green: var(--green-light);
+    --blue: var(--blue-light);
+    --purple: var(--purple-light);
+    --cyan: var(--cyan-light);
+
+    background-color: var(--bg);
+    color: var(--fg);
+}
+
+.bg-red {
+    background-color: var(--red);
+}
+
+.bg-orange {
+    background-color: var(--orange);
+}
+
+.bg-yellow {
+    background-color: var(--yellow);
+}
+
+.bg-green {
+    background-color: var(--green);
+}
+
+.bg-blue {
+    background-color: var(--blue);
+}
+
+.bg-purple {
+    background-color: var(--purple);
+}
+
+.bg-cyan {
+    background-color: var(--cyan);
+}
+
+.toolbar {
+    display: flex;
+    padding: 0.5em 0;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.toolbar > * {
+    margin: 0 0.25em;
+}
+
+.items {
+    text-align: center;
+    margin: 0 auto;
+}
+
+.item {
+    display: inline-block;
+    /* width: calc(100% / 6 - 1%); */
+    width: 20px;
+    height: 20px;
+    content: "";
+}
+
+.btn {
+    background-color: var(--bg);
+    color: var(--fg);
+    border: 1px solid var(--base04);
+    border-radius: 5px;
+    padding: 0.5em;
+    min-height: 3em;
+}
+
+main {
+    /* grid-template: auto auto / auto auto; */
+    display: grid;
+    grid-gap: 0.5em;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    height: auto;
+}
+
+#ide--section {
+    height: 90vh;
+    max-height: 90vh;
+}
+
+#term--section, #ide--section {
+    border: var(--fg) solid 1px;
+}

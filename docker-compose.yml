@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  web:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./public:/etc/nginx/html/:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - ttyd
+  ttyd:
+    # image: tsl0922/ttyd
+    build: ./docker/ttyd
+    container_name: ttyd
+    command: ttyd docker run -it --rm sendit-ide_vm
+    restart: on-failure
+    ports:
+      - 7681:7681
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - vm
+  vm:
+    container_name: vm
+    build: ./docker/vm
+    container_name: vm

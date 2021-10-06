@@ -1,7 +1,5 @@
 FROM ubuntu:latest
 
-ENV LANG C.UTF-8
-
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
     build-essential \
     htop \

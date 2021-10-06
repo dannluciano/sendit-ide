@@ -1,6 +1,6 @@
 FROM docker:latest
 
-COPY ./ttyd /usr/bin/ttyd
+COPY ./bin/ttyd /usr/bin/ttyd
 
 EXPOSE 7681
 WORKDIR /root

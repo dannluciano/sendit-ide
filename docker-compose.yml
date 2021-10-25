@@ -12,7 +12,7 @@ services:
       - ttyd
   ttyd:
     # image: tsl0922/ttyd
-    build: .
+    build: docker/ttyd
     container_name: ttyd
     command: ttyd docker run -it --rm sendit-ide_vm
     restart: on-failure

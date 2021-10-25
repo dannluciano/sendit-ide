@@ -4,8 +4,7 @@ services:
     image: nginx:latest
     container_name: nginx
     ports:
-      - 80:80
-      - 443:443
+      - 5000:5000
     volumes:
       - ./public:/etc/nginx/html/:ro
       - ./nginx.conf:/etc/nginx/nginx.conf:ro

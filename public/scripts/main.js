@@ -109,7 +109,8 @@ function changeLanguage () {
     cplusplus: 'text/x-c++src',
     java: 'text/x-java',
     javascript: 'javascript',
-    python: 'python'
+    python: 'python',
+    sql: 'sql'
   }
 
   const languagesHelloWorld = {
@@ -118,7 +119,8 @@ function changeLanguage () {
     cplusplus: '#include <iostream>\nint main() {\n    std::cout << "Ola Mundo" << std::endl;\n    return 0;\n}',
     java: 'class Principal {\n    public static void main(String[] args) {\n        System.out.println("Ola Mundo");\n    }\n}',
     javascript: 'console.log("Ola Mundo")',
-    python: 'print("Ola Mundo")'
+    python: 'print("Ola Mundo")',
+    sql: 'SELECT 1+1'
   }
 
   const languagesConfig = {
@@ -138,6 +140,9 @@ function changeLanguage () {
       indentUnit: 2
     },
     python: {
+      indentUnit: 2
+    },
+    sql: {
       indentUnit: 2
     }
   }
@@ -292,13 +297,31 @@ EOF`
   }
 }
 
+class SQLRunner {
+  constructor (code) {
+    this.code = code
+    this.fileName = 'main.sql'
+  }
+
+  update () {
+    return `cat >./${this.fileName} <<EOF
+${this.code}
+EOF`
+  }
+
+  run () {
+    return `cat ${this.fileName} | sqlite3 db.sqlite3`
+  }
+}
+
 const runners = {
   null: NullRunner,
   c: CRunner,
   cplusplus: CPlusPlusRunner,
   java: JavaRunner,
   javascript: JavaScriptRunner,
-  python: PythonRunner
+  python: PythonRunner,
+  sql: SQLRunner
 }
 
 function run () {

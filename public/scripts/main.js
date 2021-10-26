@@ -1,3 +1,6 @@
+/* eslint-env browser */
+/* global CodeMirror */
+
 const colors = {
   black: '#151515',
   white: '#F5F5F5',

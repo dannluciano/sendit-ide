@@ -7,6 +7,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
     nodejs \
     python3 \
     openjdk-11-jdk-headless \
+    sqlite3 \
     && rm -rf /var/lib/apt/lists/*
 
 CMD ["bash"]

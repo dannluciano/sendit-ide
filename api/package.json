@@ -1,0 +1,17 @@
+{
+  "name": "sendit-ide-api",
+  "module": "server.ts",
+  "type": "module",
+  "dependencies": {
+    "dockerode": "latest",
+    "xterm": "latest",
+    "xterm-addon-attach": "latest",
+    "path-to-regexp": "latest"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

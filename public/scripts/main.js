@@ -91,6 +91,7 @@ function setup () {
     console.info('Focus')
     editor.focus()
     // termContainer.contentWindow.term.setOption('fontSize', 18)
+    console.log('term', termContainer.contentWindow.term)
   }, 1000)
 
   return {

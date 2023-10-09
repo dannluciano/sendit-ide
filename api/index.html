@@ -1,27 +1,28 @@
 <!doctype html>
-  <html>
-    <head>
-      <link rel="stylesheet" href="/assets/xterm.css" />
-      <script src="/assets/xterm.js"></script>
-      <script src="/assets/xterm-addon-attach.js"></script>
-    </head>
-    <body>
-      <div id="terminal"></div>
-      <script>
-        const term = new Terminal();
-        term.open(document.getElementById('terminal'));
-        term.write('\x1B[1;3;31mCarregando...\x1B[0m $ ')
+<html>
 
-        fetch('/create').then(res => res.json()).then(data => {
-            setTimeout(() => {
-                const containerURL = `ws://localhost:5100/containers/${data.id}/attach/ws?logs=true&stream=true&stdin=true&stdout=true&stderr=true&stdout=true`
-                const socket = new WebSocket(containerURL);
-                const attachAddon = new AttachAddon.AttachAddon(socket);
-                term.loadAddon(attachAddon);
-                term.reset()    
-            }, 1000)
-        })
+<head>
+    <link rel="stylesheet" href="/assets/xterm.css" />
+    <script src="/assets/xterm.js"></script>
+    <script src="/assets/xterm-addon-attach.js"></script>
+</head>
 
-      </script>
-    </body>
-  </html>
+<body>
+
+    <div id="toolbar">
+        <button id="run">Executar</button>
+    </div>
+
+    <div id="editor-section">
+        <textarea name="" id="editor" cols="30" rows="10">
+print('Ola Mundo')
+        </textarea>
+    </div>
+
+    <div id="terminal-section">
+        <div id="terminal"></div>
+    </div>
+    <script src="/assets/app.js"></script>
+</body>
+
+</html>

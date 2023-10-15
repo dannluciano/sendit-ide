@@ -2,6 +2,9 @@
   "name": "sendit-ide-api",
   "module": "server.ts",
   "type": "module",
+  "scripts": {
+     "start": "bun run --hot --watch server.ts"
+  },
   "dependencies": {
     "dockerode": "latest",
     "xterm": "latest",

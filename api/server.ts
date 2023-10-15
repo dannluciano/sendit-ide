@@ -1,12 +1,11 @@
 import Docker from 'dockerode'
 import { pathToRegexp } from 'path-to-regexp'
 
-const clients = {}
 
 async function createContainer() {
     try {
         console.info("==> Connecting to Docker Daemon")
-        const docker = new Docker({ protocol: 'http', host: 'host.docker.internal', port: 2375 })
+        const docker = new Docker({ protocol: 'http', host: 'host.docker.internal', port: 2375, timeout: 10_000 })
         // const docker = new Docker({ socketPath: '/var/run/docker.sock' })
 
         console.info("==> Creating container")
@@ -23,6 +22,14 @@ async function createContainer() {
 
         console.info("==> Starting container")
         await container.start()
+
+        console.info("==> Waiting for container to start")
+
+        const info = await container.inspect()
+        console.info("==>", info)
+
+        const exec = await container.exec({ Cmd: ['echo', 'print("hello")', '>', '/root/main.py'] })
+        await exec.start()
 
         const obj = { id: container.id }
         return Response.json(obj)
@@ -52,6 +59,12 @@ function GetIndex() {
     );
 }
 
+function GetPythonRuntime() {
+    return new Response(
+        Bun.file("./python.html")
+    )
+}
+
 function GetStaticFiles(url: URL) {
     const path = '.' + url.pathname
     const file = Bun.file(path)
@@ -67,6 +80,22 @@ function GetStaticFiles(url: URL) {
     }
 }
 
+async function runSource(req: Request) {
+    try {
+        const body = await req.json()
+
+        return Response.json(
+            {
+                msg: "OK",
+                code: body.code
+            }
+        )
+    } catch (err) {
+        console.error(err)
+        return Response.json({ msg: "No body" }, { status: 400 })
+    }
+}
+
 const server = Bun.serve({
     port: 3000,
     async fetch(req) {
@@ -76,26 +105,28 @@ const server = Bun.serve({
             return GetIndex()
         }
 
+        if (url.pathname === "/python") {
+            return GetPythonRuntime()
+        }
+
         if (url.pathname.startsWith("/assets/")) {
             return GetStaticFiles(url)
         }
 
-        if (url.pathname === "/create") {
+        if (req.method === "POST" && url.pathname === "/create") {
             return await createContainer()
         }
 
+        if (req.method === "POST" && url.pathname === "/run") {
+            return await runSource(req)
+        }
+
         return new Response("Bun!")
-     }
-    //, websocket: {
-    //     message(ws, message) { 
-    //         console.log(`==> Browser to Server MSG: ${message}`)
-    //     },
-    //     open(ws) {
-    //         console.log(`==> Browser to Server MSG: ${ws}`)
-    //     },
-    //     close(ws, code, message) { }, // a socket is closed
-    //     drain(ws) { }, // the socket is ready to receive more data
-    // },
+    }
 });
 
 console.log(`Listening on http://localhost:${server.port} ...`);
+
+process.on("SIGINT", () => {
+    console.log("Received SIGINT");
+});

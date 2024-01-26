@@ -8,8 +8,10 @@ A SendIT editor and shell
 To run this project exec:
 
 ```bash
-    ./setup.sh
+$ docker compose up --build -d && docker compose logs -f
 ```
+
+Visit ```http://localhost```
 
 ## Authors
 

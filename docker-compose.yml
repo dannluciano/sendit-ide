@@ -11,6 +11,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     links:
       - api
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
       
   vm:
     container_name: vm
@@ -24,6 +26,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp:/tmp
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     develop:
       watch:
         - path: ./api/

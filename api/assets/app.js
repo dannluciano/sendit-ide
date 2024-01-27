@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   editor.setOption('theme', 'dracula')
+  editor.setSize('100%', '59vh');
 
   const newFileButton = document.getElementById('new-file-button')
   newFileButton.addEventListener('click', function () {
@@ -77,6 +78,9 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((data) => {
       containerId = data["container-id"];
       tempDirPath = data["temp-dir-path"];
+
+      if (!containerId) return
+
       setTimeout(() => {
         try {
           const containerURL = `ws://localhost/containers/${containerId}/attach/ws?logs=true&stream=true&stdin=true&stdout=true&stderr=true&stdout=true`;
@@ -130,7 +134,8 @@ document.addEventListener("DOMContentLoaded", () => {
           console.error(error)
         }
       }, 1000);
-    });
+    })
+    .catch(error => console.error);
   // fetch("/run", {
   //     method: "POST",
   //     body: JSON.stringify({

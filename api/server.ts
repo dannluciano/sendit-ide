@@ -12,27 +12,33 @@ import {
 } from 'node:os';
 
 import { renderFile } from 'ejs'
+import { Server } from 'bun';
 
-
+let docker;
 // const dockerHost = 'localhost'
 const dockerHost = 'host.docker.internal'
-
-const wsConnections = {}
+console.info("==> Connecting to Docker Daemon")
+try {
+    docker = new Docker({
+        protocol: 'http',
+        host: dockerHost,
+        port: 2375,
+        timeout: 1000
+    })
+    const infos = await docker.info()
+    console.info("==> Docker Daemon Connection Info")
+    console.info(infos)
+    // docker = new Docker({ socketPath: '/var/run/docker.sock', timeout: 1000 })
+} catch (error) {
+    console.error("Cannot Connect to Docker Daemon!")
+    process.exit(1)
+}
 
 async function createContainer() {
     try {
         console.info("==> Creating Temp Folder")
         const temp_dir_path = await mkdtemp(join(tmpdir(), 'ide-vm-home-'));
         console.info(`==> Created Temp Folder: ${temp_dir_path}`)
-
-        console.info("==> Connecting to Docker Daemon")
-        const docker = new Docker({
-            protocol: 'http',
-            host: dockerHost,
-            port: 2375,
-            timeout: 10000
-        })
-        // const docker = new Docker({ socketPath: '/var/run/docker.sock' })
 
         console.info("==> Creating container")
         const container = await docker.createContainer({
@@ -82,17 +88,8 @@ async function createContainer() {
     }
 }
 
-async function stopContainer(containerId) {
+async function stopContainer(containerId: string) {
     try {
-        console.info("==> Connecting to Docker Daemon")
-        const docker = new Docker({
-            protocol: 'http',
-            host: dockerHost,
-            port: 2375,
-            timeout: 10000
-        })
-        // const docker = new Docker({ socketPath: '/var/run/docker.sock' })
-
         const container = await docker.getContainer(containerId)
         await container.stop()
 
@@ -116,20 +113,14 @@ async function stopContainer(containerId) {
 function GetIndex() {
     return new Response(
         Bun.file("./index.html"), {
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range',
-            'Access-Control-Expose-Headers': 'Content-Length,Content-Range'
-        }
+        // headers: {
+        //     'Access-Control-Allow-Origin': '*',
+        //     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        //     'Access-Control-Allow-Headers': 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range',
+        //     'Access-Control-Expose-Headers': 'Content-Length,Content-Range'
+        // }
     }
     );
-}
-
-function GetPythonRuntime() {
-    return new Response(
-        Bun.file("./python.html")
-    )
 }
 
 function GetStaticFiles(url: URL) {
@@ -152,21 +143,12 @@ async function runSource(req: Request) {
 
         const containerId = body.containerId
 
-        console.info("==> Connecting to Docker Daemon")
-        const docker = new Docker({
-            protocol: 'http',
-            host: dockerHost,
-            port: 2375,
-            timeout: 1000
-        })
-
         const container = docker.getContainer(containerId)
 
         const exec = await container.exec({
             Cmd: ['echo', 'print(\"hello\")', '>', '/root/main.py']
         })
         await exec.start()
-
 
         return Response.json({
             msg: "OK",
@@ -183,10 +165,10 @@ async function runSource(req: Request) {
     }
 }
 
-async function createFile(temp_dir_path, filename) {
+async function createFile(temp_dir_path: string, filename: string, content: string) {
     try {
         const new_file_path = `${temp_dir_path}/${filename}`
-        await Bun.write(new_file_path, '');
+        await Bun.write(new_file_path, content);
         return Response.json({ msg: 'OK', path: new_file_path })
     } catch (error) {
         console.error(error)
@@ -232,17 +214,13 @@ async function createFile(temp_dir_path, filename) {
 // process.on("SIGTERM", handle_signals);
 // process.on("SIGKILL", handle_signals);
 
-const server = Bun.serve({
+const server: Server = Bun.serve({
     port: process.env["PORT"] || 8000,
-    async fetch(req) {
+    async fetch(req: Request) {
         const url = new URL(req.url);
 
         if (url.pathname === "/") {
             return GetIndex()
-        }
-
-        if (url.pathname === "/python") {
-            return GetPythonRuntime()
         }
 
         if (url.pathname.startsWith("/assets/")) {
@@ -263,7 +241,9 @@ const server = Bun.serve({
             const data = await req.json()
             const temp_dir_path = data['temp-dir-path']
             const filename = data['filename']
-            return await createFile(temp_dir_path, filename)
+            // const content = data['content']
+            const content = ''
+            return await createFile(temp_dir_path, filename, content)
         }
 
         if (req.method === "POST" && url.pathname === "/run") {
@@ -281,22 +261,15 @@ const server = Bun.serve({
             }
         }
 
-        return new Response("Bun!")
+        return new Response("Not Found", { status: 404 })
     },
     websocket: {
-        async message(ws, message) {
+        async message(ws, message: string) {
             try {
                 console.info(`WebSocket Message Received from: ${JSON.stringify(ws.data)}`)
                 const containerId = ws.data['cid']
                 const cmd = JSON.parse(message)
                 if (cmd.type === 'resize') {
-                    console.info("==> Connecting to Docker Daemon")
-                    const docker = new Docker({
-                        protocol: 'http',
-                        host: dockerHost,
-                        port: 2375,
-                        timeout: 1000
-                    })
                     const container = docker.getContainer(containerId)
                     await container.resize(cmd.params)
                 }
@@ -304,23 +277,17 @@ const server = Bun.serve({
                 console.error(error)
             }
 
-        }, // a message is received
+        },
         async open(ws) {
             const containerId = ws.data['cid']
             console.info(`WebSocket Connection opened: ${JSON.stringify(ws.data)}`)
 
-            let interval;
+            let interval: Timer;
             interval = setInterval(async () => {
                 try {
                     const cmd = 'tree -J /root --dirsfirst'.split(' ')
                     // console.info("==> Running: ", cmd)
                     // console.info("==> Connecting to Docker Daemon")
-                    const docker = new Docker({
-                        protocol: 'http',
-                        host: dockerHost,
-                        port: 2375,
-                        timeout: 1000
-                    })
 
                     const container = docker.getContainer(containerId)
 
@@ -344,7 +311,7 @@ const server = Bun.serve({
                                 ws.send(str)
                             })
                         } catch (error) {
-                            if (error instanceof(SyntaxError)) {
+                            if (error instanceof (SyntaxError)) {
                                 return
                             }
                             console.error(error)
@@ -358,18 +325,12 @@ const server = Bun.serve({
                 }
 
             }, 1000);
-        }, // a socket is opened
+        },
         async close(ws, code, message) {
             console.info(`WebSocket Connection closed: ${JSON.stringify(ws.data)}, ${code}, ${message}`)
             console.info("==> Connecting to Docker Daemon")
             try {
                 const containerId = ws.data['cid']
-                const docker = new Docker({
-                    protocol: 'http',
-                    host: dockerHost,
-                    port: 2375,
-                    timeout: 1000
-                })
                 const container = docker.getContainer(containerId)
                 console.info("==> Removing Docker Container: ", containerId)
                 await container.remove()
@@ -378,7 +339,7 @@ const server = Bun.serve({
             }
 
         },
-        drain(ws) { }, // the socket is ready to receive more data
+        drain(ws) { },
     },
 });
 

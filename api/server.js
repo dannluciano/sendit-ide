@@ -1,6 +1,7 @@
 import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
+
 // import * as process from 'node:process';
 
 import { serve } from "@hono/node-server";
@@ -10,7 +11,8 @@ import { logger } from "hono/logger";
 import { WebSocketServer } from "ws";
 
 import * as dockerode from "dockerode";
-import { renderFile } from "ejs";
+import * as chokidar from "chokidar";
+import { default as directoryTree } from "directory-tree";
 
 const wsDB = new Map();
 
@@ -65,14 +67,30 @@ async function createContainer() {
     console.info("==> Starting container: ", container.id);
     await container.start();
 
-    const obj = {
+    wsDB.set(container.id, {
+      temp_dir_path: temp_dir_path,
+      ws: null,
+    });
+
+    console.info(`==> Watching Temp Dir: ${temp_dir_path}`);
+    chokidar.watch(temp_dir_path).on("all", (event, path) => {
+      console.log(event, path);
+      const containerInfo = wsDB.get(container.id);
+      if (containerInfo.ws) {
+        const tree = directoryTree(temp_dir_path);
+        containerInfo.ws.send(
+          JSON.stringify({
+            type: "fs",
+            param: tree,
+          }),
+        );
+      }
+    });
+
+    return {
       "container-id": container.id,
       "temp-dir-path": temp_dir_path,
     };
-    wsDB.set(container.id, {
-      temp_dir_path: temp_dir_path,
-    });
-    return obj;
   } catch (error) {
     console.error("Error!", error);
     return {
@@ -98,14 +116,14 @@ app.get("/", (c) => {
   return c.html(indexHTML);
 });
 
-app.get("/fs/file/open/:cid/:filename", async (c) => {
+app.get("/fs/file/open/:cid/:filename{./*.\\.*}", async (c) => {
   try {
-    console.log("aquii");
     const cid = c.req.param("cid");
-    const filename = c.req.param("filename").replace("/root/", "");
+    const filename = c.req.param("filename");
 
-    const { temp_dir_path, ws } = wsDB.get(cid);
-    console.log(temp_dir_path, filename);
+    const container = await docker.getContainer(cid).inspect();
+
+    const { temp_dir_path, ws } = wsDB.get(container.Id);
     const content = await fs.readFile(`${temp_dir_path}/${filename}`);
     ws.send(
       JSON.stringify({
@@ -115,6 +133,7 @@ app.get("/fs/file/open/:cid/:filename", async (c) => {
     );
     return new Response("");
   } catch (error) {
+    console.error(error);
     return new Response("File not found", {
       status: 404,
     });
@@ -151,57 +170,6 @@ async function connection(ws, req) {
   const containerInfo = wsDB.get(containerId) || {};
   containerInfo.ws = ws;
   wsDB.set(containerId, containerInfo);
-
-  let interval;
-  interval = setInterval(async () => {
-    try {
-      const cmd = "tree -J /root --dirsfirst".split(" ");
-
-      const container = docker.getContainer(containerId);
-
-      const exec = await container.exec({
-        AttachStdout: true,
-        AttachStderr: true,
-        Cmd: cmd,
-      });
-      let output = "";
-      const stream = await exec.start();
-      stream.on("data", (chunk) => {
-        output += chunk;
-      });
-      stream.on("end", () => {
-        try {
-          output = output.substring(8);
-          // console.info(output)
-          const outjson = JSON.parse(output);
-          renderFile(
-            "filesystem.ejs",
-            {
-              output: outjson,
-            },
-            {},
-            function (err, str) {
-              if (err) return ws.send(err);
-              ws.send(str);
-            },
-          );
-        } catch (error) {
-          if (error instanceof SyntaxError) {
-            return;
-          }
-          console.error(error);
-          if (interval) {
-            clearInterval(interval);
-          }
-        }
-      });
-    } catch (error) {
-      console.error(error);
-      if (interval) {
-        clearInterval(interval);
-      }
-    }
-  }, 1000);
 
   ws.on("message", async function message(message) {
     try {

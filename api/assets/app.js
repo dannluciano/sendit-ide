@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error(err);
           };
 
-          const containerWSURL = `ws://localhost:8000/vmws?cid=${containerId}`;
+          const containerWSURL = `ws://localhost/vmws?cid=${containerId}`;
           const apiSocket = new WebSocket(containerWSURL);
           apiSocket.onopen = function () {
             console.info("API WebSocket Connection Opened");

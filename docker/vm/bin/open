@@ -1,0 +1,12 @@
+#! /bin/bash
+
+dirpath=$(echo "$PWD" | sed  "s/\/root\///g")
+
+if [ "$dirpath" == "/root" ]; then
+    dirpath=""
+else
+    dirpath="${dirpath}/"
+fi
+
+echo "curl http://host.docker.internal/fs/file/open/$(uname -n)/$dirpath$1"
+curl http://host.docker.internal/fs/file/open/$(uname -n)/$dirpath$1 2> /dev/null > /dev/null

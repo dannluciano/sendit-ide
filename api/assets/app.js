@@ -3,6 +3,7 @@ let tempDirPath;
 let editor;
 
 function fitTerminal() {
+  console.info("Term Resize");
   fitAddon.fit();
   term.scrollToBottom();
 }
@@ -11,79 +12,77 @@ window.addEventListener("resize", fitTerminal);
 
 const term = new Terminal({
   theme: {
-    background: 'var(--black)',
-    black: 'var(--black)',
-    brightBlack: 'var(--blackSecondary)',
-    white: 'var(--white)',
-    red: 'var(--red)',
-    yellow: 'var(--yellow)',
-    green: 'var(--green)',
-    blue: 'var(--blue)',
-    cyan: 'var(--cyan)',
-    magenta: 'var(--pink)',
-  }
+    background: "var(--black)",
+    black: "var(--black)",
+    brightBlack: "var(--blackSecondary)",
+    white: "var(--white)",
+    red: "var(--red)",
+    yellow: "var(--yellow)",
+    green: "var(--green)",
+    blue: "var(--blue)",
+    cyan: "var(--cyan)",
+    magenta: "var(--pink)",
+  },
 });
 const fitAddon = new FitAddon.FitAddon();
 term.loadAddon(fitAddon);
 term.open(document.getElementById("terminal"));
 term.write("\x1B[1;3;31mCarregando...\x1B[0m $ ");
 
-
 document.addEventListener("DOMContentLoaded", () => {
-
   editor = CodeMirror.fromTextArea(document.querySelector("#editor"), {
     lineNumbers: true,
     styleActiveLine: true,
-    matchBrackets: true
+    matchBrackets: true,
   });
 
-  editor.setOption('theme', 'dracula')
-  editor.setSize('100%', '59vh');
+  editor.setOption("theme", "dracula");
+  editor.setSize("100%", "59vh");
 
-  const newFileButton = document.getElementById('new-file-button')
-  newFileButton.addEventListener('click', function () {
+  const newFileButton = document.getElementById("new-file-button");
+  newFileButton.addEventListener("click", function () {
     const data = {
-      'temp-dir-path': tempDirPath,
-      'filename': 'hello.txt',
-    }
+      "temp-dir-path": tempDirPath,
+      filename: "hello.txt",
+    };
     fetch("/fs/file/create", {
-        method: "POST",
-        body: JSON.stringify(data)
-      })
+      method: "POST",
+      body: JSON.stringify(data),
+    })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data)
-      })
-  })
+        console.log(data);
+      });
+  });
 
-  const stopButton = document.getElementById('stop-button')
-  stopButton.addEventListener('click', function () {
+  const stopButton = document.getElementById("stop-button");
+  stopButton.addEventListener("click", function () {
     const data = {
-      'container-id': containerId,
-    }
+      "container-id": containerId,
+    };
     fetch("/stop", {
-        method: "POST",
-        body: JSON.stringify(data)
-      })
+      method: "POST",
+      body: JSON.stringify(data),
+    })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data)
-      })
-  })
+        console.log(data);
+      });
+  });
 
   fetch("/create", {
-      method: "POST",
-    })
+    method: "POST",
+  })
     .then((res) => res.json())
     .then((data) => {
       containerId = data["container-id"];
       tempDirPath = data["temp-dir-path"];
 
-      if (!containerId) return
+      if (!containerId) return;
 
       setTimeout(() => {
         try {
-          const containerURL = `ws://localhost/containers/${containerId}/attach/ws?logs=true&stream=true&stdin=true&stdout=true&stderr=true&stdout=true`;
+          const containerURL = `ws://localhost/containers/${containerId}/attach/ws?logs=true&stream=true&stdin=true&stdout=true`; //&stderr=true
           const containerSocket = new WebSocket(containerURL);
           containerSocket.onopen = function () {
             const attachAddon = new AttachAddon.AttachAddon(containerSocket);
@@ -92,12 +91,12 @@ document.addEventListener("DOMContentLoaded", () => {
             term.reset();
             term.paste("clear\n");
           };
-          console.info(containerSocket)
+          console.info(containerSocket);
 
           containerSocket.onclose = function (code, reason) {
             apiSocket.close();
             term.reset();
-            term.writeln('Disconnected');
+            term.writeln("Disconnected");
             console.log("Containet WebSocket Disconnected:", code, reason);
           };
           containerSocket.onerror = function (err) {
@@ -107,16 +106,20 @@ document.addEventListener("DOMContentLoaded", () => {
           const containerWSURL = `ws://localhost:8000/vmws?cid=${containerId}`;
           const apiSocket = new WebSocket(containerWSURL);
           apiSocket.onopen = function () {
-            console.info('API WebSocket Connection Opened')
-            apiSocket.send(JSON.stringify({
-              'type': 'resize',
-              params: {
-                'w': term.cols,
-                'h': term.rows,
-              }
-            }))
+            console.info("API WebSocket Connection Opened");
+            setTimeout(function () {
+              apiSocket.send(
+                JSON.stringify({
+                  type: "resize",
+                  params: {
+                    w: term.cols,
+                    h: term.rows,
+                  },
+                }),
+              );
+            }, 1000);
           };
-          console.info(apiSocket)
+          console.info(apiSocket);
 
           apiSocket.onclose = function (code, reason) {
             console.log("API WebSocket Disconnected:", code, reason);
@@ -125,26 +128,14 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error(err);
           };
 
-          apiSocket.addEventListener("message", event => {
-            const root = document.getElementById('root')
-            Idiomorph.morph(root, event.data)
-          })
-
+          apiSocket.addEventListener("message", (event) => {
+            const root = document.getElementById("root");
+            Idiomorph.morph(root, event.data);
+          });
         } catch (error) {
-          console.error(error)
+          console.error(error);
         }
       }, 1000);
     })
-    .catch(error => console.error);
-  // fetch("/run", {
-  //     method: "POST",
-  //     body: JSON.stringify({
-  //       code: editor.value,
-  //       containerId: containerId,
-  //     }),
-  //   })
-  //   .then((res) => res.json())
-  //   .then((data) => {
-  //     console.info(data);
-  //   });
+    .catch((error) => console.error(error));
 });

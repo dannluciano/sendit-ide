@@ -13,7 +13,6 @@ services:
       - api
     extra_hosts:
       - "host.docker.internal:host-gateway"
-      
   vm:
     container_name: vm
     build: ./docker/vm
@@ -30,5 +29,5 @@ services:
       - "host.docker.internal:host-gateway"
     develop:
       watch:
-        - path: ./api/
+        - path: ./api/*
           action: rebuild

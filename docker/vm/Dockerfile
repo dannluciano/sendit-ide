@@ -12,6 +12,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
     vim \
     tree \
     neofetch \
+    nyancat \
     && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+    curl
+
+COPY ./bin/ /usr/local/bin
+
 
 CMD ["bash"]

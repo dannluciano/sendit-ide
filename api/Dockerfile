@@ -1,37 +1,22 @@
-FROM oven/bun:1 as base
+FROM node:lts AS development
 
-WORKDIR /usr/src/app
+# set our node environment, either development or production
+# defaults to production, compose overrides this to development on build and run
+ARG NODE_ENV=production
+ENV NODE_ENV $NODE_ENV
 
-# RUN apk add libssh2 libssh2-dev
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-    build-essential \
-    libssl-dev \
-    cmake \
-    && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
-FROM base AS install
-RUN mkdir -p /temp/dev
-COPY package.json bun.lockb /temp/dev/
-RUN cd /temp/dev && bun install --frozen-lockfile --ignore-scripts
+# default to port 8000 for node
+ARG PORT=8000
+ENV PORT $PORT
+EXPOSE $PORT
 
-# install with --production (exclude devDependencies)
-RUN mkdir -p /temp/prod
-COPY package.json bun.lockb /temp/prod/
-RUN cd /temp/prod && bun install --frozen-lockfile --production --ignore-scripts
+COPY package.json .
+COPY package-lock.json .
+RUN npm ci
 
-# copy node_modules from temp directory
-# then copy all (non-ignored) project files into the image
-FROM base AS prerelease
-COPY --from=install /temp/dev/node_modules node_modules
+# copy in our source code last, as it changes the most
 COPY . .
 
-FROM base AS release
-ENV NODE_ENV=production
-COPY --from=install /temp/prod/node_modules node_modules
-COPY . .
-
-# run the app
-USER bun
-EXPOSE 8000/tcp
-
-ENTRYPOINT [ "bun", "run", "server.ts" ]
+CMD [ "node", "server.js" ]

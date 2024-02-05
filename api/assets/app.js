@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           apiSocket.addEventListener("message", (event) => {
             const root = document.getElementById("root");
-            Idiomorph.morph(root, event.data);
+            root.innerHTML = event.data;
           });
         } catch (error) {
           console.error(error);

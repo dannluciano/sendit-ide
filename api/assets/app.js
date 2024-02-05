@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       setTimeout(() => {
         try {
-          const containerURL = `ws://localhost/containers/${containerId}/attach/ws?logs=true&stream=true&stdin=true&stdout=true`; //&stderr=true
+          const containerURL = `ws://localhost:81/containers/${containerId}/attach/ws?logs=true&stream=true&stdin=true&stdout=true`; //&stderr=true
           const containerSocket = new WebSocket(containerURL);
           containerSocket.onopen = function () {
             const attachAddon = new AttachAddon.AttachAddon(containerSocket);
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error(err);
           };
 
-          const containerWSURL = `ws://localhost:8000/vmws?cid=${containerId}`;
+          const containerWSURL = `ws://localhost:8001/vmws?cid=${containerId}`;
           const apiSocket = new WebSocket(containerWSURL);
           apiSocket.onopen = function () {
             console.info("API WebSocket Connection Opened");

@@ -147,7 +147,7 @@ app.post("/create", async (c) => {
 const server = serve(
   {
     fetch: app.fetch,
-    port: process.env["PORT"] || 8000,
+    port: process.env["PORT"] || 8001,
   },
   (info) => {
     console.log(`Listening on http://localhost:${info.port}`);
@@ -215,14 +215,17 @@ async function handle_signals() {
     });
     for (const c of containers) {
       console.info("Removing: ", c.Id);
-      await docker.getContainer(c.Id).remove({
-        force: true,
-      });
+      try {
+        await docker.getContainer(c.Id).remove({
+          force: true,
+        });
+      } catch (error) {
+        continue
+      }
     }
     process.exit(0);
   } catch (error) {
     console.error(error);
-    process.exit(-1);
   }
 }
 

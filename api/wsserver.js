@@ -23,33 +23,35 @@ const wss = new WebSocketServer({
 
 wss.on("connection", connection);
 
-async function connection(ws, req) {
+async function connection(clientToServerWS, req) {
   console.info(
     `WebSocket -> Server Connection opened: ${JSON.stringify(req.url)}`,
   );
 
-  const wsDocker = new WebSocket(`ws+unix:///var/run/docker.sock:${req.url}`);
-  wsDocker.on("open", function (ws) {
-    console.info(`WebSocket -> Docker Connection Opened: ${ws}`);
+  const serverToDockerWS = new WebSocket(
+    `ws+unix:///var/run/docker.sock:${req.url}`,
+  );
+  serverToDockerWS.on("open", function (clientToServerWS) {
+    console.info(`WebSocket -> Docker Connection Opened: ${clientToServerWS}`);
   });
 
-  wsDocker.on("message", async function message(message) {
-    ws.send(message);
+  serverToDockerWS.on("message", async function message(message) {
+    clientToServerWS.send(message);
   });
 
-  wsDocker.on("close", async function close() {
+  serverToDockerWS.on("close", async function close() {
     console.info(`WebSocket -> Docker Connection closed:`);
   });
-  wsDocker.on("error", console.error);
+  serverToDockerWS.on("error", console.error);
 
-  ws.on("message", async function message(message) {
-    if (wsDocker.readyState === wsDocker.OPEN) {
-      wsDocker.send(message);
+  clientToServerWS.on("message", async function message(message) {
+    if (serverToDockerWS.readyState === serverToDockerWS.OPEN) {
+      serverToDockerWS.send(message);
     }
   });
 
-  ws.on("close", async function close() {
+  clientToServerWS.on("close", async function close() {
     console.info(`WebSocket -> Server Connection closed:`);
   });
-  ws.on("error", console.error);
+  clientToServerWS.on("error", console.error);
 }

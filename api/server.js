@@ -116,24 +116,34 @@ app.get("/", (c) => {
   return c.html(indexHTML);
 });
 
-app.get("/fs/file/open/:cid/:filename{./*.\\.*}", async (c) => {
+app.get("/fs/file/open/:cid/:pathenc", async (c) => {
   try {
     const cid = c.req.param("cid");
-    const filename = c.req.param("filename");
+    const pathEncoded = c.req.param("pathenc");
+    const path = Buffer.from(pathEncoded, "base64").toString("utf-8");
 
     const container = await docker.getContainer(cid).inspect();
 
     const { temp_dir_path, ws } = wsDB.get(container.Id);
-    const content = await fs.readFile(`${temp_dir_path}/${filename}`);
+    const content = await fs.readFile(`${temp_dir_path}/${path}`);
+
     ws.send(
       JSON.stringify({
         type: "open",
         param: content,
       }),
     );
+
     return new Response("");
   } catch (error) {
     console.error(error);
+
+    ws.send(
+      JSON.stringify({
+        type: "open",
+        param: content,
+      }),
+    );
     return new Response("File not found", {
       status: 404,
     });
@@ -220,7 +230,7 @@ async function handle_signals() {
           force: true,
         });
       } catch (error) {
-        continue
+        continue;
       }
     }
     process.exit(0);

@@ -1,12 +1,20 @@
 #! /bin/bash
 
-dirpath=$(echo "$PWD" | sed  "s/\/root\///g")
+if [ -d "$1" ]; then
+  echo "Cannot Open Folder only Text Files"
+  exit 1
+fi
 
+dirpath=$(echo "$PWD" | sed  "s/\/root\///g")
 if [ "$dirpath" == "/root" ]; then
     dirpath=""
 else
-    dirpath="${dirpath}/"
+    dirpath="${dirpath}"
 fi
 
-echo "curl http://host.docker.internal/fs/file/open/$(uname -n)/$dirpath$1"
-curl http://host.docker.internal/fs/file/open/$(uname -n)/$dirpath$1 2> /dev/null > /dev/null
+filepath="${dirpath}/$1"
+pathencoded=$(echo -n $filepath | basenc --base64url)
+
+hostname=$(uname -n)
+
+curl "http://host.docker.internal:81/fs/file/open/${hostname}/${pathencoded}" 2> /dev/null > /dev/null

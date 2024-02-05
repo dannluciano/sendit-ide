@@ -41,11 +41,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const newFileButton = document.getElementById("new-file-button");
   newFileButton.addEventListener("click", function () {
+    const filename = document.getElementById("file-name").value;
     const data = {
-      "temp-dir-path": tempDirPath,
-      filename: "hello.txt",
+      tempDirPath,
+      filename,
     };
     fetch("/fs/file/create", {
+      method: "POST",
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      });
+  });
+
+  const newFolderButton = document.getElementById("new-folder-button");
+  newFolderButton.addEventListener("click", function () {
+    const filename = document.getElementById("file-name").value;
+    const data = {
+      tempDirPath,
+      filename,
+    };
+    fetch("/fs/folder/create", {
       method: "POST",
       body: JSON.stringify(data),
     })

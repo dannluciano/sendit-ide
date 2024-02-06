@@ -81,7 +81,7 @@ async function createContainer() {
         containerInfo.ws.send(
           JSON.stringify({
             type: "fs",
-            param: tree,
+            params: tree,
           }),
         );
       }
@@ -130,7 +130,7 @@ app.get("/fs/file/open/:cid/:pathenc", async (c) => {
     ws.send(
       JSON.stringify({
         type: "open",
-        param: content,
+        params: content.toString("utf-8"),
       }),
     );
 
@@ -141,7 +141,7 @@ app.get("/fs/file/open/:cid/:pathenc", async (c) => {
     ws.send(
       JSON.stringify({
         type: "open",
-        param: content,
+        params: content,
       }),
     );
     return new Response("File not found", {

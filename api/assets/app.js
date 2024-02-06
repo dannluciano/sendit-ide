@@ -180,8 +180,15 @@ document.addEventListener("DOMContentLoaded", () => {
           };
 
           apiSocket.addEventListener("message", (event) => {
-            const root = document.getElementById("root");
-            root.innerHTML = event.data;
+            const { type, params } = JSON.parse(event.data);
+            console.log(event, type, params);
+            if (type === "fs") {
+              const root = document.getElementById("root");
+              root.innerHTML = JSON.stringify(params);
+            }
+            if (type === "open") {
+              editor.setValue(params);
+            }
           });
         } catch (error) {
           console.error(error);

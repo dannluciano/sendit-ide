@@ -191,6 +191,12 @@ async function connection(ws, req) {
         const container = docker.getContainer(containerId);
         await container.resize(cmd.params);
       }
+      if (cmd.type === "write") {
+        const { filename, source } = cmd.params;
+        const temp_dir_path = containerInfo.temp_dir_path;
+        const path = `${temp_dir_path}/${filename}`;
+        await fs.writeFile(path, source);
+      }
     } catch (error) {
       console.error(error);
     }

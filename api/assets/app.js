@@ -1,6 +1,8 @@
 let containerId;
 let tempDirPath;
 let editor;
+let apiSocket;
+let containerSocket;
 
 function fitTerminal() {
   console.info("Term Resize");
@@ -31,13 +33,21 @@ term.write("\x1B[1;3;31mCarregando...\x1B[0m $ ");
 
 document.addEventListener("DOMContentLoaded", () => {
   editor = CodeMirror.fromTextArea(document.querySelector("#editor"), {
+    mode: {
+      name: "python",
+      version: 3,
+      singleLineStringErrors: false,
+    },
+    theme: "dracula",
     lineNumbers: true,
+    indentUnit: 4,
+    matchBrackets: true,
     styleActiveLine: true,
     matchBrackets: true,
   });
 
-  editor.setOption("theme", "dracula");
   editor.setSize("100%", "59vh");
+  editor.setValue("print('ola mundo')");
 
   const newFileButton = document.getElementById("new-file-button");
   newFileButton.addEventListener("click", function () {
@@ -73,6 +83,29 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 
+  const languageSelect = document.getElementById("language-select");
+
+  const runButton = document.getElementById("run-button");
+  runButton.addEventListener("click", function () {
+    const language = languageSelect.value;
+    const source = editor.getValue();
+    const filename = "main.py";
+
+    apiSocket.send(
+      JSON.stringify({
+        type: "write",
+        params: {
+          filename,
+          source,
+        },
+      }),
+    );
+
+    if (language === "py") {
+      containerSocket.send(`python3 ${filename}\n`);
+    }
+  });
+
   const stopButton = document.getElementById("stop-button");
   stopButton.addEventListener("click", function () {
     const data = {
@@ -101,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         try {
           const containerURL = `ws://localhost:81/containers/${containerId}/attach/ws?logs=true&stream=true&stdin=true&stdout=true`; //&stderr=true
-          const containerSocket = new WebSocket(containerURL);
+          containerSocket = new WebSocket(containerURL);
           containerSocket.onopen = function () {
             const attachAddon = new AttachAddon.AttachAddon(containerSocket);
             term.loadAddon(attachAddon);
@@ -121,8 +154,8 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error(err);
           };
 
-          const containerWSURL = `ws://localhost:8001/vmws?cid=${containerId}`;
-          const apiSocket = new WebSocket(containerWSURL);
+          const apiWSURL = `ws://localhost:8001/vmws?cid=${containerId}`;
+          apiSocket = new WebSocket(apiWSURL);
           apiSocket.onopen = function () {
             console.info("API WebSocket Connection Opened");
             setTimeout(function () {

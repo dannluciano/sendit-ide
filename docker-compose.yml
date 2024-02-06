@@ -30,8 +30,9 @@ services:
       - "host.docker.internal:host-gateway"
     develop:
       watch:
-        - path: ./api/*
-          action: rebuild
+        - path: ./api/index.html
+          target: /app/api/index.html
+          action: sync
 
   wsapi:
     container_name: wsapi

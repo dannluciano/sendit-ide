@@ -31,8 +31,8 @@ async function connection(clientToServerWS, req) {
   const serverToDockerWS = new WebSocket(
     `ws+unix:///var/run/docker.sock:${req.url}`,
   );
-  serverToDockerWS.on("open", function (clientToServerWS) {
-    console.info(`WebSocket -> Docker Connection Opened: ${clientToServerWS}`);
+  serverToDockerWS.on("open", function () {
+    console.info(`WebSocket -> Docker Connection Opened:`);
   });
 
   serverToDockerWS.on("message", async function message(message) {

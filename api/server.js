@@ -214,28 +214,19 @@ async function connection(ws, req) {
 async function handle_signals() {
   console.log("Ctrl-C was pressed");
 
-  const opts = {
-    filters: '{"label": ["com.docker.compose.service","vm"]}',
-  };
+  // const opts = {
+  //   filters: '{"label": ["com.docker.compose.service","vm"]}',
+  // };
 
-  try {
-    const containers = await docker.listContainers({
-      opts,
-    });
-    for (const c of containers) {
-      console.info("Removing: ", c.Id);
-      try {
-        await docker.getContainer(c.Id).remove({
-          force: true,
-        });
-      } catch (error) {
-        continue;
-      }
-    }
-    process.exit(0);
-  } catch (error) {
-    console.error(error);
-  }
+  // try {
+  //   await docker.pruneContainers({
+  //     opts,
+  //   });
+  // } catch (error) {
+  //   console.error(error);
+  // }
+  server.close();
+  wss.close();
 }
 
 process.on("SIGINT", handle_signals);

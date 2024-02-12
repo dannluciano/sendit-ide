@@ -1,5 +1,7 @@
 FROM node:lts AS development
 
+USER root
+
 # set our node environment, either development or production
 # defaults to production, compose overrides this to development on build and run
 ARG NODE_ENV=production
@@ -17,6 +19,6 @@ COPY package-lock.json .
 RUN npm ci
 
 # copy in our source code last, as it changes the most
-COPY . .
+COPY --chown=root:root . .
 
 CMD [ "node", "server.js" ]

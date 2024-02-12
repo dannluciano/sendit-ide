@@ -99,21 +99,17 @@ async function createContainer() {
   }
 }
 
-const indexHTML = await fs.readFile("./index.html");
-
 const app = new Hono();
 
 app.use("*", logger());
 
-app.use(
-  "/assets/*",
-  serveStatic({
-    root: "./",
-  }),
-);
-
-app.get("/", (c) => {
+app.get("/", async (c) => {
+  const indexHTML = await fs.readFile("./index.html");
   return c.html(indexHTML);
+});
+
+app.get("/version", async (c) => {
+  return c.text("v0.0.1");
 });
 
 app.get("/fs/file/open/:cid/:pathenc", async (c) => {
@@ -183,9 +179,6 @@ async function connection(ws, req) {
 
   ws.on("message", async function message(message) {
     try {
-      console.info(
-        `WebSocket Message Received from: ${JSON.stringify(message)}`,
-      );
       const cmd = JSON.parse(message);
       if (cmd.type === "resize") {
         const container = docker.getContainer(containerId);

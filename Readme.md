@@ -11,17 +11,24 @@ To run this project exec:
 $ docker compose up --build -d && docker compose logs -f
 ```
 
+or
+
 ```bash
-socat -d -v -d TCP-L:2375,fork UNIX:/var/run/docker.sock
-
-curl --unix-socket /var/run/docker.sock -H "Content-Type: application/json" http://localhost/info
-curl --unix-socket /run/docker.sock -H "Content-Type: application/json" http://localhost/info
-curl "Content-Type: application/json" "http://localhost:2375/info"
-
+$ docker compose watch
 ```
 
-Visit ```http://localhost```
+and on other term tab
 
+```bash
+$ docker compose logs -f
+```
+
+## To test docker socket
+
+```bash
+curl --unix-socket /var/run/docker.sock -H "Content-Type: application/json" http://localhost/info
+curl --unix-socket /run/docker.sock -H "Content-Type: application/json" http://localhost/info
+```
 
 ## Authors
 

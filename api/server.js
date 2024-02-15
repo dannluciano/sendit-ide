@@ -127,33 +127,30 @@ app.get("/fs/file/open/:cid/:pathenc", async (c) => {
   try {
     const cid = c.req.param("cid");
     const pathEncoded = c.req.param("pathenc");
-    const path = Buffer.from(pathEncoded, "base64").toString("utf-8");
-
+    const filename = Buffer.from(pathEncoded, "base64").toString("utf-8").substring(1);
     const container = await docker.getContainer(cid).inspect();
 
     const {
       temp_dir_path,
       ws
     } = wsDB.get(container.Id);
-    const content = await fs.readFile(`${temp_dir_path}/${path}`);
+    const filepath = `${temp_dir_path}/${filename}`
+    const content = await fs.readFile(filepath);
 
     ws.send(
       JSON.stringify({
         type: "open",
-        params: content.toString("utf-8"),
+        params: {
+          filename,
+          filepath,
+          content: content.toString("utf-8")
+        },
       }),
     );
 
     return new Response("");
   } catch (error) {
     console.error(error);
-
-    ws.send(
-      JSON.stringify({
-        type: "open",
-        params: content,
-      }),
-    );
     return new Response("File not found", {
       status: 404,
     });

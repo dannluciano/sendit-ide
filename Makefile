@@ -10,5 +10,8 @@ run: build
 build:
 	docker compose build --parallel
 
+logs:
+	docker compose logs -f
+
 watch:
 	docker compose watch

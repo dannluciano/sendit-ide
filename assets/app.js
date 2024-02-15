@@ -33,37 +33,32 @@ term.write("\x1B[1;3;31mCarregando...\x1B[0m $ ");
 
 document.addEventListener("DOMContentLoaded", () => {
   editor = CodeMirror.fromTextArea(document.querySelector("#editor"), {
-    mode: {
-      name: "python",
-      version: 3,
-      singleLineStringErrors: false,
-    },
+    // mode: {
+    //   name: "python",
+    //   version: 3,
+    //   singleLineStringErrors: false,
+    // },
     theme: "dracula",
     lineNumbers: true,
     indentUnit: 4,
     matchBrackets: true,
     styleActiveLine: true,
     matchBrackets: true,
+    viewportMargin: 25
   });
 
-  editor.setSize("100%", "59vh");
-  editor.setValue("print('ola mundo')");
+  editor.setSize("100%", "470px");
+  // editor.setValue("print('ola mundo')");
 
   const newFileButton = document.getElementById("new-file-button");
   newFileButton.addEventListener("click", function () {
-    const filename = document.getElementById("file-name").value;
-    const data = {
-      tempDirPath,
-      filename,
-    };
-    fetch("/fs/file/create", {
-      method: "POST",
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      });
+    const filenameField = document.getElementById("file-name")
+    const filename = filenameField.value;
+    const filepath = `${tempDirPath}/${filename}`
+
+    writeFile(filepath, '')
+    openFile(filepath)
+    filenameField.value = ''
   });
 
   const newFolderButton = document.getElementById("new-folder-button");
@@ -74,9 +69,9 @@ document.addEventListener("DOMContentLoaded", () => {
       filename,
     };
     fetch("/fs/folder/create", {
-      method: "POST",
-      body: JSON.stringify(data),
-    })
+        method: "POST",
+        body: JSON.stringify(data),
+      })
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -89,20 +84,15 @@ document.addEventListener("DOMContentLoaded", () => {
   runButton.addEventListener("click", function () {
     const language = languageSelect.value;
     const source = editor.getValue();
-    const filename = "main.py";
+    const filenameTab = document.getElementById('filename-tab')
+    const filename = filenameTab.dataset.filepath;
 
-    apiSocket.send(
-      JSON.stringify({
-        type: "write",
-        params: {
-          filename,
-          source,
-        },
-      }),
-    );
+    writeFile(filename, source)
+
+    const file = filename.replace(`${tempDirPath}/`, '')
 
     if (language === "py") {
-      containerSocket.send(`python3 ${filename}\n`);
+      containerSocket.send(`python3 ${file}\n`);
     }
   });
 
@@ -112,9 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
       "container-id": containerId,
     };
     fetch("/stop", {
-      method: "POST",
-      body: JSON.stringify(data),
-    })
+        method: "POST",
+        body: JSON.stringify(data),
+      })
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -122,8 +112,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   fetch("/create", {
-    method: "POST",
-  })
+      method: "POST",
+    })
     .then((res) => res.json())
     .then((data) => {
       containerId = data["container-id"];
@@ -180,14 +170,23 @@ document.addEventListener("DOMContentLoaded", () => {
           };
 
           apiSocket.addEventListener("message", (event) => {
-            const { type, params } = JSON.parse(event.data);
-            console.log(event, type, params);
+            const {
+              type,
+              params
+            } = JSON.parse(event.data);
             if (type === "fs") {
-              const root = document.getElementById("root");
-              root.innerHTML = JSON.stringify(params);
+              renderFileSystemTree(params)
             }
             if (type === "open") {
-              editor.setValue(params);
+              const {
+                filename,
+                filepath,
+                content
+              } = params
+              const filenameTab = document.getElementById('filename-tab')
+              filenameTab.textContent = filename
+              filenameTab.dataset.filepath = filepath
+              editor.setValue(content);
             }
           });
         } catch (error) {
@@ -197,3 +196,88 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .catch((error) => console.error(error));
 });
+
+
+function renderFileSystemTree(data) {
+  const filesystem = document.querySelector("#file-system-tree");
+
+  filesystem.replaceChildren()
+
+  for (const child of data.children) {
+    if ('children' in child) {
+      filesystem.appendChild(renderFolder(child))
+    } else {
+      filesystem.appendChild(renderFile(child))
+    }
+  }
+}
+
+function renderFolder(folder) {
+  const summary = document.createElement('summary')
+  summary.textContent = folder.name
+
+  const files = document.createElement('ul')
+
+  for (const child of folder.children) {
+    if ('children' in child) {
+      files.appendChild(renderFolder(child))
+    } else {
+      files.appendChild(renderFile(child))
+    }
+  }
+
+  const details = document.createElement('details')
+  details.appendChild(summary)
+  details.appendChild(files)
+
+  const li = document.createElement('li')
+  li.dataset.path = folder.path
+  li.appendChild(details)
+
+  return li
+}
+
+function renderFile(child) {
+  const li = document.createElement('li')
+  li.dataset.path = child.path
+  li.textContent = child.name
+  li.addEventListener('click', writeCurrentFileAndOpenFile)
+  return li
+}
+
+function openFile(filepath) {
+  apiSocket.send(JSON.stringify({
+    type: 'open',
+    params: {
+      filepath: filepath
+    }
+  }))
+}
+
+function writeCurrentFileAndOpenFile(event) {
+  const filenameTab = document.getElementById('filename-tab')
+  const filename = filenameTab.dataset.filepath
+  const content = editor.getValue()
+
+  if (filenameTab.textContent.length > 0 && content.length > 0) {
+    writeFile(filename, content)
+  }
+  const filepath = event.target.dataset.path
+  openFile(filepath)
+}
+
+function writeFile(filename, source) {
+  if (!apiSocket) {
+    return
+  }
+
+  apiSocket.send(
+    JSON.stringify({
+      type: "writeInPath",
+      params: {
+        filename,
+        source,
+      },
+    }),
+  );
+}

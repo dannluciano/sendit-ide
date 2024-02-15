@@ -37,19 +37,30 @@
                 <div id="fs-options-section">
                     <button id="new-file-button">New File</button>
                     <button id="new-folder-button">New Folder</button>
-                    <input id="file-name" type="text" />
+                    <input id="file-name" type="text" size="14" width="auto"/>
                 </div>
-                <details id="root" class="drac-text-white" open="">
-                    <summary>/root</summary>
-                </details>
+                <div id="file-system-tree__section" class="drac-text-white" open="">
+                    <ul class="tree">
+                        <li>
+                            <details open="">
+                                <summary>/</summary>
+                                <ul id="file-system-tree">
+                                </ul>
+                            </details>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <div id="editor-container">
                 <nav id="file-title-bar">
                     <ul>
-                        <li>main.py</li>
+                        <li id="filename-tab" data-filepath=""></li>
                     </ul>
                 </nav>
-                <textarea name="editor" id="editor" cols="30" rows="10"></textarea>
+                <div id="editor-wrapper" style="position: relative">
+                    <textarea name="editor" id="editor" cols="30" rows="10"></textarea>    
+                </div>
+                
             </div>
         </div>
 

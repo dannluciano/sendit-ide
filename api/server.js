@@ -4,15 +4,24 @@ import * as path from "node:path";
 
 // import * as process from 'node:process';
 
-import { serve } from "@hono/node-server";
-import { serveStatic } from "@hono/node-server/serve-static";
-import { Hono } from "hono";
-import { logger } from "hono/logger";
-import { WebSocketServer } from "ws";
+import {
+  serve
+} from "@hono/node-server";
+import {
+  Hono
+} from "hono";
+import {
+  logger
+} from "hono/logger";
+import {
+  WebSocketServer
+} from "ws";
 
 import * as dockerode from "dockerode";
 import * as chokidar from "chokidar";
-import { default as directoryTree } from "directory-tree";
+import {
+  default as directoryTree
+} from "directory-tree";
 
 const wsDB = new Map();
 
@@ -73,7 +82,9 @@ async function createContainer() {
     });
 
     console.info(`==> Watching Temp Dir: ${temp_dir_path}`);
-    chokidar.watch(temp_dir_path).on("all", (event, path) => {
+    chokidar.watch(temp_dir_path, {
+      ignoreInitial: true
+    }).on("all", (event, path) => {
       console.log(event, path);
       const containerInfo = wsDB.get(container.id);
       if (containerInfo.ws) {
@@ -120,7 +131,10 @@ app.get("/fs/file/open/:cid/:pathenc", async (c) => {
 
     const container = await docker.getContainer(cid).inspect();
 
-    const { temp_dir_path, ws } = wsDB.get(container.Id);
+    const {
+      temp_dir_path,
+      ws
+    } = wsDB.get(container.Id);
     const content = await fs.readFile(`${temp_dir_path}/${path}`);
 
     ws.send(
@@ -150,8 +164,7 @@ app.post("/create", async (c) => {
   return c.json(await createContainer());
 });
 
-const server = serve(
-  {
+const server = serve({
     fetch: app.fetch,
     port: process.env["PORT"] || 8001,
   },
@@ -177,6 +190,15 @@ async function connection(ws, req) {
   containerInfo.ws = ws;
   wsDB.set(containerId, containerInfo);
 
+  const tree = directoryTree(containerInfo.temp_dir_path);
+
+  ws.send(
+    JSON.stringify({
+      type: "fs",
+      params: tree,
+    }),
+  );
+
   ws.on("message", async function message(message) {
     try {
       const cmd = JSON.parse(message);
@@ -185,10 +207,39 @@ async function connection(ws, req) {
         await container.resize(cmd.params);
       }
       if (cmd.type === "write") {
-        const { filename, source } = cmd.params;
+        const {
+          filename,
+          source
+        } = cmd.params;
         const temp_dir_path = containerInfo.temp_dir_path;
         const path = `${temp_dir_path}/${filename}`;
         await fs.writeFile(path, source);
+      }
+      if (cmd.type === "writeInPath") {
+        const {
+          filename,
+          source
+        } = cmd.params;
+        const path = `${filename}`;
+        await fs.writeFile(path, source);
+      }
+      if (cmd.type === "open") {
+        const {
+          filepath
+        } = cmd.params
+        const content = await fs.readFile(filepath);
+        const filename = path.basename(filepath)
+
+        ws.send(
+          JSON.stringify({
+            type: "open",
+            params: {
+              filename,
+              filepath,
+              content: content.toString("utf-8")
+            },
+          }),
+        );
       }
     } catch (error) {
       console.error(error);

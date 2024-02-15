@@ -43,6 +43,24 @@ main {
     height: 60vh;
 }
 
+#file-title-bar {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px dashed white;
+}
+
+#file-title-bar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#file-title-bar li {
+    color: white;
+    border-right: 1px dashed white;
+    padding: 0.5em;
+}
+
 .xterm-fg-0 {
     color: var(--black) !important;
 }

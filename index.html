@@ -1,70 +1,64 @@
 <!doctype html>
 <html>
-    <head>
-        <link rel="stylesheet" href="/assets/style.css" />
-        <link
-            rel="stylesheet"
-            href="https://unpkg.com/dracula-ui@1.0.3/styles/dracula-ui.css"
-        />
-        <link rel="stylesheet" href="/assets/xterm.css" />
 
-        <link
-            rel="stylesheet"
-            href="https://unpkg.com/codemirror@5.65.16/lib/codemirror.css"
-        />
-        <link
-            rel="stylesheet"
-            href="https://codemirror.net/5/theme/dracula.css"
-        />
+<head>
+    <link rel="stylesheet" href="/assets/style.css" />
+    <link rel="stylesheet" href="/assets/dracula-ui.css" />
+    <link rel="stylesheet" href="/assets/xterm.css" />
 
-        <script src="/assets/xterm.js"></script>
-        <script src="/assets/xterm-addon-attach.js"></script>
-        <script src="/assets/xterm-addon-fit.js"></script>
+    <link rel="stylesheet" href="/assets/codemirror.css" />
+    <link rel="stylesheet" href="/assets/dracula.css" />
 
-        <script src="https://unpkg.com/codemirror@5.65.16/lib/codemirror.js"></script>
-    </head>
+    <script src="/assets/xterm.js"></script>
+    <script src="/assets/xterm-addon-attach.js"></script>
+    <script src="/assets/xterm-addon-fit.js"></script>
 
-    <body>
-        <main>
-            <p class="drac-text drac-text-green">
-                SendIT IDE
-                <select id="language-select">
-                    <option value="py">Python</option>
-                    <option value="js">JavaScript</option>
-                    <option value="java">Java</option>
-                    <option value="c++">C++</option>
-                    <option value="c">C</option>
-                </select>
-                <button id="run-button">Run</button>
-                <button id="pause-button">Pause</button>
-                <button id="stop-button">Stop</button>
-            </p>
-            <div id="workbench">
-                <div id="filesystem">
-                    <div id="fs-options-section">
-                        <button id="new-file-button">New File</button>
-                        <button id="new-folder-button">New Folder</button>
-                        <input id="file-name" type="text" />
-                    </div>
-                    <details id="root" class="drac-text-white" open="">
-                        <summary>/root</summary>
-                    </details>
+    <script src="/assets/codemirror.js"></script>
+    <script src="/assets/python.js"></script>
+</head>
+
+<body>
+    <main>
+        <p class="drac-text drac-text-green">
+            SendIT IDE
+            <select id="language-select">
+                <option value="py">Python</option>
+                <option value="js">JavaScript</option>
+                <option value="java">Java</option>
+                <option value="c++">C++</option>
+                <option value="c">C</option>
+            </select>
+            <button id="run-button">Run</button>
+            <button id="pause-button">Pause</button>
+            <button id="stop-button">Stop</button>
+        </p>
+        <div id="workbench">
+            <div id="filesystem">
+                <div id="fs-options-section">
+                    <button id="new-file-button">New File</button>
+                    <button id="new-folder-button">New Folder</button>
+                    <input id="file-name" type="text" />
                 </div>
-                <div id="editor-container">
-                    <textarea
-                        name="editor"
-                        id="editor"
-                        cols="30"
-                        rows="10"
-                    ></textarea>
-                </div>
+                <details id="root" class="drac-text-white" open="">
+                    <summary>/root</summary>
+                </details>
             </div>
-
-            <div id="terminal-section">
-                <div id="terminal"></div>
+            <div id="editor-container">
+                <nav id="file-title-bar">
+                    <ul>
+                        <li>main.py</li>
+                    </ul>
+                </nav>
+                <textarea name="editor" id="editor" cols="30" rows="10"></textarea>
             </div>
-        </main>
+        </div>
 
-        <script src="/assets/app.js"></script>
-    </body>
+        <div id="terminal-section">
+            <div id="terminal"></div>
+        </div>
+    </main>
+
+    <script src="/assets/app.js"></script>
+</body>
+
 </html>

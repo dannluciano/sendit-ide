@@ -52,7 +52,9 @@ document.addEventListener("DOMContentLoaded", () => {
   editor.setSize("100%", "470px");
 
   editor.on("changes", function () {
-    openedFiles[currentOpenTab].changed = true;
+    if (currentOpenTab >= 0) {
+      openedFiles[currentOpenTab].changed = true;
+    }
     renderFilesTabs()
   })
   // editor.setValue("print('ola mundo')");
@@ -92,14 +94,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const language = languageSelect.value;
     const source = editor.getValue();
     const file = openedFiles[currentOpenTab]
-    const filename = file.filepath;
 
-    writeFile(filename, source)
+    writeFile(file.filepath, source)
 
-    const filepath = filename.replace(`${tempDirPath}/`, '')
+    const filepathWithOutHomePath = file.filepath.replace(`${tempDirPath}/`, '')
 
     if (language === "py") {
-      containerSocket.send(`python3 ${filepath}\n`);
+      containerSocket.send(`python3 ${filepathWithOutHomePath}\n`);
     }
   });
 
@@ -205,24 +206,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 return file.filepath === filepath
               })
 
-              const file = {
-                filename,
-                filepath,
-                content,
-                changed: false
-              }
+              let file
 
               if (fileIsOpened === -1) {
+                file = {
+                  filename,
+                  filepath,
+                  changed: false,
+                  doc: new CodeMirror.Doc(content)
+                }
                 openedFiles.push(file)
+              } else {
+                file = openedFiles[fileIsOpened]
               }
 
               changeCurrentOpenedTabWithFile(file)
               renderFilesTabs()
               editor.focus()
-              // const filenameTab = document.getElementById('filename-tab')
-              // filenameTab.textContent = filename
-              // filenameTab.dataset.filepath = filepath
-              // editor.setValue(content);
             }
           });
         } catch (error) {
@@ -308,15 +308,12 @@ function changeCurrentOpenedTab(event) {
 }
 
 function changeCurrentOpenedTabWithFile(file) {
-  // if (openedFiles.length > 0) {
-  //   writeFile(openedFiles[currentOpenTab].filepath, editor.getValue())
-  // }
 
   const tabindex = openedFiles.findIndex(function (currentFile) {
     return currentFile.filepath === file.filepath
   })
 
-  editor.setValue(file.content)
+  editor.swapDoc(file.doc)
   // To-Do Change the Mode
   currentOpenTab = tabindex
   renderFilesTabs()
@@ -325,6 +322,9 @@ function changeCurrentOpenedTabWithFile(file) {
 function closeTab(event) {
   const tabindex = parseInt(event.target.dataset.fileindex)
   openedFiles.splice(tabindex, 1)
+  if (openedFiles.length == 0) {
+    currentOpenTab = -1
+  }
   renderFilesTabs()
 }
 
@@ -377,20 +377,11 @@ function renderFile(child) {
 
 function openFileInTree(event) {
   const filepath = event.target.dataset.path
-  // if (currentOpenTab >= 0) {
-  //   const file = openedFiles[currentOpenTab]
 
-  //   if (file) {
-  //     writeFile(file.filepath, file.content)
-  //   }
-  // }
   openFile(filepath)
 }
 
 function openFile(filepath) {
-  // if (openedFiles.length > 0) {
-  //   writeFile(openedFiles[currentOpenTab].filepath, editor.getValue())
-  // }
   apiSocket.send(JSON.stringify({
     type: 'open',
     params: {

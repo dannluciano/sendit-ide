@@ -251,6 +251,7 @@ function renderFilesTabs() {
     li.classList.add('active-tab')
     tabs.appendChild(li)
 
+    editor.setValue('')
     editor.setOption('readOnly', true)
     return
   }

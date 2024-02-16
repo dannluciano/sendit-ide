@@ -3,6 +3,8 @@ let tempDirPath;
 let editor;
 let apiSocket;
 let containerSocket;
+let openedFiles = []
+let currentOpenTab = -1
 
 function fitTerminal() {
   console.info("Term Resize");
@@ -48,6 +50,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   editor.setSize("100%", "470px");
+
+  editor.on("changes", function () {
+    openedFiles[currentOpenTab].changed = true;
+    renderFilesTabs()
+  })
   // editor.setValue("print('ola mundo')");
 
   const newFileButton = document.getElementById("new-file-button");
@@ -110,6 +117,16 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log(data);
       });
   });
+
+  const saveButton = document.getElementById("save-button");
+  saveButton.addEventListener("click", function () {
+    if (currentOpenTab >= 0 && openedFiles.length > 0) {
+      const file = openedFiles[currentOpenTab]
+      writeFile(file.filepath, editor.getValue())
+      openedFiles[currentOpenTab].changed = false;
+      renderFilesTabs()
+    }
+  })
 
   fetch("/create", {
       method: "POST",
@@ -183,10 +200,29 @@ document.addEventListener("DOMContentLoaded", () => {
                 filepath,
                 content
               } = params
-              const filenameTab = document.getElementById('filename-tab')
-              filenameTab.textContent = filename
-              filenameTab.dataset.filepath = filepath
-              editor.setValue(content);
+
+              const fileIsOpened = openedFiles.findIndex(function (file) {
+                return file.filepath === filepath
+              })
+
+              const file = {
+                filename,
+                filepath,
+                content,
+                changed: false
+              }
+
+              if (fileIsOpened === -1) {
+                openedFiles.push(file)
+              }
+
+              changeCurrentOpenedTabWithFile(file)
+              renderFilesTabs()
+              editor.focus()
+              // const filenameTab = document.getElementById('filename-tab')
+              // filenameTab.textContent = filename
+              // filenameTab.dataset.filepath = filepath
+              // editor.setValue(content);
             }
           });
         } catch (error) {
@@ -195,8 +231,95 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 1000);
     })
     .catch((error) => console.error(error));
+  renderFilesTabs()
 });
 
+function renderFilesTabs() {
+  const tabs = document.getElementById('tabs')
+  tabs.replaceChildren()
+
+  if (openedFiles.length === 0) {
+    const filenameSpan = document.createElement('span')
+    filenameSpan.textContent = 'Scratch'
+    filenameSpan.style = ''
+
+    const p = document.createElement('p')
+    p.appendChild(filenameSpan)
+
+    const li = document.createElement('li')
+    li.appendChild(p)
+    li.classList.add('active-tab')
+    tabs.appendChild(li)
+
+    editor.setOption('readOnly', true)
+    return
+  }
+
+  let fileindex = 0
+  for (const file of openedFiles) {
+    const filenameSpan = document.createElement('span')
+
+    filenameSpan.textContent = file.changed ? `${file.filename} * ` : file.filename
+    filenameSpan.onclick = changeCurrentOpenedTab
+    filenameSpan.dataset.fileindex = fileindex
+    filenameSpan.style = ''
+
+    const closeSpan = document.createElement('span')
+    closeSpan.textContent = '  ⓧ  '
+    closeSpan.onclick = closeTab
+    closeSpan.dataset.fileindex = fileindex
+    closeSpan.style = ''
+
+    const p = document.createElement('p')
+    p.appendChild(filenameSpan)
+    p.appendChild(closeSpan)
+
+    const li = document.createElement('li')
+    li.appendChild(p)
+    li.dataset.filepath = file.filepath
+    if (currentOpenTab === fileindex) {
+      li.classList.add('active-tab')
+    }
+    tabs.appendChild(li)
+    fileindex++
+  }
+  editor.setOption('readOnly', false)
+}
+
+function changeCurrentOpenedTab(event) {
+  // if (currentOpenTab >= 0) {
+  //   writeFile(filepath, editor.getValue())
+  // }
+
+  const tabindex = parseInt(event.target.dataset.fileindex)
+  const filepath = openedFiles[tabindex].filepath
+
+  openFile(filepath)
+  // To-Do Change the Mode
+  currentOpenTab = tabindex
+  renderFilesTabs()
+}
+
+function changeCurrentOpenedTabWithFile(file) {
+  // if (openedFiles.length > 0) {
+  //   writeFile(openedFiles[currentOpenTab].filepath, editor.getValue())
+  // }
+
+  const tabindex = openedFiles.findIndex(function (currentFile) {
+    return currentFile.filepath === file.filepath
+  })
+
+  editor.setValue(file.content)
+  // To-Do Change the Mode
+  currentOpenTab = tabindex
+  renderFilesTabs()
+}
+
+function closeTab(event) {
+  const tabindex = parseInt(event.target.dataset.fileindex)
+  openedFiles.splice(tabindex, 1)
+  renderFilesTabs()
+}
 
 function renderFileSystemTree(data) {
   const filesystem = document.querySelector("#file-system-tree");
@@ -241,11 +364,26 @@ function renderFile(child) {
   const li = document.createElement('li')
   li.dataset.path = child.path
   li.textContent = child.name
-  li.addEventListener('click', writeCurrentFileAndOpenFile)
+  li.onclick = openFileInTree
   return li
 }
 
+function openFileInTree(event) {
+  const filepath = event.target.dataset.path
+  // if (currentOpenTab >= 0) {
+  //   const file = openedFiles[currentOpenTab]
+
+  //   if (file) {
+  //     writeFile(file.filepath, file.content)
+  //   }
+  // }
+  openFile(filepath)
+}
+
 function openFile(filepath) {
+  // if (openedFiles.length > 0) {
+  //   writeFile(openedFiles[currentOpenTab].filepath, editor.getValue())
+  // }
   apiSocket.send(JSON.stringify({
     type: 'open',
     params: {
@@ -254,19 +392,7 @@ function openFile(filepath) {
   }))
 }
 
-function writeCurrentFileAndOpenFile(event) {
-  const filenameTab = document.getElementById('filename-tab')
-  const filename = filenameTab.dataset.filepath
-  const content = editor.getValue()
-
-  if (filenameTab.textContent.length > 0 && content.length > 0) {
-    writeFile(filename, content)
-  }
-  const filepath = event.target.dataset.path
-  openFile(filepath)
-}
-
-function writeFile(filename, source) {
+function writeFile(filepath, source) {
   if (!apiSocket) {
     return
   }
@@ -275,7 +401,7 @@ function writeFile(filename, source) {
     JSON.stringify({
       type: "writeInPath",
       params: {
-        filename,
+        filepath,
         source,
       },
     }),

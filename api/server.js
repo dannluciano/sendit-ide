@@ -214,11 +214,10 @@ async function connection(ws, req) {
       }
       if (cmd.type === "writeInPath") {
         const {
-          filename,
+          filepath,
           source
         } = cmd.params;
-        const path = `${filename}`;
-        await fs.writeFile(path, source);
+        await fs.writeFile(filepath, source);
       }
       if (cmd.type === "open") {
         const {

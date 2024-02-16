@@ -11,8 +11,28 @@ main {
     margin: 0 auto;
 }
 
-.cm-wrap { height: 100% }
-.cm-scroller { overflow: auto }
+#tabs {
+    display: flex;
+    flex-direction: row;
+}
+
+#tabs li p {
+    padding: 0 auto;
+    margin: 0;
+}
+
+.active-tab p,
+.active-tab span {
+    color: var(--green);
+}
+
+.cm-wrap {
+    height: 100%
+}
+
+.cm-scroller {
+    overflow: auto
+}
 
 #workbench {
     display: flex;

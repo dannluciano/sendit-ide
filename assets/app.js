@@ -91,15 +91,15 @@ document.addEventListener("DOMContentLoaded", () => {
   runButton.addEventListener("click", function () {
     const language = languageSelect.value;
     const source = editor.getValue();
-    const filenameTab = document.getElementById('filename-tab')
-    const filename = filenameTab.dataset.filepath;
+    const file = openedFiles[currentOpenTab]
+    const filename = file.filepath;
 
     writeFile(filename, source)
 
-    const file = filename.replace(`${tempDirPath}/`, '')
+    const filepath = filename.replace(`${tempDirPath}/`, '')
 
     if (language === "py") {
-      containerSocket.send(`python3 ${file}\n`);
+      containerSocket.send(`python3 ${filepath}\n`);
     }
   });
 

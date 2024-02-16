@@ -243,8 +243,14 @@ function renderFilesTabs() {
     filenameSpan.textContent = 'Scratch'
     filenameSpan.style = ''
 
+    const closeSpan = document.createElement('span')
+    closeSpan.textContent = '  ⓧ  '
+    closeSpan.onclick = closeTab
+    closeSpan.style = ''
+
     const p = document.createElement('p')
     p.appendChild(filenameSpan)
+    p.appendChild(closeSpan)
 
     const li = document.createElement('li')
     li.appendChild(p)

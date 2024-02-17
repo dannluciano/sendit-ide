@@ -1,0 +1,56 @@
+#filesystem {
+  width: 25%;
+  padding: 1rem;
+}
+
+#fs-options-section {
+  display: flex;
+  align-items: top;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+#fs-options-section input {
+  padding: 0.2rem 0.5rem;
+  border: none;
+  border-radius: 5px;
+  max-width: 100%;
+}
+
+#create-file-container-labels {
+    display: none;
+}
+
+#create-file-container-labels p {
+    font-size: 1rem;
+    margin: 0;
+}
+
+#fs-options-section button {
+  background-color: var(--black);
+  border: none;
+  color: var(--green);
+  font-size: 1.5rem;
+}
+
+#fs-options-section button:hover {
+  opacity: 0.8;
+}
+
+@media (max-width: 1393px) {
+  #fs-options-section input {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  #create-file-container-icons {
+    display: none;
+  }
+
+  #create-file-container-labels {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+}

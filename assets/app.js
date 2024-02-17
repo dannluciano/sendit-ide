@@ -178,6 +178,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 }),
               );
             }, 1000);
+            file = {
+              filename: 'main.py',
+              filepath: `${tempDirPath}/main.py`,
+              changed: false,
+              doc: new CodeMirror.Doc(`print("Ola mundo")`)
+            }
+            // To-Do REMOVE THIS
+            openedFiles.push(file)
+            currentOpenTab = 0
+            editor.swapDoc(file.doc)
+            renderFilesTabs()
+            // To-Do REMOVE THIS
           };
           console.info(apiSocket);
 

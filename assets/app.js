@@ -57,7 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     renderFilesTabs()
   })
-  // editor.setValue("print('ola mundo')");
 
   const newFileButton = document.getElementById("new-file-button");
   newFileButton.addEventListener("click", function () {
@@ -72,19 +71,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const newFolderButton = document.getElementById("new-folder-button");
   newFolderButton.addEventListener("click", function () {
-    const filename = document.getElementById("file-name").value;
-    const data = {
-      tempDirPath,
-      filename,
-    };
-    fetch("/fs/folder/create", {
-        method: "POST",
-        body: JSON.stringify(data),
-      })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      });
+    const filenameField = document.getElementById("file-name")
+    const filename = filenameField.value;
+    const folderpath = `${tempDirPath}/${filename}`
+    makeFolder(folderpath)
+    filenameField.value = ''
   });
 
   const languageSelect = document.getElementById("language-select");
@@ -401,6 +392,21 @@ function writeFile(filepath, source) {
       params: {
         filepath,
         source,
+      },
+    }),
+  );
+}
+
+function makeFolder(folderpath) {
+  if (!apiSocket) {
+    return
+  }
+
+  apiSocket.send(
+    JSON.stringify({
+      type: "mkdir",
+      params: {
+        folderpath
       },
     }),
   );

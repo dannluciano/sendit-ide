@@ -219,6 +219,14 @@ async function connection(ws, req) {
         } = cmd.params;
         await fs.writeFile(filepath, source);
       }
+      if (cmd.type === "mkdir") {
+        const {
+          folderpath,
+        } = cmd.params;
+        await fs.mkdir(folderpath, {
+          recursive: true
+        });
+      }
       if (cmd.type === "open") {
         const {
           filepath

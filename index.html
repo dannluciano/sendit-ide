@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="/assets/css/style.css" />
     <link rel="stylesheet" href="/assets/css/header.css" />
     <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="/assets/css/footer.css" />
 
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
@@ -45,6 +46,7 @@
             <option value="c">C</option>
           </select>
           <button
+            id="more-icon-button"
             class="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
@@ -58,26 +60,17 @@
 
           <div class="collapse navbar-collapse" id="navbarNav">
             <div class="actions">
-              <abbr title="Executar">
                 <button id="run-button">
                   <ion-icon name="play"></ion-icon>
                 </button>
-              </abbr>
-              <abbr title="Pausar execução">
                 <button id="pause-button">
                   <ion-icon name="pause"></ion-icon>
-                </button>
-              </abbr>
-              <abbr title="Parar execução">
                 <button id="stop-button">
                   <ion-icon name="power"></ion-icon>
                 </button>
-              </abbr>
-              <abbr title="Salvar arquivo">
                 <button id="save-button">
                   <ion-icon name="save"></ion-icon>
                 </button>
-              </abbr>
             </div>
           </div>
         </div>
@@ -87,9 +80,9 @@
       <div id="workbench">
         <div id="filesystem">
           <div id="fs-options-section">
-            <input id="file-name" type="text" size="14" width="auto" />
-            <button id="new-file-button">New File</button>
-            <button id="new-folder-button">New Folder</button>
+            <input placeholder="nome" id="file-name" type="text" size="14" width="auto" />
+            <button style="margin:0 1rem;" id="new-file-button"><div style="display: flex; align-items: flex-end;"><ion-icon style="font-size: 0.9rem;" name="add"></ion-icon><ion-icon name="document"></ion-icon></div></button>
+            <button id="new-folder-button"><div style="display: flex; align-items: flex-end;"><ion-icon style="font-size: 0.9rem;" name="add"></ion-icon><ion-icon name="folder"></ion-icon></div></button>
           </div>
           <div id="file-system-tree__section" class="drac-text-white" open="">
             <ul class="tree">

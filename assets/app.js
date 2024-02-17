@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
               filename: 'main.py',
               filepath: `${tempDirPath}/main.py`,
               changed: false,
-              doc: new CodeMirror.Doc(`print("Ola mundo")`)
+              doc: new CodeMirror.Doc(`print("Olá, mundo!")`)
             }
             // To-Do REMOVE THIS
             openedFiles.push(file)

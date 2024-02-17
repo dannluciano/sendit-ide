@@ -1,11 +1,12 @@
 header {
   width: 100%;
   padding: 1rem !important;
+  background-color: #000000;
 }
 
 header h1 {
   font-size: 1.2rem !important;
-  margin-right: 1rem !important;
+  margin: 0;
 }
 
 header select {
@@ -13,20 +14,23 @@ header select {
   margin-right: 1rem !important;
 }
 
+#language-select {
+  padding: 0.2rem;
+}
+
 .actions button {
   transition: 0.1s;
-  background-color: var(--black) !important;
+  background-color: var(--green) !important;
+  color: var(--black);
   padding: 0 0.5rem !important;
   border-radius: 5px !important;
   border: 1px solid var(--green) !important;
-  color: var(--green);
   margin-right: 0.5rem !important;
-  padding-top: 0.1rem !important;
+  padding-top: 0.2rem !important;
 }
 
 .actions button:hover {
-  background-color: var(--green) !important;
-  color: var(--black);
+  opacity: 0.8;
 }
 
 .navbar-toggler {
@@ -36,4 +40,15 @@ header select {
 
 #more-icon {
   color: var(--green);
+}
+
+#more-icon-button {
+  color: var(--green);
+  padding-top: 0.2rem !important;
+}
+
+@media (max-width: 991px) {
+  .actions {
+    margin-top: 0.5rem !important;
+  }
 }

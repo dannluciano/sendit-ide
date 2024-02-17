@@ -100,6 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (language === "py") {
       containerSocket.send(`python3 ${filepathWithOutHomePath}\n`);
+    } else if ("js") {
+      containerSocket.send(`node ${filepathWithOutHomePath}\n`);
     }
   });
 

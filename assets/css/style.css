@@ -1,0 +1,27 @@
+::-webkit-scrollbar-track {
+  background-color: #f4f4f4;
+}
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background: #f4f4f4;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c2d8e8;
+}
+
+* {
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+body {
+  background-color: var(--black) !important;
+}
+
+li {
+    list-style-type: none;
+    cursor: pointer;
+}

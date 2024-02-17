@@ -1,0 +1,46 @@
+main {
+  width: 100%;
+}
+
+#workbench {
+  width: 100%;
+  display: flex;
+  align-items: top;
+}
+
+#filesystem {
+  width: 25%;
+}
+
+#editor-container {
+  width: 75%;
+  overflow: auto !important;
+}
+
+#tabs {
+    display: flex;
+    flex-direction: row;
+}
+
+#tabs li p {
+    padding: 0 auto;
+    margin: 0;
+}
+
+#tabs li {
+    color: var(--white);
+    margin-right: 0.5rem !important;
+}
+
+.active-tab p,
+.active-tab span {
+    color: var(--green);
+}
+
+.cm-wrap {
+    height: 100%
+}
+
+.cm-scroller {
+    overflow: auto
+}

@@ -1,0 +1,39 @@
+header {
+  width: 100%;
+  padding: 1rem !important;
+}
+
+header h1 {
+  font-size: 1.2rem !important;
+  margin-right: 1rem !important;
+}
+
+header select {
+  width: 300px !important;
+  margin-right: 1rem !important;
+}
+
+.actions button {
+  transition: 0.1s;
+  background-color: var(--black) !important;
+  padding: 0 0.5rem !important;
+  border-radius: 5px !important;
+  border: 1px solid var(--green) !important;
+  color: var(--green);
+  margin-right: 0.5rem !important;
+  padding-top: 0.1rem !important;
+}
+
+.actions button:hover {
+  background-color: var(--green) !important;
+  color: var(--black);
+}
+
+.navbar-toggler {
+  padding-top: 0.1rem !important;
+  border: 1px solid var(--green) !important;
+}
+
+#more-icon {
+  color: var(--green);
+}

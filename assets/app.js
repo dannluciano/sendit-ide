@@ -45,7 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
     indentUnit: 4,
     matchBrackets: true,
     styleActiveLine: true,
-    matchBrackets: true,
     viewportMargin: 25
   });
 

@@ -34,6 +34,14 @@ term.open(document.getElementById("terminal"));
 term.write("\x1B[1;3;31mCarregando...\x1B[0m $ ");
 
 document.addEventListener("DOMContentLoaded", () => {
+  function saveFile(cm) {
+    console.log(cm)
+    const file = openedFiles[currentOpenTab]
+    if (file) {
+      writeFile(file.filepath, file.doc.getValue())
+      file.changed = false
+    }
+  }
   editor = CodeMirror.fromTextArea(document.querySelector("#editor"), {
     // mode: {
     //   name: "python",
@@ -47,6 +55,10 @@ document.addEventListener("DOMContentLoaded", () => {
     styleActiveLine: true,
     matchBrackets: true,
     viewportMargin: 25
+  });
+  editor.setOption("extraKeys", {
+    'Cmd-S': saveFile,
+    'Ctrl-S': saveFile
   });
 
   editor.setSize("100%", "470px");

@@ -37,6 +37,35 @@
   opacity: 0.8;
 }
 
+#file-system-tree__section {
+  margin-top: 1rem;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+summary {
+  list-style-type: none;
+}
+
+summary div {
+  display: flex !important;
+  align-items: center;
+}
+
+ul li div {
+  display: flex !important;
+  align-items: center;
+}
+
+summary span {
+  margin-left: 0.5rem;
+}
+
+ul li span {
+  margin-left: 0.5rem;
+}
+
 @media (max-width: 1393px) {
   #fs-options-section input {
     width: 100%;

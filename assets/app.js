@@ -12,23 +12,44 @@ function fitTerminal() {
   term.scrollToBottom();
 }
 
-function getExtensionIcon(filename) {
+const iconFileStylePattern =
+  'style="padding-top: 0.4rem; margin-right: 0.5rem"';
+const iconFileLabels = {
+  py: "logo-python",
+  js: "logo-javascript",
+  java: "cafe",
+  html: "logo-html5",
+  file: "document",
+  folder: "folder",
+};
+
+function getExtensionIcon(filename, style) {
   if (filename.endsWith(".py")) {
-    return '<ion-icon style="padding-top: 0.4rem; margin-right: 0.5rem" name="logo-python"></ion-icon>';
+    return `<ion-icon ${style ? iconFileStylePattern : null} name="${
+      iconFileLabels.py
+    }"></ion-icon>`;
   } else if (filename.endsWith(".js")) {
-    return '<ion-icon style="padding-top: 0.4rem; margin-right: 0.5rem" name="logo-javascript"></ion-icon>';
+    return `<ion-icon ${style ? iconFileStylePattern : null} name="${
+      iconFileLabels.js
+    }"></ion-icon>`;
   } else if (filename.endsWith(".java")) {
-    return '<ion-icon style="padding-top: 0.4rem; margin-right: 0.5rem" name="cafe"></ion-icon>';
+    return `<ion-icon ${style ? iconFileStylePattern : null} name="${
+      iconFileLabels.java
+    }"></ion-icon>`;
   } else if (filename.endsWith(".c")) {
     return "cㅤ";
   } else if (filename.endsWith(".cpp")) {
     return "c++ㅤ";
   } else if (filename.endsWith(".html")) {
-    return '<ion-icon style="padding-top: 0.4rem; margin-right: 0.5rem" name="logo-html5"></ion-icon>';
+    return `<ion-icon ${style ? iconFileStylePattern : null} name="${
+      iconFileLabels.html
+    }"></ion-icon>`;
   } else if (filename.endsWith(".css")) {
     return "cssㅤ";
   } else {
-    return '<ion-icon style="padding-top: 0.4rem; margin-right: 0.5rem" name="document"></ion-icon>';
+    return `<ion-icon ${style ? iconFileStylePattern : null} name="${
+      iconFileLabels.file
+    }"></ion-icon>`;
   }
 }
 
@@ -414,7 +435,13 @@ function renderFileSystemTree(data) {
 
 function renderFolder(folder) {
   const summary = document.createElement("summary");
-  summary.textContent = folder.name;
+  const div = document.createElement("div");
+  div.innerHTML = `<ion-icon name="${iconFileLabels.folder}"></ion-icon>`;
+  const span = document.createElement("span");
+  span.textContent = folder.name;
+
+  div.appendChild(span);
+  summary.appendChild(div);
 
   const files = document.createElement("ul");
 
@@ -439,15 +466,20 @@ function renderFolder(folder) {
 
 function renderFile(child) {
   const li = document.createElement("li");
-  li.dataset.path = child.path;
-  li.textContent = child.name;
-  li.onclick = openFileInTree;
+  const div = document.createElement("div");
+  div.innerHTML = getExtensionIcon(child.name, false);
+  const span = document.createElement("span");
+  span.textContent = child.name;
+  div.appendChild(span);
+  li.appendChild(div);
+
+  span.dataset.path = child.path;
+  span.onclick = openFileInTree;
   return li;
 }
 
 function openFileInTree(event) {
   const filepath = event.target.dataset.path;
-
   openFile(filepath);
 }
 

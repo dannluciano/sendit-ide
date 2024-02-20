@@ -77,15 +77,11 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
     },
     "cpp": {
       ...defaultOptions,
-      "mode": {
-        "name": "text/x-c++src",
-      }
+      "mode": "text/x-c++src",
     },
     "c": {
       ...defaultOptions,
-      "mode": {
-        "name": "text/x-csrc",
-      }
+      "mode": "text/x-csrc",
     },
     "scratch": {
       ...defaultOptions,
@@ -105,7 +101,6 @@ function changeEditorConfigsAndMode(editor, filename) {
   const fileExtension = getFileExtension(filename)
   const options = getEditorConfigsAndModeWithFileExtension(fileExtension)
   const extension = CodeMirror.findModeByExtension(fileExtension) || 'txt';
-  console.log(extension)
   CodeMirror.autoLoadMode(editor, extension);
   for (const key in options) {
     if (Object.hasOwnProperty.call(options, key)) {
@@ -178,6 +173,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (language === "py") {
       containerSocket.send(`python3 ${filepathWithOutHomePath}\n`);
+    } else if (language === "js") {
+      containerSocket.send(`node ${filepathWithOutHomePath}\n`);
+    } else if (language === "java") {
+      containerSocket.send(`java ${filepathWithOutHomePath}\n`);
+    } else if (language === "c++") {
+      containerSocket.send(`g++ -o main ${filepathWithOutHomePath}\n`);
+      containerSocket.send(`./main\n`);
+    } else if (language === "c") {
+      containerSocket.send(`gcc -o main ${filepathWithOutHomePath}\n`);
+      containerSocket.send(`./main\n`);
     }
   });
 

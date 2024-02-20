@@ -6,6 +6,18 @@ let containerSocket;
 let openedFiles = []
 let currentOpenTab = -1
 
+CodeMirror.modeURL = "/assets/vendor/codemirror/mode/%N/%N.js";
+
+const debounce = (callback, wait) => {
+  let timeoutId = null;
+  return (...args) => {
+    window.clearTimeout(timeoutId);
+    timeoutId = window.setTimeout(() => {
+      callback.apply(null, args);
+    }, wait);
+  };
+}
+
 function fitTerminal() {
   console.info("Term Resize");
   fitAddon.fit();
@@ -13,6 +25,94 @@ function fitTerminal() {
 }
 
 window.addEventListener("resize", fitTerminal);
+
+function getFileExtension(fileNameOrPath) {
+  return fileNameOrPath.split(".").pop()
+}
+
+function getEditorConfigsAndModeWithFileExtension(fileExtention) {
+  const defaultOptions = {
+    theme: "dracula",
+    lineNumbers: true,
+    indentUnit: 4,
+    matchBrackets: true,
+    styleActiveLine: true,
+    viewportMargin: 25,
+  }
+  const fileConfigsAndExtentionModes = {
+    "py": {
+      ...defaultOptions,
+      "mode": {
+        name: "python",
+        version: 3,
+        singleLineStringErrors: false,
+      },
+      "indentUnit": 2,
+      "smartIndent": true,
+      "tabSize": 2,
+      "indentWithTabs": false,
+    },
+    "js": {
+      ...defaultOptions,
+      "mode": {
+        "name": "javascript",
+      }
+    },
+    "mjs": {
+      ...defaultOptions,
+      "mode": {
+        "name": "javascript",
+      }
+    },
+    "json": {
+      ...defaultOptions,
+      "mode": {
+        "name": "javascript",
+        "json": true
+      }
+    },
+    "java": {
+      ...defaultOptions,
+      "mode": "text/x-java"
+    },
+    "cpp": {
+      ...defaultOptions,
+      "mode": {
+        "name": "text/x-c++src",
+      }
+    },
+    "c": {
+      ...defaultOptions,
+      "mode": {
+        "name": "text/x-csrc",
+      }
+    },
+    "scratch": {
+      ...defaultOptions,
+      "mode": null,
+      readOnly: true
+    }
+  }
+  try {
+    return fileConfigsAndExtentionModes[fileExtention]
+  } catch (error) {
+    console.error(error)
+    return
+  }
+}
+
+function changeEditorConfigsAndMode(editor, filename) {
+  const fileExtension = getFileExtension(filename)
+  const options = getEditorConfigsAndModeWithFileExtension(fileExtension)
+  const extension = CodeMirror.findModeByExtension(fileExtension) || 'txt';
+  console.log(extension)
+  CodeMirror.autoLoadMode(editor, extension);
+  for (const key in options) {
+    if (Object.hasOwnProperty.call(options, key)) {
+      editor.setOption(key, options[key])
+    }
+  }
+}
 
 const term = new Terminal({
   theme: {
@@ -34,41 +134,15 @@ term.open(document.getElementById("terminal"));
 term.write("\x1B[1;3;31mCarregando...\x1B[0m $ ");
 
 document.addEventListener("DOMContentLoaded", () => {
-  function saveFile(cm) {
-    console.log(cm)
-    const file = openedFiles[currentOpenTab]
-    if (file) {
-      writeFile(file.filepath, file.doc.getValue())
-      file.changed = false
-    }
-  }
-  editor = CodeMirror.fromTextArea(document.querySelector("#editor"), {
-    // mode: {
-    //   name: "python",
-    //   version: 3,
-    //   singleLineStringErrors: false,
-    // },
-    theme: "dracula",
-    lineNumbers: true,
-    indentUnit: 4,
-    matchBrackets: true,
-    styleActiveLine: true,
-    matchBrackets: true,
-    viewportMargin: 25
-  });
-  editor.setOption("extraKeys", {
-    'Cmd-S': saveFile,
-    'Ctrl-S': saveFile
-  });
-
+  editor = CodeMirror.fromTextArea(document.querySelector("#editor"));
   editor.setSize("100%", "470px");
-
   editor.on("changes", function () {
     if (currentOpenTab >= 0) {
       openedFiles[currentOpenTab].changed = true;
     }
-    renderFilesTabs()
-  })
+    requestAnimationFrame(debounce(renderFilesTabs, 500));
+  });
+  changeEditorConfigsAndMode(editor, 'scratch')
 
   const newFileButton = document.getElementById("new-file-button");
   newFileButton.addEventListener("click", function () {
@@ -203,7 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 filename,
                 filepath,
                 content
-              } = params
+              } = params;
 
               const fileIsOpened = openedFiles.findIndex(function (file) {
                 return file.filepath === filepath
@@ -238,12 +312,12 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function renderFilesTabs() {
-  const tabs = document.getElementById('tabs')
-  tabs.replaceChildren()
+  const tabs = document.getElementById("tabs");
+  tabs.replaceChildren();
 
   if (openedFiles.length === 0) {
     const filenameSpan = document.createElement('span')
-    filenameSpan.textContent = 'Scratch'
+    filenameSpan.textContent = 'scratch'
     filenameSpan.style = ''
 
     const closeSpan = document.createElement('span')
@@ -265,14 +339,16 @@ function renderFilesTabs() {
     return
   }
 
-  let fileindex = 0
+  let fileindex = 0;
   for (const file of openedFiles) {
     const filenameSpan = document.createElement('span')
 
-    filenameSpan.textContent = file.changed ? `${file.filename} * ` : file.filename
-    filenameSpan.onclick = changeCurrentOpenedTab
-    filenameSpan.dataset.fileindex = fileindex
-    filenameSpan.style = ''
+    filenameSpan.textContent = file.changed ?
+      `${file.filename} * ` :
+      file.filename;
+    filenameSpan.onclick = changeCurrentOpenedTab;
+    filenameSpan.dataset.fileindex = fileindex;
+    filenameSpan.style = "";
 
     const closeSpan = document.createElement('span')
     closeSpan.textContent = '  ⓧ  '
@@ -311,15 +387,13 @@ function changeCurrentOpenedTab(event) {
 }
 
 function changeCurrentOpenedTabWithFile(file) {
-
   const tabindex = openedFiles.findIndex(function (currentFile) {
     return currentFile.filepath === file.filepath
   })
-
-  editor.swapDoc(file.doc)
-  // To-Do Change the Mode
-  currentOpenTab = tabindex
-  renderFilesTabs()
+  editor.swapDoc(file.doc);
+  changeEditorConfigsAndMode(editor, file.filename)
+  currentOpenTab = tabindex;
+  renderFilesTabs();
 }
 
 function closeTab(event) {

@@ -436,7 +436,8 @@ function renderFileSystemTree(data) {
 function renderFolder(folder) {
   const summary = document.createElement("summary");
   const div = document.createElement("div");
-  div.innerHTML = `<ion-icon name="${iconFileLabels.folder}"></ion-icon>`;
+  div.setAttribute('onclick', "toggleFolderIcon(this)")
+  div.innerHTML = `<ion-icon class="filesystem-folder-icon" name="${iconFileLabels.folder}"></ion-icon>`;
   const span = document.createElement("span");
   span.textContent = folder.name;
 

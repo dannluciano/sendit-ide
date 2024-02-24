@@ -96,10 +96,10 @@
         <div id="file-system-tree__section" class="drac-text-white" open="">
           <ul class="tree">
             <li>
-              <details open="">
+              <details style="user-select: none" open="">
                 <summary>
-                  <div>
-                    <ion-icon name="folder"></ion-icon>
+                  <div onclick="toggleFolderIcon(this)">
+                    <ion-icon class="filesystem-folder-icon" name="folder-open"></ion-icon>
                     <span>root</span>
                   </div>
                 </summary>
@@ -133,6 +133,7 @@
     integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
     crossorigin="anonymous"></script>
   <script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+  <script src="./assets/open-folder-icon.js"></script>
 </body>
 
 </html>

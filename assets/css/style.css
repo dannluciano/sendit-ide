@@ -25,3 +25,7 @@ li {
     list-style-type: none;
     cursor: pointer;
 }
+
+.display-none {
+  display: none !important;
+}

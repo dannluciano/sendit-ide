@@ -67,7 +67,10 @@
     <div id="workbench">
       <div id="filesystem">
         <div id="fs-options-section">
-          <input placeholder="nome" id="file-name" type="text" size="14" width="auto" />
+          <div class="toggle-sidebar-container" style="display: flex; align-items: top;"><ion-icon
+              onclick="toggleFilesystemSidebar()" class="no-filesystem-icon" name="list-box"></ion-icon>
+            <input id="input-filename" placeholder="nome" id="file-name" type="text" size="14" width="auto" />
+          </div>
           <div id="create-file-container-icons">
             <button style="margin:0 1rem;" id="new-file-button">
               <div style="display: flex; align-items: flex-end;"><ion-icon style="font-size: 0.9rem;"
@@ -107,7 +110,12 @@
               </details>
             </li>
           </ul>
+
         </div>
+      </div>
+      <!--  -->
+      <div onclick="toggleFilesystemSidebar()" class="display-none" id="sidebar-no-show-filesystem">
+        <ion-icon class="no-filesystem-icon" name="list-box"></ion-icon>
       </div>
       <div id="editor-container">
         <nav id="file-title-bar">
@@ -134,6 +142,7 @@
     crossorigin="anonymous"></script>
   <script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
   <script src="./assets/open-folder-icon.js"></script>
+  <script src="./assets/sidebar-colapse.js"></script>
 </body>
 
 </html>

@@ -3,6 +3,10 @@
   overflow: auto !important;
 }
 
+.filsystem-colapsed {
+  width: calc(100% - 56px) !important;
+}
+
 #tabs {
   display: flex;
   flex-direction: row;

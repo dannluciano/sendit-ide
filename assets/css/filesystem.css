@@ -1,0 +1,102 @@
+#filesystem {
+  width: 25%;
+  padding: 1rem;
+}
+
+#sidebar-no-show-filesystem {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.no-filesystem-icon {
+  color: var(--green);
+  font-size: 1.5rem !important;
+  cursor: pointer;
+}
+
+#fs-options-section {
+  display: flex;
+  align-items: top;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+#fs-options-section input {
+  padding: 0 0.5rem;
+  border: none;
+  border-radius: 5px;
+  max-width: 100%;
+  margin-left: 0.5rem;
+  height: 25px !important;
+}
+
+#create-file-container-labels {
+  display: none;
+}
+
+#create-file-container-labels p {
+  font-size: 1rem;
+  margin: 0;
+}
+
+#fs-options-section button {
+  background-color: var(--black);
+  border: none;
+  color: var(--green);
+  font-size: 1.5rem;
+}
+
+#fs-options-section button:hover {
+  opacity: 0.8;
+}
+
+#file-system-tree__section {
+  margin-top: 1rem;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+summary {
+  list-style-type: none;
+}
+
+summary div {
+  display: flex !important;
+  align-items: center;
+}
+
+ul li div {
+  display: flex !important;
+  align-items: center;
+}
+
+summary span {
+  margin-left: 0.5rem;
+}
+
+ul li span {
+  margin-left: 0.5rem;
+}
+
+@media (max-width: 1393px) {
+  #fs-options-section input {
+    width: 100%;
+  }
+
+  .toggle-sidebar-container {
+    margin-bottom: 0.5rem;
+  }
+
+  #create-file-container-icons {
+    display: none;
+  }
+
+  #create-file-container-labels {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+}

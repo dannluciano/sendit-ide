@@ -24,6 +24,47 @@ function fitTerminal() {
   term.scrollToBottom();
 }
 
+const iconFileStylePattern =
+  'style="padding-top: 0.4rem; margin-right: 0.5rem"';
+const iconFileLabels = {
+  py: "logo-python",
+  js: "logo-javascript",
+  java: "cafe",
+  html: "logo-html5",
+  file: "document",
+  folder: "folder",
+};
+
+function getExtensionIcon(filename, style) {
+  if (filename.endsWith(".py")) {
+    return `<ion-icon ${style ? iconFileStylePattern : null} name="${
+      iconFileLabels.py
+    }"></ion-icon>`;
+  } else if (filename.endsWith(".js")) {
+    return `<ion-icon ${style ? iconFileStylePattern : null} name="${
+      iconFileLabels.js
+    }"></ion-icon>`;
+  } else if (filename.endsWith(".java")) {
+    return `<ion-icon ${style ? iconFileStylePattern : null} name="${
+      iconFileLabels.java
+    }"></ion-icon>`;
+  } else if (filename.endsWith(".c")) {
+    return "cㅤ";
+  } else if (filename.endsWith(".cpp")) {
+    return "c++ㅤ";
+  } else if (filename.endsWith(".html")) {
+    return `<ion-icon ${style ? iconFileStylePattern : null} name="${
+      iconFileLabels.html
+    }"></ion-icon>`;
+  } else if (filename.endsWith(".css")) {
+    return "cssㅤ";
+  } else {
+    return `<ion-icon ${style ? iconFileStylePattern : null} name="${
+      iconFileLabels.file
+    }"></ion-icon>`;
+  }
+}
+
 window.addEventListener("resize", fitTerminal);
 
 function getFileExtension(fileNameOrPath) {
@@ -133,15 +174,18 @@ document.addEventListener("DOMContentLoaded", () => {
   editor.setSize("100%", "470px");
   editor.on("changes", function () {
     if (currentOpenTab >= 0) {
+      const fileWasChanged = openedFiles[currentOpenTab].changed
       openedFiles[currentOpenTab].changed = true;
+      if (!fileWasChanged) {
+        requestAnimationFrame(renderFilesTabs);
+      }
     }
-    requestAnimationFrame(debounce(renderFilesTabs, 500));
   });
   changeEditorConfigsAndMode(editor, "scratch");
 
   const newFileButton = document.getElementById("new-file-button");
   newFileButton.addEventListener("click", function () {
-    const filenameField = document.getElementById("file-name");
+    const filenameField = document.getElementById("input-filename");
     const filename = filenameField.value;
     const filepath = `${tempDirPath}/${filename}`;
 
@@ -152,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const newFolderButton = document.getElementById("new-folder-button");
   newFolderButton.addEventListener("click", function () {
-    const filenameField = document.getElementById("file-name");
+    const filenameField = document.getElementById("input-filename");
     const filename = filenameField.value;
     const folderpath = `${tempDirPath}/${filename}`;
     makeFolder(folderpath);
@@ -209,8 +253,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (currentOpenTab >= 0 && openedFiles.length > 0) {
       const file = openedFiles[currentOpenTab];
       writeFile(file.filepath, editor.getValue());
+      const fileWasChanged = openedFiles[currentOpenTab].changed
       openedFiles[currentOpenTab].changed = false;
-      renderFilesTabs();
+      if (fileWasChanged) {
+        renderFilesTabs();
+      }
     }
   });
 
@@ -262,6 +309,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
               );
             }, 1000);
+            file = {
+              filename: "main.py",
+              filepath: `${tempDirPath}/main.py`,
+              changed: false,
+              doc: new CodeMirror.Doc(`print("Olá, mundo!")`),
+            };
+            // To-Do REMOVE THIS
+            openedFiles.push(file);
+            currentOpenTab = 0;
+            editor.swapDoc(file.doc);
+            renderFilesTabs();
+            // To-Do REMOVE THIS
           };
           console.info(apiSocket);
 
@@ -318,15 +377,20 @@ function renderFilesTabs() {
 
   if (openedFiles.length === 0) {
     const filenameSpan = document.createElement("span");
-    filenameSpan.textContent = "scratch";
+    filenameSpan.textContent = "Scratch";
     filenameSpan.style = "";
+
+    const extensionIcon = document.createElement("span");
+    extensionIcon.innerHTML = getExtensionIcon(filenameSpan.textContent);
+    extensionIcon.style = "";
 
     const closeSpan = document.createElement("span");
     closeSpan.textContent = "  ⓧ  ";
     closeSpan.onclick = closeTab;
     closeSpan.style = "";
 
-    const p = document.createElement("p");
+    const p = document.createElement("div");
+    p.appendChild(extensionIcon);
     p.appendChild(filenameSpan);
     p.appendChild(closeSpan);
 
@@ -351,13 +415,18 @@ function renderFilesTabs() {
     filenameSpan.dataset.fileindex = fileindex;
     filenameSpan.style = "";
 
+    const extensionIcon = document.createElement("span");
+    extensionIcon.innerHTML = getExtensionIcon(filenameSpan.textContent);
+    extensionIcon.style = "";
+
     const closeSpan = document.createElement("span");
     closeSpan.textContent = "  ⓧ  ";
     closeSpan.onclick = closeTab;
     closeSpan.dataset.fileindex = fileindex;
     closeSpan.style = "";
 
-    const p = document.createElement("p");
+    const p = document.createElement("div");
+    p.appendChild(extensionIcon);
     p.appendChild(filenameSpan);
     p.appendChild(closeSpan);
 
@@ -422,7 +491,14 @@ function renderFileSystemTree(data) {
 
 function renderFolder(folder) {
   const summary = document.createElement("summary");
-  summary.textContent = folder.name;
+  const div = document.createElement("div");
+  div.setAttribute('onclick', "toggleFolderIcon(this)")
+  div.innerHTML = `<ion-icon class="filesystem-folder-icon" name="${iconFileLabels.folder}"></ion-icon>`;
+  const span = document.createElement("span");
+  span.textContent = folder.name;
+
+  div.appendChild(span);
+  summary.appendChild(div);
 
   const files = document.createElement("ul");
 
@@ -447,15 +523,20 @@ function renderFolder(folder) {
 
 function renderFile(child) {
   const li = document.createElement("li");
-  li.dataset.path = child.path;
-  li.textContent = child.name;
-  li.onclick = openFileInTree;
+  const div = document.createElement("div");
+  div.innerHTML = getExtensionIcon(child.name, false);
+  const span = document.createElement("span");
+  span.textContent = child.name;
+  div.appendChild(span);
+  li.appendChild(div);
+
+  span.dataset.path = child.path;
+  span.onclick = openFileInTree;
   return li;
 }
 
 function openFileInTree(event) {
   const filepath = event.target.dataset.path;
-
   openFile(filepath);
 }
 

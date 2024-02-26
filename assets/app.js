@@ -3,8 +3,8 @@ let tempDirPath;
 let editor;
 let apiSocket;
 let containerSocket;
-let openedFiles = []
-let currentOpenTab = -1
+let openedFiles = [];
+let currentOpenTab = -1;
 
 CodeMirror.modeURL = "/assets/vendor/codemirror/mode/%N/%N.js";
 
@@ -16,7 +16,7 @@ const debounce = (callback, wait) => {
       callback.apply(null, args);
     }, wait);
   };
-}
+};
 
 function fitTerminal() {
   console.info("Term Resize");
@@ -27,7 +27,7 @@ function fitTerminal() {
 window.addEventListener("resize", fitTerminal);
 
 function getFileExtension(fileNameOrPath) {
-  return fileNameOrPath.split(".").pop()
+  return fileNameOrPath.split(".").pop();
 }
 
 function getEditorConfigsAndModeWithFileExtension(fileExtention) {
@@ -38,73 +38,73 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
     matchBrackets: true,
     styleActiveLine: true,
     viewportMargin: 25,
-  }
+  };
   const fileConfigsAndExtentionModes = {
-    "py": {
+    py: {
       ...defaultOptions,
-      "mode": {
+      mode: {
         name: "python",
         version: 3,
         singleLineStringErrors: false,
       },
-      "indentUnit": 2,
-      "smartIndent": true,
-      "tabSize": 2,
-      "indentWithTabs": false,
+      indentUnit: 2,
+      smartIndent: true,
+      tabSize: 2,
+      indentWithTabs: false,
     },
-    "js": {
+    js: {
       ...defaultOptions,
-      "mode": {
-        "name": "javascript",
-      }
+      mode: {
+        name: "javascript",
+      },
     },
-    "mjs": {
+    mjs: {
       ...defaultOptions,
-      "mode": {
-        "name": "javascript",
-      }
+      mode: {
+        name: "javascript",
+      },
     },
-    "json": {
+    json: {
       ...defaultOptions,
-      "mode": {
-        "name": "javascript",
-        "json": true
-      }
+      mode: {
+        name: "javascript",
+        json: true,
+      },
     },
-    "java": {
+    java: {
       ...defaultOptions,
-      "mode": "text/x-java"
+      mode: "text/x-java",
     },
-    "cpp": {
+    cpp: {
       ...defaultOptions,
-      "mode": "text/x-c++src",
+      mode: "text/x-c++src",
     },
-    "c": {
+    c: {
       ...defaultOptions,
-      "mode": "text/x-csrc",
+      mode: "text/x-csrc",
     },
-    "scratch": {
+    scratch: {
       ...defaultOptions,
-      "mode": null,
-      readOnly: true
-    }
-  }
+      mode: null,
+      readOnly: true,
+    },
+  };
   try {
-    return fileConfigsAndExtentionModes[fileExtention]
+    return fileConfigsAndExtentionModes[fileExtention];
   } catch (error) {
-    console.error(error)
-    return
+    console.error(error);
+    return;
   }
 }
 
 function changeEditorConfigsAndMode(editor, filename) {
-  const fileExtension = getFileExtension(filename)
-  const options = getEditorConfigsAndModeWithFileExtension(fileExtension)
-  const extension = CodeMirror.findModeByExtension(fileExtension) || 'txt';
+  const fileExtension = getFileExtension(filename);
+  const options = getEditorConfigsAndModeWithFileExtension(fileExtension);
+  const extension = CodeMirror.findModeByExtension(fileExtension) || "txt";
   CodeMirror.autoLoadMode(editor, extension);
   for (const key in options) {
     if (Object.hasOwnProperty.call(options, key)) {
-      editor.setOption(key, options[key])
+      editor.setOption(key, options[key]);
     }
   }
 }
@@ -137,26 +137,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     requestAnimationFrame(debounce(renderFilesTabs, 500));
   });
-  changeEditorConfigsAndMode(editor, 'scratch')
+  changeEditorConfigsAndMode(editor, "scratch");
 
   const newFileButton = document.getElementById("new-file-button");
   newFileButton.addEventListener("click", function () {
-    const filenameField = document.getElementById("file-name")
+    const filenameField = document.getElementById("file-name");
     const filename = filenameField.value;
-    const filepath = `${tempDirPath}/${filename}`
+    const filepath = `${tempDirPath}/${filename}`;
 
-    writeFile(filepath, '')
-    openFile(filepath)
-    filenameField.value = ''
+    writeFile(filepath, "");
+    openFile(filepath);
+    filenameField.value = "";
   });
 
   const newFolderButton = document.getElementById("new-folder-button");
   newFolderButton.addEventListener("click", function () {
-    const filenameField = document.getElementById("file-name")
+    const filenameField = document.getElementById("file-name");
     const filename = filenameField.value;
-    const folderpath = `${tempDirPath}/${filename}`
-    makeFolder(folderpath)
-    filenameField.value = ''
+    const folderpath = `${tempDirPath}/${filename}`;
+    makeFolder(folderpath);
+    filenameField.value = "";
   });
 
   const languageSelect = document.getElementById("language-select");
@@ -165,11 +165,14 @@ document.addEventListener("DOMContentLoaded", () => {
   runButton.addEventListener("click", function () {
     const language = languageSelect.value;
     const source = editor.getValue();
-    const file = openedFiles[currentOpenTab]
+    const file = openedFiles[currentOpenTab];
 
-    writeFile(file.filepath, source)
+    writeFile(file.filepath, source);
 
-    const filepathWithOutHomePath = file.filepath.replace(`${tempDirPath}/`, '')
+    const filepathWithOutHomePath = file.filepath.replace(
+      `${tempDirPath}/`,
+      ""
+    );
 
     if (language === "py") {
       containerSocket.send(`python3 ${filepathWithOutHomePath}\n`);
@@ -192,9 +195,9 @@ document.addEventListener("DOMContentLoaded", () => {
       "container-id": containerId,
     };
     fetch("/stop", {
-        method: "POST",
-        body: JSON.stringify(data),
-      })
+      method: "POST",
+      body: JSON.stringify(data),
+    })
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -204,16 +207,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveButton = document.getElementById("save-button");
   saveButton.addEventListener("click", function () {
     if (currentOpenTab >= 0 && openedFiles.length > 0) {
-      const file = openedFiles[currentOpenTab]
-      writeFile(file.filepath, editor.getValue())
+      const file = openedFiles[currentOpenTab];
+      writeFile(file.filepath, editor.getValue());
       openedFiles[currentOpenTab].changed = false;
-      renderFilesTabs()
+      renderFilesTabs();
     }
-  })
+  });
 
   fetch("/create", {
-      method: "POST",
-    })
+    method: "POST",
+  })
     .then((res) => res.json())
     .then((data) => {
       containerId = data["container-id"];
@@ -256,7 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     w: term.cols,
                     h: term.rows,
                   },
-                }),
+                })
               );
             }, 1000);
           };
@@ -270,41 +273,34 @@ document.addEventListener("DOMContentLoaded", () => {
           };
 
           apiSocket.addEventListener("message", (event) => {
-            const {
-              type,
-              params
-            } = JSON.parse(event.data);
+            const { type, params } = JSON.parse(event.data);
             if (type === "fs") {
-              renderFileSystemTree(params)
+              renderFileSystemTree(params);
             }
             if (type === "open") {
-              const {
-                filename,
-                filepath,
-                content
-              } = params;
+              const { filename, filepath, content } = params;
 
               const fileIsOpened = openedFiles.findIndex(function (file) {
-                return file.filepath === filepath
-              })
+                return file.filepath === filepath;
+              });
 
-              let file
+              let file;
 
               if (fileIsOpened === -1) {
                 file = {
                   filename,
                   filepath,
                   changed: false,
-                  doc: new CodeMirror.Doc(content)
-                }
-                openedFiles.push(file)
+                  doc: new CodeMirror.Doc(content),
+                };
+                openedFiles.push(file);
               } else {
-                file = openedFiles[fileIsOpened]
+                file = openedFiles[fileIsOpened];
               }
 
-              changeCurrentOpenedTabWithFile(file)
-              renderFilesTabs()
-              editor.focus()
+              changeCurrentOpenedTabWithFile(file);
+              renderFilesTabs();
+              editor.focus();
             }
           });
         } catch (error) {
@@ -313,7 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 1000);
     })
     .catch((error) => console.error(error));
-  renderFilesTabs()
+  renderFilesTabs();
 });
 
 function renderFilesTabs() {
@@ -321,60 +317,60 @@ function renderFilesTabs() {
   tabs.replaceChildren();
 
   if (openedFiles.length === 0) {
-    const filenameSpan = document.createElement('span')
-    filenameSpan.textContent = 'scratch'
-    filenameSpan.style = ''
+    const filenameSpan = document.createElement("span");
+    filenameSpan.textContent = "scratch";
+    filenameSpan.style = "";
 
-    const closeSpan = document.createElement('span')
-    closeSpan.textContent = '  ⓧ  '
-    closeSpan.onclick = closeTab
-    closeSpan.style = ''
+    const closeSpan = document.createElement("span");
+    closeSpan.textContent = "  ⓧ  ";
+    closeSpan.onclick = closeTab;
+    closeSpan.style = "";
 
-    const p = document.createElement('p')
-    p.appendChild(filenameSpan)
-    p.appendChild(closeSpan)
+    const p = document.createElement("p");
+    p.appendChild(filenameSpan);
+    p.appendChild(closeSpan);
 
-    const li = document.createElement('li')
-    li.appendChild(p)
-    li.classList.add('active-tab')
-    tabs.appendChild(li)
+    const li = document.createElement("li");
+    li.appendChild(p);
+    li.classList.add("active-tab");
+    tabs.appendChild(li);
 
-    editor.setValue('')
-    editor.setOption('readOnly', true)
-    return
+    editor.setValue("");
+    editor.setOption("readOnly", true);
+    return;
   }
 
   let fileindex = 0;
   for (const file of openedFiles) {
-    const filenameSpan = document.createElement('span')
+    const filenameSpan = document.createElement("span");
 
-    filenameSpan.textContent = file.changed ?
-      `${file.filename} * ` :
-      file.filename;
+    filenameSpan.textContent = file.changed
+      ? `${file.filename} * `
+      : file.filename;
     filenameSpan.onclick = changeCurrentOpenedTab;
     filenameSpan.dataset.fileindex = fileindex;
     filenameSpan.style = "";
 
-    const closeSpan = document.createElement('span')
-    closeSpan.textContent = '  ⓧ  '
-    closeSpan.onclick = closeTab
-    closeSpan.dataset.fileindex = fileindex
-    closeSpan.style = ''
+    const closeSpan = document.createElement("span");
+    closeSpan.textContent = "  ⓧ  ";
+    closeSpan.onclick = closeTab;
+    closeSpan.dataset.fileindex = fileindex;
+    closeSpan.style = "";
 
-    const p = document.createElement('p')
-    p.appendChild(filenameSpan)
-    p.appendChild(closeSpan)
+    const p = document.createElement("p");
+    p.appendChild(filenameSpan);
+    p.appendChild(closeSpan);
 
-    const li = document.createElement('li')
-    li.appendChild(p)
-    li.dataset.filepath = file.filepath
+    const li = document.createElement("li");
+    li.appendChild(p);
+    li.dataset.filepath = file.filepath;
     if (currentOpenTab === fileindex) {
-      li.classList.add('active-tab')
+      li.classList.add("active-tab");
     }
-    tabs.appendChild(li)
-    fileindex++
+    tabs.appendChild(li);
+    fileindex++;
   }
-  editor.setOption('readOnly', false)
+  editor.setOption("readOnly", false);
 }
 
 function changeCurrentOpenedTab(event) {
@@ -382,99 +378,101 @@ function changeCurrentOpenedTab(event) {
   //   writeFile(filepath, editor.getValue())
   // }
 
-  const tabindex = parseInt(event.target.dataset.fileindex)
-  const filepath = openedFiles[tabindex].filepath
+  const tabindex = parseInt(event.target.dataset.fileindex);
+  const filepath = openedFiles[tabindex].filepath;
 
-  openFile(filepath)
+  openFile(filepath);
   // To-Do Change the Mode
-  currentOpenTab = tabindex
-  renderFilesTabs()
+  currentOpenTab = tabindex;
+  renderFilesTabs();
 }
 
 function changeCurrentOpenedTabWithFile(file) {
   const tabindex = openedFiles.findIndex(function (currentFile) {
-    return currentFile.filepath === file.filepath
-  })
+    return currentFile.filepath === file.filepath;
+  });
   editor.swapDoc(file.doc);
-  changeEditorConfigsAndMode(editor, file.filename)
+  changeEditorConfigsAndMode(editor, file.filename);
   currentOpenTab = tabindex;
   renderFilesTabs();
 }
 
 function closeTab(event) {
-  const tabindex = parseInt(event.target.dataset.fileindex)
-  openedFiles.splice(tabindex, 1)
+  const tabindex = parseInt(event.target.dataset.fileindex);
+  openedFiles.splice(tabindex, 1);
   if (openedFiles.length == 0) {
-    currentOpenTab = -1
+    currentOpenTab = -1;
   }
-  renderFilesTabs()
+  renderFilesTabs();
 }
 
 function renderFileSystemTree(data) {
   const filesystem = document.querySelector("#file-system-tree");
 
-  filesystem.replaceChildren()
+  filesystem.replaceChildren();
 
   for (const child of data.children) {
-    if ('children' in child) {
-      filesystem.appendChild(renderFolder(child))
+    if ("children" in child) {
+      filesystem.appendChild(renderFolder(child));
     } else {
-      filesystem.appendChild(renderFile(child))
+      filesystem.appendChild(renderFile(child));
     }
   }
 }
 
 function renderFolder(folder) {
-  const summary = document.createElement('summary')
-  summary.textContent = folder.name
+  const summary = document.createElement("summary");
+  summary.textContent = folder.name;
 
-  const files = document.createElement('ul')
+  const files = document.createElement("ul");
 
   for (const child of folder.children) {
-    if ('children' in child) {
-      files.appendChild(renderFolder(child))
+    if ("children" in child) {
+      files.appendChild(renderFolder(child));
     } else {
-      files.appendChild(renderFile(child))
+      files.appendChild(renderFile(child));
     }
   }
 
-  const details = document.createElement('details')
-  details.appendChild(summary)
-  details.appendChild(files)
+  const details = document.createElement("details");
+  details.appendChild(summary);
+  details.appendChild(files);
 
-  const li = document.createElement('li')
-  li.dataset.path = folder.path
-  li.appendChild(details)
+  const li = document.createElement("li");
+  li.dataset.path = folder.path;
+  li.appendChild(details);
 
-  return li
+  return li;
 }
 
 function renderFile(child) {
-  const li = document.createElement('li')
-  li.dataset.path = child.path
-  li.textContent = child.name
-  li.onclick = openFileInTree
-  return li
+  const li = document.createElement("li");
+  li.dataset.path = child.path;
+  li.textContent = child.name;
+  li.onclick = openFileInTree;
+  return li;
 }
 
 function openFileInTree(event) {
-  const filepath = event.target.dataset.path
+  const filepath = event.target.dataset.path;
 
-  openFile(filepath)
+  openFile(filepath);
 }
 
 function openFile(filepath) {
-  apiSocket.send(JSON.stringify({
-    type: 'open',
-    params: {
-      filepath: filepath
-    }
-  }))
+  apiSocket.send(
+    JSON.stringify({
+      type: "open",
+      params: {
+        filepath: filepath,
+      },
+    })
+  );
 }
 
 function writeFile(filepath, source) {
   if (!apiSocket) {
-    return
+    return;
   }
 
   apiSocket.send(
@@ -484,21 +482,21 @@ function writeFile(filepath, source) {
         filepath,
         source,
       },
-    }),
+    })
   );
 }
 
 function makeFolder(folderpath) {
   if (!apiSocket) {
-    return
+    return;
   }
 
   apiSocket.send(
     JSON.stringify({
       type: "mkdir",
       params: {
-        folderpath
+        folderpath,
       },
-    }),
+    })
   );
 }

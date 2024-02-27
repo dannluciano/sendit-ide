@@ -274,7 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       setTimeout(() => {
         try {
-          const containerURL = `ws://${host}:81/containers/${containerId}/attach/ws?logs=true&stream=true&stdin=true&stdout=true`; //&stderr=true
+          const containerURL = `ws://${host}/containers/${containerId}/attach/ws?logs=true&stream=true&stdin=true&stdout=true`; //&stderr=true
           containerSocket = new WebSocket(containerURL);
           containerSocket.onopen = function () {
             const attachAddon = new AttachAddon.AttachAddon(containerSocket);

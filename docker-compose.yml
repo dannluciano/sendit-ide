@@ -41,9 +41,9 @@ services:
     container_name: wsapi
     build: ./api
     environment:
-      - PORT=9000
+      - PORT=7001
     ports:
-      - 9000:9000
+      - 7001:7001
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp:/tmp

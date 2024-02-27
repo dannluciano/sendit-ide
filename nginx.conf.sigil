@@ -103,22 +103,7 @@ server {
     gzip_vary on;
     gzip_comp_level  6;
 
-    proxy_pass  http://{{ $.APP }}-{{ $upstream_port }};
-    {{ if eq $.HTTP2_PUSH_SUPPORTED "true" }}http2_push_preload on; {{ end }}
-    proxy_http_version 1.1;
-    proxy_read_timeout {{ $.PROXY_READ_TIMEOUT }};
-    proxy_buffer_size {{ $.PROXY_BUFFER_SIZE }};
-    proxy_buffering {{ $.PROXY_BUFFERING }};
-    proxy_buffers {{ $.PROXY_BUFFERS }};
-    proxy_busy_buffers_size {{ $.PROXY_BUSY_BUFFERS_SIZE }};
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection $http_connection;
-    proxy_set_header Host $http_host;
-    proxy_set_header X-Forwarded-For {{ $.PROXY_X_FORWARDED_FOR }};
-    proxy_set_header X-Forwarded-Port {{ $.PROXY_X_FORWARDED_PORT }};
-    proxy_set_header X-Forwarded-Proto {{ $.PROXY_X_FORWARDED_PROTO }};
-    proxy_set_header X-Request-Start $msec;
-    {{ if $.PROXY_X_FORWARDED_SSL }}proxy_set_header X-Forwarded-Ssl {{ $.PROXY_X_FORWARDED_SSL }};{{ end }}
+    try_files index.html @backend;
   }
 
   {{ if $.CLIENT_MAX_BODY_SIZE }}client_max_body_size {{ $.CLIENT_MAX_BODY_SIZE }};{{ end }}
@@ -160,16 +145,26 @@ server {
     try_files $uri $uri/;
   }
 
-  location / {
-    try_files index.html @backend;
-  }
-
   location @backend {
+    proxy_pass  http://api_backend;
+    
+    {{ if eq $.HTTP2_PUSH_SUPPORTED "true" }}http2_push_preload on; {{ end }}
+    proxy_http_version 1.1;
+    proxy_read_timeout {{ $.PROXY_READ_TIMEOUT }};
+    proxy_buffer_size {{ $.PROXY_BUFFER_SIZE }};
+    proxy_buffering {{ $.PROXY_BUFFERING }};
+    proxy_buffers {{ $.PROXY_BUFFERS }};
+    proxy_busy_buffers_size {{ $.PROXY_BUSY_BUFFERS_SIZE }};
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $http_connection;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Forwarded-For {{ $.PROXY_X_FORWARDED_FOR }};
+    proxy_set_header X-Forwarded-Port {{ $.PROXY_X_FORWARDED_PORT }};
+    proxy_set_header X-Forwarded-Proto {{ $.PROXY_X_FORWARDED_PROTO }};
+    proxy_set_header X-Request-Start $msec;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-NginX-Proxy true;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header Host $host;
-    proxy_pass  http://api_backend;
+    {{ if $.PROXY_X_FORWARDED_SSL }}proxy_set_header X-Forwarded-Ssl {{ $.PROXY_X_FORWARDED_SSL }};{{ end }}
   }
 
   include {{ $.DOKKU_ROOT }}/{{ $.APP }}/nginx.conf.d/*.conf;

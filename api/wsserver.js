@@ -10,7 +10,7 @@ app.use("*", logger());
 const server = serve(
   {
     fetch: app.fetch,
-    port: process.env["PORT"] || 9000,
+    port: process.env["PORT"] || 9001,
   },
   (info) => {
     console.log(`Listening on http://localhost:${info.port}`);

@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+  web:
+    container_name: web
+    image: nginx:latest
+    ports:
+      - 81:5100
+    volumes:
+      - ./index.html:/etc/nginx/html/index.html:cached
+      - ./assets:/etc/nginx/html/assets:cached
+      - ./nginx.conf:/etc/nginx/nginx.conf:cached
+    links:
+      - api
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  vm:
+    container_name: vm
+    build: ./docker/vm
+  api:
+    container_name: api
+    build: api
+    environment:
+      - PORT=8001
+    ports:
+      - 8001:8001
+    volumes:
+      - ./index.html:/app/index.html:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  wsapi:
+    container_name: wsapi
+    build: ./api
+    environment:
+      - PORT=9001
+    ports:
+      - 9001:9001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: node wsserver.js

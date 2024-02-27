@@ -1,0 +1,15 @@
+[Unit]
+Description=SendIT
+After=syslog.target
+After=network.target
+
+[Service]
+ExecStart=docker compose -f docker-compose.prod.yml --parallel -1 up --build
+ExecStop=docker compose -f docker-compose.prod.yml down
+Type=simple
+Restart=always
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

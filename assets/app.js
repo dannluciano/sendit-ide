@@ -42,36 +42,21 @@ const iconFileLabels = {
   html: "logo-html5",
   file: "document",
   folder: "folder",
+  c: "skull",
+  cpp: "skull",
 };
 
 function getExtensionIcon(filename, style) {
-  if (filename.endsWith(".py")) {
-    return `<ion-icon ${style ? iconFileStylePattern : null} name="${
-      iconFileLabels.py
-    }"></ion-icon>`;
-  } else if (filename.endsWith(".js")) {
-    return `<ion-icon ${style ? iconFileStylePattern : null} name="${
-      iconFileLabels.js
-    }"></ion-icon>`;
-  } else if (filename.endsWith(".java")) {
-    return `<ion-icon ${style ? iconFileStylePattern : null} name="${
-      iconFileLabels.java
-    }"></ion-icon>`;
-  } else if (filename.endsWith(".c")) {
-    return "cㅤ";
-  } else if (filename.endsWith(".cpp")) {
-    return "c++ㅤ";
-  } else if (filename.endsWith(".html")) {
-    return `<ion-icon ${style ? iconFileStylePattern : null} name="${
-      iconFileLabels.html
-    }"></ion-icon>`;
-  } else if (filename.endsWith(".css")) {
-    return "cssㅤ";
-  } else {
-    return `<ion-icon ${style ? iconFileStylePattern : null} name="${
-      iconFileLabels.file
-    }"></ion-icon>`;
+  const extension = getFileExtension(filename);
+  let iconName = iconFileLabels["file"];
+  try {
+    iconName = iconFileLabels[extension];
+  } catch (error) {
+    
   }
+  return `<ion-icon ${
+    style ? iconFileStylePattern : null
+  } name="${iconName}"></ion-icon>`;
 }
 
 function getFileExtension(fileNameOrPath) {

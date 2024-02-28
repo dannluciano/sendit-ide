@@ -114,11 +114,6 @@ const app = new Hono();
 
 app.use("*", logger());
 
-app.get("/", async (c) => {
-  const indexHTML = await fs.readFile("./index.html");
-  return c.html(indexHTML);
-});
-
 app.get("/version", async (c) => {
   return c.text("v0.0.1");
 });

@@ -191,13 +191,11 @@ document.addEventListener("DOMContentLoaded", () => {
     filenameField.value = "";
   });
 
-  const languageSelect = document.getElementById("language-select");
-
   const runButton = document.getElementById("run-button");
   runButton.addEventListener("click", function () {
-    const language = languageSelect.value;
     const source = editor.getValue();
     const file = openedFiles[currentOpenTab];
+    const language = getFileExtension(file.filename);
 
     writeFile(file.filepath, source);
 
@@ -212,28 +210,13 @@ document.addEventListener("DOMContentLoaded", () => {
       containerSocket.send(`node ${filepathWithOutHomePath}\n`);
     } else if (language === "java") {
       containerSocket.send(`java ${filepathWithOutHomePath}\n`);
-    } else if (language === "c++") {
+    } else if (language === "cpp") {
       containerSocket.send(`g++ -o main ${filepathWithOutHomePath}\n`);
       containerSocket.send(`./main\n`);
     } else if (language === "c") {
       containerSocket.send(`gcc -o main ${filepathWithOutHomePath}\n`);
       containerSocket.send(`./main\n`);
     }
-  });
-
-  const stopButton = document.getElementById("stop-button");
-  stopButton.addEventListener("click", function () {
-    const data = {
-      "container-id": containerId,
-    };
-    fetch("/stop", {
-      method: "POST",
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      });
   });
 
   const saveButton = document.getElementById("save-button");
@@ -283,7 +266,7 @@ document.addEventListener("DOMContentLoaded", () => {
           apiSocket.onopen = function () {
             console.info("API WebSocket Connection Opened");
             setTimeout(function () {
-              terminalResize()
+              terminalResize();
             }, 1000);
             file = {
               filename: "main.py",
@@ -334,6 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
               }
 
               changeCurrentOpenedTabWithFile(file);
+
               renderFilesTabs();
               editor.focus();
             }
@@ -419,17 +403,10 @@ function renderFilesTabs() {
 }
 
 function changeCurrentOpenedTab(event) {
-  // if (currentOpenTab >= 0) {
-  //   writeFile(filepath, editor.getValue())
-  // }
-
   const tabindex = parseInt(event.target.dataset.fileindex);
   const filepath = openedFiles[tabindex].filepath;
 
   openFile(filepath);
-  // To-Do Change the Mode
-  currentOpenTab = tabindex;
-  renderFilesTabs();
 }
 
 function changeCurrentOpenedTabWithFile(file) {

@@ -20,5 +20,6 @@ RUN npm ci
 
 # copy in our source code last, as it changes the most
 COPY --chown=root:root . .
+COPY --chown=root:root assets/index.html ./index.html
 
 CMD [ "node", "server.js" ]

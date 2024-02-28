@@ -1,4 +1,4 @@
-const host = document.location.host
+const host = document.location.host;
 let containerId;
 let tempDirPath;
 let editor;
@@ -6,6 +6,20 @@ let apiSocket;
 let containerSocket;
 let openedFiles = [];
 let currentOpenTab = -1;
+let term;
+
+function terminalResize() {
+  term.fit();
+  if (apiSocket) {
+    apiSocket.send(
+      JSON.stringify({
+        type: "resize",
+        params: term.getDimensions(),
+      })
+    );
+  }
+}
+window.addEventListener("resize", terminalResize);
 
 CodeMirror.modeURL = "/assets/vendor/codemirror/mode/%N/%N.js";
 
@@ -18,12 +32,6 @@ const debounce = (callback, wait) => {
     }, wait);
   };
 };
-
-function fitTerminal() {
-  console.info("Term Resize");
-  fitAddon.fit();
-  term.scrollToBottom();
-}
 
 const iconFileStylePattern =
   'style="padding-top: 0.4rem; margin-right: 0.5rem"';
@@ -65,8 +73,6 @@ function getExtensionIcon(filename, style) {
     }"></ion-icon>`;
   }
 }
-
-window.addEventListener("resize", fitTerminal);
 
 function getFileExtension(fileNameOrPath) {
   return fileNameOrPath.split(".").pop();
@@ -151,31 +157,12 @@ function changeEditorConfigsAndMode(editor, filename) {
   }
 }
 
-const term = new Terminal({
-  theme: {
-    background: "var(--black)",
-    black: "var(--black)",
-    brightBlack: "var(--blackSecondary)",
-    white: "var(--white)",
-    red: "var(--red)",
-    yellow: "var(--yellow)",
-    green: "var(--green)",
-    blue: "var(--blue)",
-    cyan: "var(--cyan)",
-    magenta: "var(--pink)",
-  },
-});
-const fitAddon = new FitAddon.FitAddon();
-term.loadAddon(fitAddon);
-term.open(document.getElementById("terminal"));
-term.write("\x1B[1;3;31mCarregando...\x1B[0m $ ");
-
 document.addEventListener("DOMContentLoaded", () => {
   editor = CodeMirror.fromTextArea(document.querySelector("#editor"));
   editor.setSize("100%", "470px");
   editor.on("changes", function () {
     if (currentOpenTab >= 0) {
-      const fileWasChanged = openedFiles[currentOpenTab].changed
+      const fileWasChanged = openedFiles[currentOpenTab].changed;
       openedFiles[currentOpenTab].changed = true;
       if (!fileWasChanged) {
         requestAnimationFrame(renderFilesTabs);
@@ -254,7 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (currentOpenTab >= 0 && openedFiles.length > 0) {
       const file = openedFiles[currentOpenTab];
       writeFile(file.filepath, editor.getValue());
-      const fileWasChanged = openedFiles[currentOpenTab].changed
+      const fileWasChanged = openedFiles[currentOpenTab].changed;
       openedFiles[currentOpenTab].changed = false;
       if (fileWasChanged) {
         renderFilesTabs();
@@ -277,18 +264,14 @@ document.addEventListener("DOMContentLoaded", () => {
           const containerURL = `ws://${host}/containers/${containerId}/attach/ws?logs=true&stream=true&stdin=true&stdout=true`; //&stderr=true
           containerSocket = new WebSocket(containerURL);
           containerSocket.onopen = function () {
-            const attachAddon = new AttachAddon.AttachAddon(containerSocket);
-            term.loadAddon(attachAddon);
-            fitTerminal();
-            term.reset();
-            term.paste("clear\n");
+            term = new Term();
+            term.attach(containerSocket);
+            console.info(containerSocket);
           };
-          console.info(containerSocket);
 
           containerSocket.onclose = function (code, reason) {
             apiSocket.close();
-            term.reset();
-            term.writeln("Disconnected");
+            term.close();
             console.log("Containet WebSocket Disconnected:", code, reason);
           };
           containerSocket.onerror = function (err) {
@@ -300,15 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
           apiSocket.onopen = function () {
             console.info("API WebSocket Connection Opened");
             setTimeout(function () {
-              apiSocket.send(
-                JSON.stringify({
-                  type: "resize",
-                  params: {
-                    w: term.cols,
-                    h: term.rows,
-                  },
-                })
-              );
+              terminalResize()
             }, 1000);
             file = {
               filename: "main.py",
@@ -493,7 +468,7 @@ function renderFileSystemTree(data) {
 function renderFolder(folder) {
   const summary = document.createElement("summary");
   const div = document.createElement("div");
-  div.setAttribute('onclick', "toggleFolderIcon(this)")
+  div.setAttribute("onclick", "toggleFolderIcon(this)");
   div.innerHTML = `<ion-icon class="filesystem-folder-icon" name="${iconFileLabels.folder}"></ion-icon>`;
   const span = document.createElement("span");
   span.textContent = folder.name;

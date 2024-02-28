@@ -127,7 +127,7 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
     },
     scratch: {
       ...defaultOptions,
-      mode: null,
+      mode: "properties",
       readOnly: true,
     },
   };

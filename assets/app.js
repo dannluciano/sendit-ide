@@ -320,7 +320,7 @@ function renderFilesTabs() {
 
   if (openedFiles.length === 0) {
     const filenameSpan = document.createElement("span");
-    filenameSpan.textContent = "Scratch";
+    filenameSpan.textContent = "scratch";
     filenameSpan.style = "";
 
     const extensionIcon = document.createElement("span");
@@ -328,7 +328,7 @@ function renderFilesTabs() {
     extensionIcon.style = "";
 
     const closeSpan = document.createElement("span");
-    closeSpan.textContent = "  ⓧ  ";
+    closeSpan.innerHTML = '<ion-icon name="close-circle"></ion-icon>';
     closeSpan.onclick = closeTab;
     closeSpan.style = "";
 
@@ -363,7 +363,7 @@ function renderFilesTabs() {
     extensionIcon.style = "";
 
     const closeSpan = document.createElement("span");
-    closeSpan.textContent = "  ⓧ  ";
+    closeSpan.innerHTML = '<ion-icon name="close-circle"></ion-icon>';
     closeSpan.onclick = closeTab;
     closeSpan.dataset.fileindex = fileindex;
     closeSpan.style = "";

@@ -20,4 +20,4 @@ update:
 	git pull --rebase
 	cp assets/index.html /etc/nginx/html/
 	cp -r assets/ /etc/nginx/html/
-	
+	systemctl restart sendit-ide.service

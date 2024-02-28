@@ -7,17 +7,13 @@ services:
     ports:
       - 81:81
     volumes:
+      - ./assets/index.html:/etc/nginx/html/index.html:cached
       - ./assets:/etc/nginx/html/assets:cached
       - ./nginx.local:/etc/nginx/nginx.conf:cached
     links:
       - api
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    develop:
-      watch:
-        - action: rebuild
-          path: nginx.local
-          target: /etc/nginx/nginx.conf
   vm:
     container_name: vm
     build: ./docker/vm
@@ -30,7 +26,6 @@ services:
     ports:
       - 8001:8001
     volumes:
-      - ./index.html:/app/index.html:cached
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp:/tmp
     extra_hosts:

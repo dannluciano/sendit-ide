@@ -29,6 +29,10 @@ http {
         listen          81 default;
         server_name     web;
 
+        location = / {
+            try_files /index.html =404;
+        }
+
         location ~ ^/containers/(.*)$ {
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
@@ -45,21 +49,18 @@ http {
             proxy_pass  http://api_backend;
         }
 
-        location /assets/ {
+        location ~ ^/assets/(.*)$ {
             root  /etc/nginx/html;
             try_files $uri $uri/;
         }
-
-        location / {
-            try_files index.html @backend;
-        }
-
-        location @backend {
+        
+        location ~ ^/(.*)$ {
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-NginX-Proxy true;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header Host $host;
             proxy_pass  http://api_backend;
         }
+
     }
 }

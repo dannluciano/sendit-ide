@@ -1,4 +1,5 @@
 const host = document.location.host;
+const sProtocol = document.location.protocol === "http:" ? "" : "s";
 let containerId;
 let tempDirPath;
 let editor;
@@ -51,9 +52,7 @@ function getExtensionIcon(filename, style) {
   let iconName = iconFileLabels["file"];
   try {
     iconName = iconFileLabels[extension];
-  } catch (error) {
-    
-  }
+  } catch (error) {}
   return `<ion-icon ${
     style ? iconFileStylePattern : null
   } name="${iconName}"></ion-icon>`;
@@ -229,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       setTimeout(() => {
         try {
-          const containerURL = `ws://${host}/containers/${containerId}/attach/ws?logs=true&stream=true&stdin=true&stdout=true`; //&stderr=true
+          const containerURL = `ws${sProtocol}://${host}/containers/${containerId}/attach/ws?logs=true&stream=true&stdin=true&stdout=true`; //&stderr=true
           containerSocket = new WebSocket(containerURL);
           containerSocket.onopen = function () {
             term = new Term();
@@ -246,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error(err);
           };
 
-          const apiWSURL = `ws://${host}/vmws?cid=${containerId}`;
+          const apiWSURL = `ws${sProtocol}://${host}/vmws?cid=${containerId}`;
           apiSocket = new WebSocket(apiWSURL);
           apiSocket.onopen = function () {
             console.info("API WebSocket Connection Opened");
@@ -262,8 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // To-Do REMOVE THIS
             openedFiles.push(file);
             currentOpenTab = 0;
-            editor.swapDoc(file.doc);
-            renderFilesTabs();
+            changeCurrentOpenedTabWithFile(file);
             // To-Do REMOVE THIS
           };
           console.info(apiSocket);

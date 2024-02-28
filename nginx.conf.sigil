@@ -149,7 +149,7 @@ server {
   }
 
   location /assets/ {
-    root  /etc/nginx/html;
+    root  /etc/nginx/html/;
     try_files $uri $uri/;
   }
 

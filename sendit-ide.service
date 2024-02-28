@@ -4,7 +4,8 @@ After=syslog.target
 After=network.target
 
 [Service]
-ExecStart=docker compose -f docker-compose.prod.yml --parallel -1 up --build
+WorkingDirectory=/var/www/sendit-ide
+ExecStart=docker compose -f docker-compose.prod.yml up --build
 ExecStop=docker compose -f docker-compose.prod.yml down
 Type=simple
 Restart=always

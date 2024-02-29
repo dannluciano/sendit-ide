@@ -45,7 +45,8 @@ const iconFileLabels = {
   folder: "folder",
   c: "skull",
   cpp: "skull",
-  sql: "server"
+  sql: "server",
+  scratch: "document"
 };
 
 function getExtensionIcon(filename, style) {
@@ -53,7 +54,11 @@ function getExtensionIcon(filename, style) {
   let iconName = iconFileLabels["file"];
   try {
     iconName = iconFileLabels[extension];
-  } catch (error) {}
+  } catch (error) {
+    return `<ion-icon ${
+      style ? iconFileStylePattern : null
+    } name="document"></ion-icon>`;
+  }
   return `<ion-icon ${
     style ? iconFileStylePattern : null
   } name="${iconName}"></ion-icon>`;

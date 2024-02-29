@@ -45,6 +45,7 @@ const iconFileLabels = {
   folder: "folder",
   c: "skull",
   cpp: "skull",
+  sql: "server"
 };
 
 function getExtensionIcon(filename, style) {
@@ -114,6 +115,10 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
     c: {
       ...defaultOptions,
       mode: "text/x-csrc",
+    },
+    sql: {
+      ...defaultOptions,
+      mode: "text/x-sqlite",
     },
     scratch: {
       ...defaultOptions,
@@ -200,6 +205,8 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (language === "c") {
       containerSocket.send(`gcc -o main ${filepathWithOutHomePath}\n`);
       containerSocket.send(`./main\n`);
+    } else if (language === "sql") {
+      containerSocket.send(`sqlite3 ${filepathWithOutHomePath}\n`);
     }
   });
 

@@ -46,7 +46,7 @@ const iconFileLabels = {
   c: "skull",
   cpp: "skull",
   sql: "server",
-  scratch: "document"
+  scratch: "document",
 };
 
 function getExtensionIcon(filename, style) {
@@ -154,6 +154,14 @@ function changeEditorConfigsAndMode(editor, filename) {
 document.addEventListener("DOMContentLoaded", () => {
   editor = CodeMirror.fromTextArea(document.querySelector("#editor"));
   editor.setSize("100%", "470px");
+  editor.setOption("extraKeys", {
+    "Ctrl-S": function (cm) {
+      saveFile();
+    },
+    "Cmd-S": function (cm) {
+      saveFile();
+    },
+  });
   editor.on("changes", function () {
     if (currentOpenTab >= 0) {
       const fileWasChanged = openedFiles[currentOpenTab].changed;
@@ -187,11 +195,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const runButton = document.getElementById("run-button");
   runButton.addEventListener("click", function () {
-    const source = editor.getValue();
     const file = openedFiles[currentOpenTab];
     const language = getFileExtension(file.filename);
 
-    writeFile(file.filepath, source);
+    saveFile();
 
     const filepathWithOutHomePath = file.filepath.replace(
       `${tempDirPath}/`,
@@ -217,15 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const saveButton = document.getElementById("save-button");
   saveButton.addEventListener("click", function () {
-    if (currentOpenTab >= 0 && openedFiles.length > 0) {
-      const file = openedFiles[currentOpenTab];
-      writeFile(file.filepath, editor.getValue());
-      const fileWasChanged = openedFiles[currentOpenTab].changed;
-      openedFiles[currentOpenTab].changed = false;
-      if (fileWasChanged) {
-        renderFilesTabs();
-      }
-    }
+    saveFile();
   });
 
   fetch("/create", {
@@ -326,6 +325,18 @@ document.addEventListener("DOMContentLoaded", () => {
   renderFilesTabs();
 });
 
+function saveFile() {
+  if (currentOpenTab >= 0 && openedFiles.length > 0) {
+    const file = openedFiles[currentOpenTab];
+    writeFile(file.filepath, editor.getValue());
+    const fileWasChanged = openedFiles[currentOpenTab].changed;
+    openedFiles[currentOpenTab].changed = false;
+    if (fileWasChanged) {
+      renderFilesTabs();
+    }
+  }
+}
+
 function renderFilesTabs() {
   const tabs = document.getElementById("tabs");
   tabs.replaceChildren();
@@ -371,7 +382,7 @@ function renderFilesTabs() {
     filenameSpan.style = "";
 
     const extensionIcon = document.createElement("span");
-    extensionIcon.innerHTML = getExtensionIcon(filenameSpan.textContent);
+    extensionIcon.innerHTML = getExtensionIcon(file.filename);
     extensionIcon.style = "";
 
     const closeSpan = document.createElement("span");

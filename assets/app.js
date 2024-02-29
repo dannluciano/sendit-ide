@@ -1,5 +1,6 @@
 const host = document.location.host;
 const sProtocol = document.location.protocol === "http:" ? "" : "s";
+const debugIsActive = document.location.hash === "debug";
 let containerId;
 let tempDirPath;
 let editor;
@@ -8,6 +9,12 @@ let containerSocket;
 let openedFiles = [];
 let currentOpenTab = -1;
 let term;
+
+function debug(msg) {
+  if (debugIsActive) {
+    console.log(msg);
+  }
+}
 
 function terminalResize() {
   term.fit();
@@ -244,13 +251,13 @@ document.addEventListener("DOMContentLoaded", () => {
           containerSocket.onopen = function () {
             term = new Term();
             term.attach(containerSocket);
-            console.info(containerSocket);
+            debug(containerSocket);
           };
 
           containerSocket.onclose = function (code, reason) {
             apiSocket.close();
             term.close();
-            console.log("Containet WebSocket Disconnected:", code, reason);
+            debug("Containet WebSocket Disconnected:", code, reason);
           };
           containerSocket.onerror = function (err) {
             console.error(err);
@@ -259,7 +266,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const apiWSURL = `ws${sProtocol}://${host}/vmws?cid=${containerId}`;
           apiSocket = new WebSocket(apiWSURL);
           apiSocket.onopen = function () {
-            console.info("API WebSocket Connection Opened");
+            debug("API WebSocket Connection Opened");
             setTimeout(function () {
               terminalResize();
             }, 1000);
@@ -275,10 +282,10 @@ document.addEventListener("DOMContentLoaded", () => {
             changeCurrentOpenedTabWithFile(file);
             // To-Do REMOVE THIS
           };
-          console.info(apiSocket);
+          debug(apiSocket);
 
           apiSocket.onclose = function (code, reason) {
-            console.log("API WebSocket Disconnected:", code, reason);
+            debug("API WebSocket Disconnected:", code, reason);
           };
           apiSocket.onerror = function (err) {
             console.error(err);

@@ -30,7 +30,7 @@ class Term {
     this.term.write("\x1B[1;3;31mCarregando...\x1B[0m $ ");
   }
   fit() {
-    console.info("Term Resize");
+    debug("Term Resize");
     this.fitAddon.fit();
     this.term.scrollToBottom();
   }

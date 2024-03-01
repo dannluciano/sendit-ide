@@ -1,6 +1,6 @@
 const host = document.location.host;
 const sProtocol = document.location.protocol === "http:" ? "" : "s";
-const debugIsActive = document.location.hash === "debug";
+const debugIsActive = document.location.hash === "#debug";
 let containerId;
 let tempDirPath;
 let editor;

@@ -29,3 +29,7 @@ li {
 .display-none {
   display: none !important;
 }
+
+#tabs {
+  overflow-y: auto;
+}

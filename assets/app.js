@@ -433,7 +433,7 @@ function changeCurrentOpenedTabWithFile(file) {
 }
 
 function closeTab(event) {
-  const tabindex = parseInt(event.target.dataset.fileindex);
+  const tabindex = parseInt(event.target.parentNode.dataset.fileindex);
   openedFiles.splice(tabindex, 1);
   if (openedFiles.length == 0) {
     currentOpenTab = -1;

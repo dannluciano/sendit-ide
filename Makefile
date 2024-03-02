@@ -16,6 +16,9 @@ logs:
 watch:
 	docker compose watch
 
+deploy:
+	git push dokku main
+
 update:
 	git pull --rebase
 	cp assets/index.html /etc/nginx/html/

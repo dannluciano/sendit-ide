@@ -206,6 +206,13 @@ document.addEventListener("DOMContentLoaded", () => {
     "Cmd-S": function (cm) {
       saveFile();
     },
+    "Ctrl-R": function (cm) {
+      runCurrentOpenedFile();
+    },
+    "Cmd-R": function (cm) {
+      runCurrentOpenedFile();
+    },
+
   });
   editor.on("changes", function () {
     if (currentOpenTab >= 0) {

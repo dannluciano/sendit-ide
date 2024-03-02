@@ -1,6 +1,8 @@
 const host = document.location.host;
 const sProtocol = document.location.protocol === "http:" ? "" : "s";
-const debugIsActive = document.location.hash === "#debug";
+const currentURL = new URL(document.location);
+const debugIsActive = currentURL.searchParams.has("debug");
+const testIsActive = currentURL.searchParams.has("test");
 let containerId;
 let tempDirPath;
 let editor;
@@ -270,23 +272,23 @@ document.addEventListener("DOMContentLoaded", () => {
             setTimeout(function () {
               terminalResize();
             }, 1000);
-            file = {
-              filename: "main.py",
-              filepath: `${tempDirPath}/main.py`,
-              changed: false,
-              doc: new CodeMirror.Doc(`print("Olá, mundo!")`),
-            };
-            // To-Do REMOVE THIS
-            openedFiles.push(file);
-            
 
-            currentOpenTab = 0;
-            changeCurrentOpenedTabWithFile(file);
-            saveFile()
-            setTimeout(() => {
-              setActionFileStyle('main.py', false)
-            }, 1000)
-            // To-Do REMOVE THIS
+            if (testIsActive) {
+              file = {
+                filename: "main.py",
+                filepath: `${tempDirPath}/main.py`,
+                changed: false,
+                doc: new CodeMirror.Doc(`print("Olá, mundo!")`),
+              };
+              openedFiles.push(file);
+
+              currentOpenTab = 0;
+              changeCurrentOpenedTabWithFile(file);
+              saveFile();
+              setTimeout(() => {
+                setActionFileStyle("main.py", false);
+              }, 1000);
+            }
           };
           debug(apiSocket);
 
@@ -351,43 +353,40 @@ function saveFile() {
 }
 
 function setOpenFile(event) {
-  const clickItem = event.target.textContent
-  const files = document.querySelectorAll('.file-item')
+  const clickItem = event.target.textContent;
+  const files = document.querySelectorAll(".file-item");
 
-  for(let i = 0; i < files.length; i++) {
-    const current = files[i]
-    if (current.querySelector('.file-item-name').textContent === clickItem) {
-      closeFileStyle()
-      current.classList.add('file-open')
-      break
+  for (let i = 0; i < files.length; i++) {
+    const current = files[i];
+    if (current.querySelector(".file-item-name").textContent === clickItem) {
+      closeFileStyle();
+      current.classList.add("file-open");
+      break;
     }
-    
   }
 }
 
 function setActionFileStyle(text, close) {
-  const files = document.querySelectorAll('.file-item')
+  const files = document.querySelectorAll(".file-item");
 
-  console.log(text)
+  console.log(text);
 
-  for(let i = 0; i < files.length; i++) {
-    const current = files[i]
-    if (current.querySelector('.file-item-name').textContent === text) {
+  for (let i = 0; i < files.length; i++) {
+    const current = files[i];
+    if (current.querySelector(".file-item-name").textContent === text) {
       if (close) {
-        current.classList.remove('file-open')
+        current.classList.remove("file-open");
       } else {
-        current.classList.add('file-open')
+        current.classList.add("file-open");
       }
-      break
+      break;
     }
-    
   }
 }
 
 function closeFileStyle() {
-  const element = document.querySelector('.file-open')
-  console.log('close', element)
-  element && element.classList.remove('file-open')
+  const element = document.querySelector(".file-open");
+  element && element.classList.remove("file-open");
 }
 
 function renderFilesTabs() {
@@ -418,7 +417,7 @@ function renderFilesTabs() {
     li.classList.add("active-tab");
     tabs.appendChild(li);
 
-    closeFileStyle()
+    closeFileStyle();
 
     editor.setValue("");
     editor.setOption("readOnly", true);
@@ -428,7 +427,7 @@ function renderFilesTabs() {
   let fileindex = 0;
   for (const file of openedFiles) {
     const filenameSpan = document.createElement("span");
-    filenameSpan.classList.add('file-name-span')
+    filenameSpan.classList.add("file-name-span");
 
     filenameSpan.textContent = file.changed
       ? `${file.filename} * `
@@ -454,7 +453,7 @@ function renderFilesTabs() {
 
     const li = document.createElement("li");
     li.appendChild(p);
-    li.onclick = setOpenFile
+    li.onclick = setOpenFile;
     li.dataset.filepath = file.filepath;
     if (currentOpenTab === fileindex) {
       li.classList.add("active-tab");
@@ -469,13 +468,13 @@ function changeCurrentOpenedTab(event) {
   const tabindex = parseInt(event.target.dataset.fileindex);
   const file = openedFiles[tabindex];
   const filepath = file.filepath;
-  
+
   openFile(filepath);
 }
 
 function changeCurrentOpenedTabWithFile(file) {
-  closeFileStyle()
-  setActionFileStyle(file.filename, false)
+  closeFileStyle();
+  setActionFileStyle(file.filename, false);
 
   const tabindex = openedFiles.findIndex(function (currentFile) {
     return currentFile.filepath === file.filepath;
@@ -487,16 +486,20 @@ function changeCurrentOpenedTabWithFile(file) {
 }
 
 function closeTab(event) {
-  setActionFileStyle(event.target.parentNode.parentNode.querySelector('.file-name-span').textContent, true)
+  setActionFileStyle(
+    event.target.parentNode.parentNode.querySelector(".file-name-span")
+      .textContent,
+    true
+  );
 
   const tabindex = parseInt(event.target.parentNode.dataset.fileindex);
   openedFiles.splice(tabindex, 1);
   if (openedFiles.length == 0) {
     currentOpenTab = -1;
   } else {
-    changeCurrentOpenedTabWithFile(openedFiles[openedFiles.length-1])
+    changeCurrentOpenedTabWithFile(openedFiles[openedFiles.length - 1]);
   }
-  
+
   renderFilesTabs();
 }
 
@@ -548,14 +551,14 @@ function renderFolder(folder) {
 
 function renderFile(child) {
   const li = document.createElement("li");
-  li.classList.add('file-item')
+  li.classList.add("file-item");
   const div = document.createElement("div");
-  div.style.padding = "0 0.5rem"
-  div.style.marginBottom = "0.5rem"
+  div.style.padding = "0 0.5rem";
+  div.style.marginBottom = "0.5rem";
   div.innerHTML = getExtensionIcon(child.name, false);
   const span = document.createElement("span");
   span.textContent = child.name;
-  span.classList.add('file-item-name')
+  span.classList.add("file-item-name");
   div.appendChild(span);
   li.appendChild(div);
 

@@ -160,6 +160,42 @@ function changeEditorConfigsAndMode(editor, filename) {
   }
 }
 
+function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
+  const runCommandsPerLanguages = {
+    py: [`python3 ${filepath}\n`],
+    js: [`node ${filepath}\n`],
+    mjs: [`node ${filepath}\n`],
+    json: [],
+    java: [`java ${filepath}\n`],
+    cpp: [`g++ -o main ${filepath}\n`, `./main`],
+    c: [`g++ -o main ${filepath}\n`, `./main`],
+    sql: [`cat ${filepath} | sqlite3 db.sqlite \n`],
+    scratch: [],
+  };
+  try {
+    return runCommandsPerLanguages[fileExtention];
+  } catch (error) {
+    return [];
+  }
+}
+
+function runCurrentOpenedFile() {
+  const file = openedFiles[currentOpenTab];
+  const extension = getFileExtension(file.filename);
+
+  saveFile();
+
+  const filepathWithOutHomePath = file.filepath.replace(`${tempDirPath}/`, "");
+
+  const commands = getRunCommandsWithFileExtensionAndFilepath(
+    extension,
+    filepathWithOutHomePath
+  );
+  for (command of commands) {
+    containerSocket.send(command);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   editor = CodeMirror.fromTextArea(document.querySelector("#editor"));
   editor.setSize("100%", "470px");
@@ -203,33 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const runButton = document.getElementById("run-button");
-  runButton.addEventListener("click", function () {
-    const file = openedFiles[currentOpenTab];
-    const language = getFileExtension(file.filename);
-
-    saveFile();
-
-    const filepathWithOutHomePath = file.filepath.replace(
-      `${tempDirPath}/`,
-      ""
-    );
-
-    if (language === "py") {
-      containerSocket.send(`python3 ${filepathWithOutHomePath}\n`);
-    } else if (language === "js") {
-      containerSocket.send(`node ${filepathWithOutHomePath}\n`);
-    } else if (language === "java") {
-      containerSocket.send(`java ${filepathWithOutHomePath}\n`);
-    } else if (language === "cpp") {
-      containerSocket.send(`g++ -o main ${filepathWithOutHomePath}\n`);
-      containerSocket.send(`./main\n`);
-    } else if (language === "c") {
-      containerSocket.send(`gcc -o main ${filepathWithOutHomePath}\n`);
-      containerSocket.send(`./main\n`);
-    } else if (language === "sql") {
-      containerSocket.send(`sqlite3 ${filepathWithOutHomePath}\n`);
-    }
-  });
+  runButton.addEventListener("click", runCurrentOpenedFile);
 
   const saveButton = document.getElementById("save-button");
   saveButton.addEventListener("click", function () {

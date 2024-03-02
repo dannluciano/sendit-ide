@@ -100,3 +100,9 @@ ul li span {
     flex-wrap: wrap;
   }
 }
+
+.file-open {
+  color: var(--green);
+  background-color: var(--grey);
+  border-radius: 5px;
+}

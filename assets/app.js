@@ -278,8 +278,14 @@ document.addEventListener("DOMContentLoaded", () => {
             };
             // To-Do REMOVE THIS
             openedFiles.push(file);
+            
+
             currentOpenTab = 0;
             changeCurrentOpenedTabWithFile(file);
+            saveFile()
+            setTimeout(() => {
+              setActionFileStyle('main.py', false)
+            }, 1000)
             // To-Do REMOVE THIS
           };
           debug(apiSocket);
@@ -344,6 +350,46 @@ function saveFile() {
   }
 }
 
+function setOpenFile(event) {
+  const clickItem = event.target.textContent
+  const files = document.querySelectorAll('.file-item')
+
+  for(let i = 0; i < files.length; i++) {
+    const current = files[i]
+    if (current.querySelector('.file-item-name').textContent === clickItem) {
+      closeFileStyle()
+      current.classList.add('file-open')
+      break
+    }
+    
+  }
+}
+
+function setActionFileStyle(text, close) {
+  const files = document.querySelectorAll('.file-item')
+
+  console.log(text)
+
+  for(let i = 0; i < files.length; i++) {
+    const current = files[i]
+    if (current.querySelector('.file-item-name').textContent === text) {
+      if (close) {
+        current.classList.remove('file-open')
+      } else {
+        current.classList.add('file-open')
+      }
+      break
+    }
+    
+  }
+}
+
+function closeFileStyle() {
+  const element = document.querySelector('.file-open')
+  console.log('close', element)
+  element && element.classList.remove('file-open')
+}
+
 function renderFilesTabs() {
   const tabs = document.getElementById("tabs");
   tabs.replaceChildren();
@@ -372,6 +418,8 @@ function renderFilesTabs() {
     li.classList.add("active-tab");
     tabs.appendChild(li);
 
+    closeFileStyle()
+
     editor.setValue("");
     editor.setOption("readOnly", true);
     return;
@@ -380,6 +428,7 @@ function renderFilesTabs() {
   let fileindex = 0;
   for (const file of openedFiles) {
     const filenameSpan = document.createElement("span");
+    filenameSpan.classList.add('file-name-span')
 
     filenameSpan.textContent = file.changed
       ? `${file.filename} * `
@@ -405,6 +454,7 @@ function renderFilesTabs() {
 
     const li = document.createElement("li");
     li.appendChild(p);
+    li.onclick = setOpenFile
     li.dataset.filepath = file.filepath;
     if (currentOpenTab === fileindex) {
       li.classList.add("active-tab");
@@ -417,12 +467,16 @@ function renderFilesTabs() {
 
 function changeCurrentOpenedTab(event) {
   const tabindex = parseInt(event.target.dataset.fileindex);
-  const filepath = openedFiles[tabindex].filepath;
-
+  const file = openedFiles[tabindex];
+  const filepath = file.filepath;
+  
   openFile(filepath);
 }
 
 function changeCurrentOpenedTabWithFile(file) {
+  closeFileStyle()
+  setActionFileStyle(file.filename, false)
+
   const tabindex = openedFiles.findIndex(function (currentFile) {
     return currentFile.filepath === file.filepath;
   });
@@ -433,11 +487,16 @@ function changeCurrentOpenedTabWithFile(file) {
 }
 
 function closeTab(event) {
+  setActionFileStyle(event.target.parentNode.parentNode.querySelector('.file-name-span').textContent, true)
+
   const tabindex = parseInt(event.target.parentNode.dataset.fileindex);
   openedFiles.splice(tabindex, 1);
   if (openedFiles.length == 0) {
     currentOpenTab = -1;
+  } else {
+    changeCurrentOpenedTabWithFile(openedFiles[openedFiles.length-1])
   }
+  
   renderFilesTabs();
 }
 
@@ -489,10 +548,14 @@ function renderFolder(folder) {
 
 function renderFile(child) {
   const li = document.createElement("li");
+  li.classList.add('file-item')
   const div = document.createElement("div");
+  div.style.padding = "0 0.5rem"
+  div.style.marginBottom = "0.5rem"
   div.innerHTML = getExtensionIcon(child.name, false);
   const span = document.createElement("span");
   span.textContent = child.name;
+  span.classList.add('file-item-name')
   div.appendChild(span);
   li.appendChild(div);
 

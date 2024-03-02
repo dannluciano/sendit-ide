@@ -369,7 +369,7 @@ function setOpenFile(event) {
 function setActionFileStyle(text, close) {
   const files = document.querySelectorAll(".file-item");
 
-  console.log(text);
+  debug(text);
 
   for (let i = 0; i < files.length; i++) {
     const current = files[i];

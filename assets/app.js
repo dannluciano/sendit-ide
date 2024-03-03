@@ -85,6 +85,7 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
     matchBrackets: true,
     styleActiveLine: true,
     viewportMargin: 25,
+    readOnly: false,
   };
   const fileConfigsAndExtentionModes = {
     py: {
@@ -446,9 +447,6 @@ function renderFilesTabs() {
     tabs.appendChild(li);
 
     closeFileStyle();
-
-    editor.setValue("");
-    editor.setOption("readOnly", true);
     return;
   }
 
@@ -489,7 +487,6 @@ function renderFilesTabs() {
     tabs.appendChild(li);
     fileindex++;
   }
-  editor.setOption("readOnly", false);
 }
 
 function changeCurrentOpenedTab(event) {

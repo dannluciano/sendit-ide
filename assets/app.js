@@ -52,7 +52,6 @@ function getExtensionIcon(filename, style) {
     java: "cafe",
     html: "logo-html5",
     file: "document",
-    folder: "folder",
     c: "skull",
     cpp: "skull",
     sql: "server",
@@ -62,7 +61,7 @@ function getExtensionIcon(filename, style) {
   const extension = getFileExtension(filename);
   let iconName = iconFileLabels["file"];
   try {
-    iconName = iconFileLabels[extension];
+    iconName = iconFileLabels[extension] || "document";
   } catch (error) {
     return `<ion-icon ${
       style ? iconFileStylePattern : null
@@ -209,6 +208,24 @@ function runCurrentOpenedFile() {
   }
 }
 
+function createNewFileOrFolder(event) {
+  if (event.key === "Enter") {
+    const filenameField = document.getElementById("input-filename");
+    if (newFileOrNewFolder === "file") {
+      const filename = filenameField.value;
+      const filepath = `${tempDirPath}/${filename}`;
+      writeFile(filepath, "");
+      openFile(filepath);
+    } else {
+      const foldername = filenameField.value;
+      const folderpath = `${tempDirPath}/${foldername}`;
+      makeFolder(folderpath);
+    }
+    filenameField.value = "";
+    filenameField.style.display = "none";
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   editor = CodeMirror.fromTextArea(document.querySelector("#editor"));
   editor.setSize("100%", "470px");
@@ -237,24 +254,26 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   changeEditorConfigsAndMode("scratch");
 
+  const filenameField = document.getElementById("input-filename");
+  filenameField.addEventListener(
+    "keypress",
+    debounce(createNewFileOrFolder, 250)
+  );
+
   const newFileButton = document.getElementById("new-file-button");
   newFileButton.addEventListener("click", function () {
-    const filenameField = document.getElementById("input-filename");
-    const filename = filenameField.value;
-    const filepath = `${tempDirPath}/${filename}`;
-
-    writeFile(filepath, "");
-    openFile(filepath);
-    filenameField.value = "";
+    newFileOrNewFolder = "file";
+    filenameField.placeholder = "File Name (doc.txt)"
+    filenameField.style.display = "block";
+    filenameField.focus();
   });
 
   const newFolderButton = document.getElementById("new-folder-button");
   newFolderButton.addEventListener("click", function () {
-    const filenameField = document.getElementById("input-filename");
-    const filename = filenameField.value;
-    const folderpath = `${tempDirPath}/${filename}`;
-    makeFolder(folderpath);
-    filenameField.value = "";
+    newFileOrNewFolder = "folder";
+    filenameField.placeholder = "Folder Name (src/core)"
+    filenameField.style.display = "block";
+    filenameField.focus();
   });
 
   const runButton = document.getElementById("run-button");
@@ -546,7 +565,7 @@ function renderFolder(folder) {
   const summary = document.createElement("summary");
   const div = document.createElement("div");
   div.setAttribute("onclick", "toggleFolderIcon(this)");
-  div.innerHTML = `<ion-icon class="filesystem-folder-icon" name="${iconFileLabels.folder}"></ion-icon>`;
+  div.innerHTML = `<ion-icon class="filesystem-folder-icon" name="folder"></ion-icon>`;
   const span = document.createElement("span");
   span.textContent = folder.name;
 
@@ -578,8 +597,6 @@ function renderFile(child) {
   const li = document.createElement("li");
   li.classList.add("file-item");
   const div = document.createElement("div");
-  div.style.padding = "0 0.5rem";
-  div.style.marginBottom = "0.5rem";
   div.innerHTML = getExtensionIcon(child.name, false);
   const span = document.createElement("span");
   span.textContent = child.name;

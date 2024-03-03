@@ -29,6 +29,7 @@
   max-width: 100%;
   margin-left: 0.5rem;
   height: 25px !important;
+  width: 100%;
 }
 
 #create-file-container-labels {

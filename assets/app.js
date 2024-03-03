@@ -12,9 +12,9 @@ let openedFiles = [];
 let currentOpenTab = -1;
 let term;
 
-function debug(msg) {
+function debug() {
   if (debugIsActive) {
-    console.log(msg);
+    console.log(...arguments);
   }
 }
 
@@ -43,22 +43,22 @@ const debounce = (callback, wait) => {
   };
 };
 
-const iconFileStylePattern =
-  'style="padding-top: 0.4rem; margin-right: 0.5rem"';
-const iconFileLabels = {
-  py: "logo-python",
-  js: "logo-javascript",
-  java: "cafe",
-  html: "logo-html5",
-  file: "document",
-  folder: "folder",
-  c: "skull",
-  cpp: "skull",
-  sql: "server",
-  scratch: "document",
-};
-
 function getExtensionIcon(filename, style) {
+  const iconFileStylePattern =
+    'style="padding-top: 0.4rem; margin-right: 0.5rem"';
+  const iconFileLabels = {
+    py: "logo-python",
+    js: "logo-javascript",
+    java: "cafe",
+    html: "logo-html5",
+    file: "document",
+    folder: "folder",
+    c: "skull",
+    cpp: "skull",
+    sql: "server",
+    scratch: "document",
+    sqlite: "file-tray-stacked",
+  };
   const extension = getFileExtension(filename);
   let iconName = iconFileLabels["file"];
   try {
@@ -139,24 +139,36 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
       mode: "properties",
       readOnly: true,
     },
+    sqlite: {
+      ...defaultOptions,
+      readOnly: true,
+    },
   };
   try {
-    return fileConfigsAndExtentionModes[fileExtention];
+    return (
+      fileConfigsAndExtentionModes[fileExtention] || {
+        ...defaultOptions,
+        mode: "properties",
+        readOnly: true,
+      }
+    );
   } catch (error) {
     console.error(error);
     return;
   }
 }
 
-function changeEditorConfigsAndMode(editor, filename) {
+function changeEditorConfigsAndMode(filename) {
   const fileExtension = getFileExtension(filename);
   const options = getEditorConfigsAndModeWithFileExtension(fileExtension);
-  const extension = CodeMirror.findModeByExtension(fileExtension) || "txt";
-  CodeMirror.autoLoadMode(editor, extension);
+  const extension = CodeMirror.findModeByExtension(fileExtension);
+  if (extension) {
+    CodeMirror.autoLoadMode(editor, extension);
+  }
+  debug("changeEditorConfigsAndMode", fileExtension, options, extension);
   for (const key in options) {
-    if (Object.hasOwnProperty.call(options, key)) {
-      editor.setOption(key, options[key]);
-    }
+    debug(`editor.setOption('${key}', ${options[key]});`);
+    editor.setOption(`${key}`, options[key]);
   }
 }
 
@@ -173,7 +185,7 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
     scratch: [],
   };
   try {
-    return runCommandsPerLanguages[fileExtention];
+    return runCommandsPerLanguages[fileExtention] || [];
   } catch (error) {
     return [];
   }
@@ -212,7 +224,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "Cmd-R": function (cm) {
       runCurrentOpenedFile();
     },
-
   });
   editor.on("changes", function () {
     if (currentOpenTab >= 0) {
@@ -223,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
-  changeEditorConfigsAndMode(editor, "scratch");
+  changeEditorConfigsAndMode("scratch");
 
   const newFileButton = document.getElementById("new-file-button");
   newFileButton.addEventListener("click", function () {
@@ -497,7 +508,7 @@ function changeCurrentOpenedTabWithFile(file) {
     return currentFile.filepath === file.filepath;
   });
   editor.swapDoc(file.doc);
-  changeEditorConfigsAndMode(editor, file.filename);
+  changeEditorConfigsAndMode(file.filename);
   currentOpenTab = tabindex;
   renderFilesTabs();
 }

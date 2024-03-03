@@ -24,5 +24,5 @@ update:
 	cp assets/index.html /etc/nginx/html/
 	cp -r assets/ /etc/nginx/html/
 	cp sendit-ide.service /etc/systemd/system
-	systemctl daemon-reloads
+	systemctl daemon-reload
 	systemctl restart sendit-ide.service

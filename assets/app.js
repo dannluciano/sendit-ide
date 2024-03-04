@@ -19,8 +19,8 @@ function debug() {
 }
 
 function terminalResize() {
-  term.fit();
-  if (apiSocket) {
+  if (apiSocket && term) {
+    term.fit();
     apiSocket.send(
       JSON.stringify({
         type: "resize",
@@ -263,7 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const newFileButton = document.getElementById("new-file-button");
   newFileButton.addEventListener("click", function () {
     newFileOrNewFolder = "file";
-    filenameField.placeholder = "File Name (doc.txt)"
+    filenameField.placeholder = "File Name (doc.txt)";
     filenameField.style.display = "block";
     filenameField.focus();
   });
@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const newFolderButton = document.getElementById("new-folder-button");
   newFolderButton.addEventListener("click", function () {
     newFileOrNewFolder = "folder";
-    filenameField.placeholder = "Folder Name (src/core)"
+    filenameField.placeholder = "Folder Name (src/core)";
     filenameField.style.display = "block";
     filenameField.focus();
   });

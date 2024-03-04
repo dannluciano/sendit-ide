@@ -535,11 +535,11 @@ function changeCurrentOpenedTabWithFile(file) {
 }
 
 function closeTab(event) {
-  setActionFileStyle(
-    event.target.parentNode.parentNode.querySelector(".file-name-span")
-      .textContent,
-    true
-  );
+  const element =
+    event.target.parentNode.parentNode.querySelector(".file-name-span");
+  if (element) {
+    setActionFileStyle(element.textContent, true);
+  }
 
   const tabindex = parseInt(event.target.parentNode.dataset.fileindex);
   openedFiles.splice(tabindex, 1);

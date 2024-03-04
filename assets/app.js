@@ -170,6 +170,9 @@ function changeEditorConfigsAndMode(filename) {
     debug(`editor.setOption('${key}', ${options[key]});`);
     editor.setOption(`${key}`, options[key]);
   }
+  if (options.readOnly) {
+    editor.setValue("");
+  }
 }
 
 function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
@@ -466,6 +469,8 @@ function renderFilesTabs() {
     tabs.appendChild(li);
 
     closeFileStyle();
+    editor.setValue("");
+    editor.setOption("readOnly", true);
     return;
   }
 

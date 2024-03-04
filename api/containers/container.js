@@ -1,4 +1,6 @@
 import * as chokidar from "chokidar";
+import { default as directoryTree } from "directory-tree";
+
 export default class Container {
   constructor(containerInstance, temp_dir_path) {
     this.id = containerInstance.id;

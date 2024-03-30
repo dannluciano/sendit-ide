@@ -3,12 +3,18 @@ import { default as directoryTree } from "directory-tree";
 
 export default class ComputerUnit {
   constructor(containerInstance, tempDirPath, projectId) {
-    this.id = containerInstance.id;
-    this.containerId = containerInstance.id;
-    this.containerInstance = containerInstance;
+    if (containerInstance) {
+      this.id = containerInstance.id;
+      this.containerId = containerInstance.id;
+      this.containerInstance = containerInstance;
+    }
     this.tempDirPath = tempDirPath;
     this.projectId = projectId;
     this.ws = null;
+
+    if (!tempDirPath) {
+      return;
+    }
 
     console.info(`==> Watching Temp Dir: ${tempDirPath}`);
     chokidar

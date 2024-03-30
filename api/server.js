@@ -12,6 +12,7 @@ import configs from "./configs.js";
 import ComputerUnitService from "./computer_unit/computer_unit_service.js";
 import DB from "./database.js";
 import { nanoid } from "nanoid";
+import ComputerUnit from "./computer_unit/computer_unit.js";
 
 let dockerConnection;
 
@@ -54,9 +55,8 @@ app.get("/p/:pid", async (c) => {
 app.post("/container/create/:pid", async (c) => {
   try {
     const projectId = c.req.param("pid");
-    const computerUnit =
-      DB.get(projectId) ||
-      (await computeUnitService.createComputerUnit(projectId));
+    let computerUnit = DB.get(projectId) || new ComputerUnit(null, null, projectId)
+    computerUnit = await computeUnitService.getOrCreateComputerUnit(computerUnit);
 
     DB.set(computerUnit.containerId, computerUnit);
     DB.set(computerUnit.projectId, computerUnit);

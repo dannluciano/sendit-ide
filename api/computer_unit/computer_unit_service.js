@@ -8,9 +8,15 @@ export default class ComputerUnitService {
     this.dockerConnection = dockerConnection;
   }
 
-  async createComputerUnit(projectId, _tempDirPath=null) {
+  async getOrCreateComputerUnit(computer_unit) {
     try {
-      let tempDirPath = _tempDirPath
+      let containerInstance = this.dockerConnection.getContainer(computer_unit.containerId)
+      if (containerInstance.Id) {
+        console.info("==> Return Existing Container", containerInstance.Id);
+        return computer_unit
+      }
+
+      let tempDirPath = computer_unit.tempDirPath
       if (!tempDirPath) {
         console.info("==> Creating Temp Folder");
         tempDirPath = await fs.mkdtemp(
@@ -20,7 +26,7 @@ export default class ComputerUnitService {
       }
 
       console.info("==> Creating container");
-      const containerInstance = await this.dockerConnection.createContainer({
+      containerInstance = await this.dockerConnection.createContainer({
         Image: "sendit-ide-vm",
         AttachStdin: false,
         AttachStdout: false,
@@ -46,7 +52,8 @@ export default class ComputerUnitService {
       console.info("==> Starting container: ", containerInstance.id);
       await containerInstance.start();
 
-      return new ComputerUnit(containerInstance, tempDirPath, projectId);
+      console.info("==> Return New Container");
+      return new ComputerUnit(containerInstance, tempDirPath, computer_unit.projectId);
     } catch (error) {
       console.error("Error!", error);
       throw "Error! Cannot create container";

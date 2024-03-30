@@ -11,7 +11,6 @@ services:
     ports:
       - 8001:8001
     volumes:
-      - ./index.html:/app/index.html:cached
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp:/tmp
     extra_hosts:

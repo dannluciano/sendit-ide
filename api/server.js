@@ -141,7 +141,7 @@ async function connection(ws, req) {
   container.ws = ws;
 
   const tree = directoryTree(container.tempDirPath, {
-    exclude: /\.npm|\.cache/,
+    exclude: /\.npm|\.cache|env/,
   });
 
   ws.send(

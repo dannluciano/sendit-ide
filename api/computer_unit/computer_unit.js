@@ -1,9 +1,10 @@
 import * as chokidar from "chokidar";
 import { default as directoryTree } from "directory-tree";
 
-export default class Container {
+export default class ComputerUnit {
   constructor(containerInstance, tempDirPath, projectId) {
     this.id = containerInstance.id;
+    this.containerId = containerInstance.id;
     this.containerInstance = containerInstance;
     this.tempDirPath = tempDirPath;
     this.projectId = projectId;
@@ -12,6 +13,7 @@ export default class Container {
     console.info(`==> Watching Temp Dir: ${tempDirPath}`);
     chokidar
       .watch(tempDirPath, {
+        ignored: /(^|[\/\\])\..|.cache|env/,
         ignoreInitial: true,
       })
       .on("all", (event, path) => {
@@ -26,5 +28,13 @@ export default class Container {
           );
         }
       });
+  }
+
+  to_json() {
+    return {
+      "container-id": this.containerId,
+      "temp-dir-path": this.tempDirPath,
+      "project-id": this.projectId,
+    };
   }
 }

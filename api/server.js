@@ -9,7 +9,7 @@ import * as dockerode from "dockerode";
 
 import { default as directoryTree } from "directory-tree";
 import configs from "./configs.js";
-import DockerEngine from "./containers/docker_engine.js";
+import ComputerUnitService from "./computer_unit/computer_unit_service.js";
 import DB from "./database.js";
 import { nanoid } from "nanoid";
 
@@ -28,7 +28,7 @@ try {
   process.exit(1);
 }
 
-const dockerEngine = new DockerEngine(dockerConnection);
+const computeUnitService = new ComputerUnitService(dockerConnection);
 const app = new Hono();
 
 app.use("*", logger());
@@ -54,14 +54,14 @@ app.get("/p/:pid", async (c) => {
 app.post("/container/create/:pid", async (c) => {
   try {
     const projectId = c.req.param("pid");
-    const container = await dockerEngine.createContainer(projectId);
-    DB.set(container.id, container);
-    DB.set(container.projectId, container);
-    const containerCreateResponse = {
-      "container-id": container.id,
-      "temp-dir-path": container.tempDirPath,
-      "project-id": container.projectId,
-    };
+    const computerUnit =
+      DB.get(projectId) ||
+      (await computeUnitService.createComputerUnit(projectId));
+
+    DB.set(computerUnit.containerId, computerUnit);
+    DB.set(computerUnit.projectId, computerUnit);
+
+    const containerCreateResponse = computerUnit.to_json();
     return c.json(containerCreateResponse);
   } catch (error) {
     console.error(error);
@@ -137,11 +137,11 @@ async function connection(ws, req) {
     "cid"
   );
 
-  const container = DB.get(containerId) || {};
+  const container = DB.get(containerId);
   container.ws = ws;
 
   const tree = directoryTree(container.tempDirPath, {
-    exclude: /\.npm|\.cache/
+    exclude: /\.npm|\.cache/,
   });
 
   ws.send(
@@ -200,7 +200,7 @@ async function connection(ws, req) {
     console.info("==> Connecting to Docker Daemon");
     try {
       const container = dockerConnection.getContainer(containerId);
-      console.info("==> Removing Docker Container: ", containerId);
+      console.info("==> Removing Docker ComputerUnit: ", containerId);
       await container.stop();
       // await container.remove()
     } catch (error) {
@@ -213,7 +213,7 @@ async function connection(ws, req) {
 
 async function handle_signals() {
   console.log("Ctrl-C was pressed");
-  dockerConnection.removeContainers();
+  dockerConnection.removeComputerUnits();
   server.close();
   wss.close();
 }

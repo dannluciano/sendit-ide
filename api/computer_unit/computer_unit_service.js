@@ -1,20 +1,23 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as os from "node:os";
-import Container from "./container.js";
+import ComputerUnit from "./computer_unit.js";
 
-export default class DockerEngine {
+export default class ComputerUnitService {
   constructor(dockerConnection) {
     this.dockerConnection = dockerConnection;
   }
 
-  async createContainer(projectID) {
+  async createComputerUnit(projectId, _tempDirPath=null) {
     try {
-      console.info("==> Creating Temp Folder");
-      const tempDirPath = await fs.mkdtemp(
-        path.join(os.tmpdir(), "ide-vm-home-")
-      );
-      console.info(`==> Created Temp Folder: ${tempDirPath}`);
+      let tempDirPath = _tempDirPath
+      if (!tempDirPath) {
+        console.info("==> Creating Temp Folder");
+        tempDirPath = await fs.mkdtemp(
+          path.join(os.tmpdir(), "ide-vm-home-")
+        );
+        console.info(`==> Created Temp Folder: ${tempDirPath}`);
+      }
 
       console.info("==> Creating container");
       const containerInstance = await this.dockerConnection.createContainer({
@@ -43,14 +46,14 @@ export default class DockerEngine {
       console.info("==> Starting container: ", containerInstance.id);
       await containerInstance.start();
 
-      return new Container(containerInstance, tempDirPath, projectID);
+      return new ComputerUnit(containerInstance, tempDirPath, projectId);
     } catch (error) {
       console.error("Error!", error);
       throw "Error! Cannot create container";
     }
   }
 
-  async removeContainers() {
+  async removeComputerUnits() {
     const opts = {
       filters: '{"label": ["com.docker.instances.service": "vm"]}',
     };

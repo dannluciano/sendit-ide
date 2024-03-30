@@ -1,4 +1,4 @@
-FROM node:lts AS development
+FROM node:20.12.0 AS development
 
 USER root
 

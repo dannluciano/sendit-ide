@@ -3,6 +3,7 @@ const sProtocol = document.location.protocol === "http:" ? "" : "s";
 const currentURL = new URL(document.location);
 const debugIsActive = currentURL.searchParams.has("debug");
 const testIsActive = currentURL.searchParams.has("test");
+let projectId = currentURL.pathname.replace('/p/', '');
 let containerId;
 let tempDirPath;
 let editor;
@@ -11,6 +12,7 @@ let containerSocket;
 let openedFiles = [];
 let currentOpenTab = -1;
 let term;
+let newFileOrNewFolder;
 
 function debug() {
   if (debugIsActive) {
@@ -206,7 +208,7 @@ function runCurrentOpenedFile() {
     extension,
     filepathWithOutHomePath
   );
-  for (command of commands) {
+  for (const command of commands) {
     containerSocket.send(command);
   }
 }
@@ -287,13 +289,14 @@ document.addEventListener("DOMContentLoaded", () => {
     saveFile();
   });
 
-  fetch("/create", {
+  fetch(`/container/create/${projectId}`, {
     method: "POST",
   })
     .then((res) => res.json())
     .then((data) => {
       containerId = data["container-id"];
       tempDirPath = data["temp-dir-path"];
+      projectId = data["project-id"];
 
       if (!containerId) return;
 

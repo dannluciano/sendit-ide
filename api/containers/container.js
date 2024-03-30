@@ -2,21 +2,22 @@ import * as chokidar from "chokidar";
 import { default as directoryTree } from "directory-tree";
 
 export default class Container {
-  constructor(containerInstance, temp_dir_path) {
+  constructor(containerInstance, tempDirPath, projectId) {
     this.id = containerInstance.id;
     this.containerInstance = containerInstance;
-    this.temp_dir_path = temp_dir_path;
+    this.tempDirPath = tempDirPath;
+    this.projectId = projectId;
     this.ws = null;
 
-    console.info(`==> Watching Temp Dir: ${temp_dir_path}`);
+    console.info(`==> Watching Temp Dir: ${tempDirPath}`);
     chokidar
-      .watch(temp_dir_path, {
+      .watch(tempDirPath, {
         ignoreInitial: true,
       })
       .on("all", (event, path) => {
         console.log(event, path);
         if (this.ws) {
-          const tree = directoryTree(temp_dir_path);
+          const tree = directoryTree(tempDirPath);
           this.ws.send(
             JSON.stringify({
               type: "fs",

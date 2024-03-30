@@ -8,13 +8,13 @@ export default class DockerEngine {
     this.dockerConnection = dockerConnection;
   }
 
-  async createContainer() {
+  async createContainer(projectID) {
     try {
       console.info("==> Creating Temp Folder");
-      const temp_dir_path = await fs.mkdtemp(
+      const tempDirPath = await fs.mkdtemp(
         path.join(os.tmpdir(), "ide-vm-home-")
       );
-      console.info(`==> Created Temp Folder: ${temp_dir_path}`);
+      console.info(`==> Created Temp Folder: ${tempDirPath}`);
 
       console.info("==> Creating container");
       const containerInstance = await this.dockerConnection.createContainer({
@@ -32,7 +32,7 @@ export default class DockerEngine {
           "/root": {},
         },
         HostConfig: {
-          Binds: [`${temp_dir_path}:/root`],
+          Binds: [`${tempDirPath}:/root`],
           AutoRemove: true,
         },
         Labels: {
@@ -43,7 +43,7 @@ export default class DockerEngine {
       console.info("==> Starting container: ", containerInstance.id);
       await containerInstance.start();
 
-      return new Container(containerInstance, temp_dir_path);
+      return new Container(containerInstance, tempDirPath, projectID);
     } catch (error) {
       console.error("Error!", error);
       throw "Error! Cannot create container";

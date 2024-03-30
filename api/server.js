@@ -11,6 +11,7 @@ import { default as directoryTree } from "directory-tree";
 import configs from "./configs.js";
 import DockerEngine from "./containers/docker_engine.js";
 import DB from "./database.js";
+import { nanoid } from "nanoid";
 
 let dockerConnection;
 
@@ -33,7 +34,44 @@ const app = new Hono();
 app.use("*", logger());
 
 app.get("/", async (c) => {
-  // nanoid;
+  const projectId = nanoid();
+  return c.redirect(`/p/${projectId}`);
+});
+
+app.get("/p/:pid", async (c) => {
+  const indexPath = "index.html";
+  try {
+    const content = await fs.readFile(indexPath);
+    return c.html(content);
+  } catch (error) {
+    console.error(error);
+    return new Response("Error on Server", {
+      status: 500,
+    });
+  }
+});
+
+app.post("/container/create/:pid", async (c) => {
+  try {
+    const projectId = c.req.param("pid");
+    const container = await dockerEngine.createContainer(projectId);
+    DB.set(container.id, container);
+    DB.set(container.projectId, container);
+    const containerCreateResponse = {
+      "container-id": container.id,
+      "temp-dir-path": container.tempDirPath,
+      "project-id": container.projectId,
+    };
+    return c.json(containerCreateResponse);
+  } catch (error) {
+    console.error(error);
+    return c.json(
+      {
+        msg: error.msg,
+      },
+      500
+    );
+  }
 });
 
 app.get("/version", async (c) => {
@@ -52,7 +90,7 @@ app.get("/fs/file/open/:cid/:pathenc", async (c) => {
       .inspect();
 
     const container = DB.get(containerInstance.Id);
-    const filepath = `${container.temp_dir_path}/${filename}`;
+    const filepath = `${container.tempDirPath}/${filename}`;
     const content = await fs.readFile(filepath);
 
     if (container.ws) {
@@ -74,26 +112,6 @@ app.get("/fs/file/open/:cid/:pathenc", async (c) => {
     return new Response("File not found", {
       status: 404,
     });
-  }
-});
-
-app.post("/create", async (c) => {
-  try {
-    const container = await dockerEngine.createContainer();
-    DB.set(container.id, container);
-    const containerCreateResponse = {
-      "container-id": container.id,
-      "temp-dir-path": container.temp_dir_path,
-    };
-    return c.json(containerCreateResponse);
-  } catch (error) {
-    console.error(error);
-    return c.json(
-      {
-        msg: error.msg,
-      },
-      500
-    );
   }
 });
 
@@ -122,7 +140,7 @@ async function connection(ws, req) {
   const container = DB.get(containerId) || {};
   container.ws = ws;
 
-  const tree = directoryTree(container.temp_dir_path);
+  const tree = directoryTree(container.tempDirPath);
 
   ws.send(
     JSON.stringify({
@@ -140,8 +158,8 @@ async function connection(ws, req) {
       }
       if (cmd.type === "write") {
         const { filename, source } = cmd.params;
-        const temp_dir_path = container.temp_dir_path;
-        const path = `${temp_dir_path}/${filename}`;
+        const tempDirPath = container.tempDirPath;
+        const path = `${tempDirPath}/${filename}`;
         await fs.writeFile(path, source);
       }
       if (cmd.type === "writeInPath") {

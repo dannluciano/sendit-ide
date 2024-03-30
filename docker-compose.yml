@@ -7,7 +7,7 @@ services:
     ports:
       - 81:81
     volumes:
-      - ./assets/index.html:/etc/nginx/html/index.html:cached
+      # - ./assets/index.html:/etc/nginx/html/index.html:cached
       - ./assets:/etc/nginx/html/assets:cached
       - ./nginx.local:/etc/nginx/nginx.conf:cached
     links:

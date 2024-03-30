@@ -3,7 +3,7 @@ const sProtocol = document.location.protocol === "http:" ? "" : "s";
 const currentURL = new URL(document.location);
 const debugIsActive = currentURL.searchParams.has("debug");
 const testIsActive = currentURL.searchParams.has("test");
-let projectId = currentURL.pathname.replace('/p/', '');
+let projectId = currentURL.pathname.replace("/p/", "");
 let containerId;
 let tempDirPath;
 let editor;
@@ -145,6 +145,9 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
       ...defaultOptions,
       readOnly: true,
     },
+    txt: {
+      ...defaultOptions,
+    },
   };
   try {
     return (
@@ -190,8 +193,21 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
     scratch: [],
   };
   try {
-    return runCommandsPerLanguages[fileExtention] || [];
+    const commands = runCommandsPerLanguages[fileExtention] || [];
+    if (commands.length === 0) {
+      if (filepath.includes("requirements.txt")) {
+        commands.push(`python3 -m venv env\n`);
+        commands.push(`source env/bin/activate\n`);
+        commands.push(`python3 -m pip install -r ${filepath}\n`);
+      }
+      if (filepath.includes("package.json")) {
+        commands.push(`npm install\n`);
+        commands.push(`npm start\n`);
+      }
+    }
+    return commands;
   } catch (error) {
+    console.error(error);
     return [];
   }
 }
@@ -208,6 +224,7 @@ function runCurrentOpenedFile() {
     extension,
     filepathWithOutHomePath
   );
+  debug(commands);
   for (const command of commands) {
     containerSocket.send(command);
   }
@@ -328,6 +345,18 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 1000);
 
             if (testIsActive) {
+              let file = {
+                filename: "requirements.txt",
+                filepath: `${tempDirPath}/requirements.txt`,
+                changed: false,
+                doc: new CodeMirror.Doc(`django`),
+              };
+              openedFiles.push(file);
+
+              currentOpenTab = 0;
+              changeCurrentOpenedTabWithFile(file);
+              saveFile();
+
               file = {
                 filename: "main.py",
                 filepath: `${tempDirPath}/main.py`,
@@ -336,9 +365,34 @@ document.addEventListener("DOMContentLoaded", () => {
               };
               openedFiles.push(file);
 
-              currentOpenTab = 0;
+              currentOpenTab = 1;
               changeCurrentOpenedTabWithFile(file);
               saveFile();
+
+              file = {
+                filename: "package.json",
+                filepath: `${tempDirPath}/package.json`,
+                changed: false,
+                doc: new CodeMirror.Doc(`{
+  "name": "${projectId}",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodejs index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}`
+                ),
+              };
+              openedFiles.push(file);
+
+              currentOpenTab = 2;
+              changeCurrentOpenedTabWithFile(file);
+              saveFile();
+
               setTimeout(() => {
                 setActionFileStyle("main.py", false);
               }, 1000);

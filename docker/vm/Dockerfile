@@ -5,7 +5,10 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
     htop \
     cmatrix \
     nodejs \
+    npm \
     python3 \
+    python3-pip \
+    python3-venv \
     openjdk-11-jdk-headless \
     sqlite3 \
     nano \

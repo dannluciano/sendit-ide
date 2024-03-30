@@ -56,7 +56,7 @@ app.get("/fs/file/open/:cid/:pathenc", async (c) => {
     const content = await fs.readFile(filepath);
 
     if (container.ws) {
-      ws.send(
+      container.ws.send(
         JSON.stringify({
           type: "open",
           params: {

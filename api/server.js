@@ -213,7 +213,7 @@ async function connection(ws, req) {
 
 async function handle_signals() {
   console.log("Ctrl-C was pressed");
-  dockerConnection.removeComputerUnits();
+  computeUnitService && await computeUnitService.removeComputerUnits();
   server.close();
   wss.close();
 }

@@ -3,11 +3,10 @@ services:
   web:
     container_name: web
     build: .
-    image: nginx:latest
+    image: sendit-nginx:latest
     ports:
       - 81:81
     volumes:
-      # - ./assets/index.html:/etc/nginx/html/index.html:cached
       - ./assets:/etc/nginx/html/assets:cached
       - ./nginx.local:/etc/nginx/nginx.conf:cached
     links:
@@ -26,6 +25,7 @@ services:
     ports:
       - 8001:8001
     volumes:
+      - db-data:/var/storages/sendit-ide
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp:/tmp
     extra_hosts:
@@ -50,3 +50,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     command: node wsserver.js
+
+volumes:
+  db-data:

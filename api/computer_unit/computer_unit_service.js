@@ -64,6 +64,13 @@ export default class ComputerUnitService {
     }
   }
 
+  fromJSON(cuJSON) {
+    const containerInstance = this.dockerConnection.getContainer(cuJSON['container-id'])
+    const tempDirPath = cuJSON['temp-dir-path'];
+    const projectId = cuJSON['project-id'];
+    return new ComputerUnit(containerInstance, tempDirPath, projectId)
+  }
+
   async removeComputerUnits() {
     const opts = {
       filters: '{"label": ["com.docker.instances.service": "vm"]}',

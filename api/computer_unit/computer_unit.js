@@ -39,11 +39,12 @@ export default class ComputerUnit {
       });
   }
 
-  to_json() {
+  toJSON() {
     return {
       "container-id": this.containerId,
       "temp-dir-path": this.tempDirPath,
       "project-id": this.projectId,
+      "ws": this.ws
     };
   }
 }

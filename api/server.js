@@ -15,8 +15,9 @@ import { nanoid } from "nanoid";
 import ComputerUnit from "./computer_unit/computer_unit.js";
 
 let dockerConnection;
+const WSDB = new Map();
 
-function log () {
+function log() {
   console.info("API ==>", ...arguments);
 }
 
@@ -59,13 +60,19 @@ app.get("/p/:pid", async (c) => {
 app.post("/container/create/:pid", async (c) => {
   try {
     const projectId = c.req.param("pid");
-    let computerUnit = DB.get(projectId) || new ComputerUnit(null, null, projectId)
-    computerUnit = await computeUnitService.getOrCreateComputerUnit(computerUnit);
+    const cuJSON = DB.get(projectId);
+    let computerUnit = new ComputerUnit(null, null, projectId);
+    if (cuJSON) {
+      computerUnit = computeUnitService.fromJSON(cuJSON);
+    }
+    computerUnit = await computeUnitService.getOrCreateComputerUnit(
+      computerUnit
+    );
 
-    DB.set(computerUnit.containerId, computerUnit);
-    DB.set(computerUnit.projectId, computerUnit);
+    DB.set(computerUnit.containerId, computerUnit.toJSON());
+    DB.set(computerUnit.projectId, computerUnit.toJSON());
 
-    const containerCreateResponse = computerUnit.to_json();
+    const containerCreateResponse = computerUnit.toJSON();
     return c.json(containerCreateResponse);
   } catch (error) {
     console.error(error);
@@ -89,16 +96,19 @@ app.get("/fs/file/open/:cid/:pathenc", async (c) => {
     const filename = Buffer.from(pathEncoded, "base64")
       .toString("utf-8")
       .substring(1);
-    const containerInstance = await dockerConnection
-      .getContainer(cid)
-      .inspect();
+    const containerInfo = await dockerConnection.getContainer(cid).inspect();
 
-    const container = DB.get(containerInstance.Id);
-    const filepath = `${container.tempDirPath}/${filename}`;
+    let computerUnit;
+    const cuJSON = DB.get(containerInfo.Id);
+    if (cuJSON) {
+      computerUnit = computeUnitService.fromJSON(cuJSON);
+    }
+    const filepath = `${computerUnit.tempDirPath}/${filename}`;
     const content = await fs.readFile(filepath);
 
-    if (container.ws) {
-      container.ws.send(
+    const ws = WSDB.get(computerUnit.containerId)
+    if (ws) {
+      ws.send(
         JSON.stringify({
           type: "open",
           params: {
@@ -141,10 +151,16 @@ async function connection(ws, req) {
     "cid"
   );
 
-  const container = DB.get(containerId);
-  container.ws = ws;
+  let computerUnit;
+  const cuJSON = DB.get(containerId);
+  if (cuJSON) {
+    computerUnit = computeUnitService.fromJSON(cuJSON);
+  }
+  computerUnit.ws = ws;
 
-  const tree = directoryTree(container.tempDirPath, {
+  WSDB.set(computerUnit.containerId, ws);
+
+  const tree = directoryTree(computerUnit.tempDirPath, {
     exclude: /\.npm|\.cache|env/,
   });
 
@@ -164,7 +180,7 @@ async function connection(ws, req) {
       }
       if (cmd.type === "write") {
         const { filename, source } = cmd.params;
-        const tempDirPath = container.tempDirPath;
+        const tempDirPath = computerUnit.tempDirPath;
         const path = `${tempDirPath}/${filename}`;
         await fs.writeFile(path, source);
       }
@@ -217,7 +233,7 @@ async function connection(ws, req) {
 
 async function handle_signals() {
   console.log("Ctrl-C was pressed");
-  computeUnitService && await computeUnitService.removeComputerUnits();
+  computeUnitService && (await computeUnitService.removeComputerUnits());
   server.close();
   wss.close();
 }

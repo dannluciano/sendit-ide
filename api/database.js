@@ -8,7 +8,7 @@ function log () {
 const db = new Database(configs.DATABASE_NAME, { verbose: log });
 
 db.pragma("journal_mode = WAL");
-db.exec("CREATE TABLE IF NOT EXISTS kv (key blob unique, value blob)");
+db.exec("CREATE TABLE IF NOT EXISTS kv (key BLOB UNIQUE, value BLOB, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)");
 
 function toObj(str) {
   try {

@@ -13,10 +13,11 @@ export default class ComputerUnit {
     this.ws = null;
 
     if (!tempDirPath) {
+      console.info(`==> Watching Temp Dir Disable`);
       return;
     }
 
-    console.info(`==> Watching Temp Dir: ${tempDirPath}`);
+    console.info(`==> Watching Temp Dir: ${tempDirPath} Enable`);
     chokidar
       .watch(tempDirPath, {
         ignored: /(^|[\/\\])\..|.cache|env/,

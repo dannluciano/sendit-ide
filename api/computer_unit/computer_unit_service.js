@@ -3,6 +3,10 @@ import * as path from "node:path";
 import * as os from "node:os";
 import ComputerUnit from "./computer_unit.js";
 
+function log () {
+  console.info("CPU ==>", ...arguments);
+}
+
 export default class ComputerUnitService {
   constructor(dockerConnection) {
     this.dockerConnection = dockerConnection;
@@ -12,20 +16,20 @@ export default class ComputerUnitService {
     try {
       let containerInstance = this.dockerConnection.getContainer(computer_unit.containerId)
       if (containerInstance.Id) {
-        console.info("==> Return Existing Container", containerInstance.Id);
+        log("Return Existing Container", containerInstance.Id);
         return computer_unit
       }
 
       let tempDirPath = computer_unit.tempDirPath
       if (!tempDirPath) {
-        console.info("==> Creating Temp Folder");
+        log("Creating Temp Folder");
         tempDirPath = await fs.mkdtemp(
           path.join(os.tmpdir(), "ide-vm-home-")
         );
         console.info(`==> Created Temp Folder: ${tempDirPath}`);
       }
 
-      console.info("==> Creating container");
+      log("Creating container");
       containerInstance = await this.dockerConnection.createContainer({
         Image: "sendit-ide-vm",
         AttachStdin: false,
@@ -49,10 +53,10 @@ export default class ComputerUnitService {
         },
       });
 
-      console.info("==> Starting container: ", containerInstance.id);
+      log("Starting container: ", containerInstance.id);
       await containerInstance.start();
 
-      console.info("==> Return New Container");
+      log("Return New Container");
       return new ComputerUnit(containerInstance, tempDirPath, computer_unit.projectId);
     } catch (error) {
       console.error("Error!", error);

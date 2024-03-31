@@ -1,6 +1,11 @@
 import configs from "./configs.js";
 import Database from "better-sqlite3";
-const db = new Database(configs.DATABASE_NAME, { verbose: console.log });
+
+function log () {
+    console.log("DB ==>", ...arguments)
+}
+
+const db = new Database(configs.DATABASE_NAME, { verbose: log });
 
 db.pragma("journal_mode = WAL");
 db.exec("CREATE TABLE IF NOT EXISTS kv (key blob unique, value blob)");

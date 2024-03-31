@@ -16,11 +16,15 @@ import ComputerUnit from "./computer_unit/computer_unit.js";
 
 let dockerConnection;
 
+function log () {
+  console.info("API ==>", ...arguments);
+}
+
 try {
-  console.info("==> Connecting to Docker Daemon");
+  log("Connecting to Docker Daemon");
   dockerConnection = new dockerode.default(configs.DOCKER_ENGINE_SOCKET);
   const infos = await dockerConnection.version();
-  console.info("==> Docker Daemon Connection Info");
+  log("Docker Daemon Connection Info");
   console.info(infos);
 } catch (error) {
   console.error(error);
@@ -197,10 +201,10 @@ async function connection(ws, req) {
 
   ws.on("close", async function close() {
     console.info(`WebSocket Connection closed:`);
-    console.info("==> Connecting to Docker Daemon");
+    log("Connecting to Docker Daemon");
     try {
       const container = dockerConnection.getContainer(containerId);
-      console.info("==> Removing Docker ComputerUnit: ", containerId);
+      log("Removing Docker ComputerUnit: ", containerId);
       await container.stop();
       // await container.remove()
     } catch (error) {

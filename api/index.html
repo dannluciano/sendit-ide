@@ -62,8 +62,8 @@
             </ion-icon>
           </div>
           <div>
-            <input id="input-filename" placeholder="" id="file-name" type="text" size="16"
-              width="auto" style="display: none;" />
+            <input id="input-filename" placeholder="" id="file-name" type="text" size="16" width="auto"
+              style="display: none;" />
           </div>
           <div id="create-file-container-icons">
             <button style="margin-left: 0.5rem;" id="new-file-button">
@@ -106,6 +106,17 @@
         </nav>
         <div id="editor-wrapper" style="position: relative">
           <textarea name="editor" id="editor" cols="30" rows="10"></textarea>
+        </div>
+      </div>
+      <div>
+        <div>
+          <input id="url" type="url" name="url" value="">
+        </div>
+        <div>
+          <iframe id="browser" title="webview" src=""
+            sandbox="allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads allow-downloads-without-user-activation allow-presentation allow-orientation-lock allow-scripts"
+            allow="accelerometer; ambient-light-sensor; autoplay; battery; camera; display-capture; encrypted-media; execution-while-not-rendered; execution-while-out-of-viewport; fullscreen; gamepad; geolocation; gyroscope; layout-animations; legacy-image-formats; magnetometer; microphone; midi; navigation-override; oversized-images; payment; picture-in-picture; publickey-credentials; speaker-selection; sync-xhr; unoptimized-images; unsized-media; usb; screen-wake-lock; web-share; xr-spatial-tracking; clipboard-read; clipboard-write"
+            allowfullscreen="" allowtransparency="true" allowpaymentrequest="true" allowpopups="true"></iframe>
         </div>
       </div>
     </div>

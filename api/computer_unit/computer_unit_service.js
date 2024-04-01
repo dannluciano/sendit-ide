@@ -3,7 +3,7 @@ import * as path from "node:path";
 import * as os from "node:os";
 import ComputerUnit from "./computer_unit.js";
 
-function log () {
+function log() {
   console.info("CPU ==>", ...arguments);
 }
 
@@ -14,18 +14,18 @@ export default class ComputerUnitService {
 
   async getOrCreateComputerUnit(computer_unit) {
     try {
-      let containerInstance = this.dockerConnection.getContainer(computer_unit.containerId)
+      let containerInstance = this.dockerConnection.getContainer(
+        computer_unit.containerId
+      );
       if (containerInstance.Id) {
         log("Return Existing Container", containerInstance.Id);
-        return computer_unit
+        return computer_unit;
       }
 
-      let tempDirPath = computer_unit.tempDirPath
+      let tempDirPath = computer_unit.tempDirPath;
       if (!tempDirPath) {
         log("Creating Temp Folder");
-        tempDirPath = await fs.mkdtemp(
-          path.join(os.tmpdir(), "ide-vm-home-")
-        );
+        tempDirPath = await fs.mkdtemp(path.join(os.tmpdir(), "ide-vm-home-"));
         console.info(`==> Created Temp Folder: ${tempDirPath}`);
       }
 
@@ -40,13 +40,17 @@ export default class ComputerUnitService {
         OpenStdin: true,
         StdinOnce: false,
         WorkingDir: "/root",
-        StopTimeout: 10,
+        StopTimeout: 2,
         Volumes: {
           "/root": {},
+        },
+        ExposedPorts: {
+          "8080/tcp": {},
         },
         HostConfig: {
           Binds: [`${tempDirPath}:/root`],
           AutoRemove: true,
+          PublishAllPorts: true
         },
         Labels: {
           "com.docker.instances.service": "vm",
@@ -57,7 +61,11 @@ export default class ComputerUnitService {
       await containerInstance.start();
 
       log("Return New Container");
-      return new ComputerUnit(containerInstance, tempDirPath, computer_unit.projectId);
+      return new ComputerUnit(
+        containerInstance,
+        tempDirPath,
+        computer_unit.projectId
+      );
     } catch (error) {
       console.error("Error!", error);
       throw "Error! Cannot create container";
@@ -65,10 +73,12 @@ export default class ComputerUnitService {
   }
 
   fromJSON(cuJSON) {
-    const containerInstance = this.dockerConnection.getContainer(cuJSON['container-id'])
-    const tempDirPath = cuJSON['temp-dir-path'];
-    const projectId = cuJSON['project-id'];
-    return new ComputerUnit(containerInstance, tempDirPath, projectId)
+    const containerInstance = this.dockerConnection.getContainer(
+      cuJSON["container-id"]
+    );
+    const tempDirPath = cuJSON["temp-dir-path"];
+    const projectId = cuJSON["project-id"];
+    return new ComputerUnit(containerInstance, tempDirPath, projectId);
   }
 
   async removeComputerUnits() {

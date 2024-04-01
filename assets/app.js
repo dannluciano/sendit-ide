@@ -13,6 +13,7 @@ let openedFiles = [];
 let currentOpenTab = -1;
 let term;
 let newFileOrNewFolder;
+const browser = document.getElementById('browser');
 
 function debug() {
   if (debugIsActive) {
@@ -198,7 +199,13 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
       if (filepath.includes("requirements.txt")) {
         commands.push(`python3 -m venv env\n`);
         commands.push(`source env/bin/activate\n`);
-        commands.push(`python3 -m pip install -r ${filepath}\n`);
+        commands.push(`python -m pip install -r ${filepath}\n`);
+      }
+      if (filepath.includes("manage.py")) {
+        commands.pop()
+        commands.push(`python3 -m venv env\n`);
+        commands.push(`source env/bin/activate\n`);
+        commands.push(`python ${filepath} runserver 0.0.0.0:8080\n`);
       }
       if (filepath.includes("package.json")) {
         commands.push(`npm install\n`);
@@ -245,6 +252,12 @@ function createNewFileOrFolder(event) {
     }
     filenameField.value = "";
     filenameField.style.display = "none";
+  }
+}
+
+function watchForUrlChange(event) {
+  if (event.key === "Enter") {
+    browser.src = event.target.value
   }
 }
 
@@ -306,6 +319,9 @@ document.addEventListener("DOMContentLoaded", () => {
     saveFile();
   });
 
+  const urlField = document.getElementById("url");
+  urlField.addEventListener("keypress", debounce(watchForUrlChange, 250));
+
   fetch(`/container/create/${projectId}`, {
     method: "POST",
   })
@@ -346,26 +362,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (testIsActive) {
               let file = {
-                filename: "requirements.txt",
-                filepath: `${tempDirPath}/requirements.txt`,
+                filename: "index.mjs",
+                filepath: `${tempDirPath}/index.mjs`,
                 changed: false,
-                doc: new CodeMirror.Doc(`django`),
+                doc: new CodeMirror.Doc(`
+import { createServer } from 'node:http';
+
+const server = createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Hello World!');
+});
+
+// starts a simple http server locally on port 8080
+server.listen(8080, '0.0.0.0', () => {
+  console.log('Listening on 0.0.0.0:8080');
+});
+`),
               };
               openedFiles.push(file);
 
-              currentOpenTab = 0;
-              changeCurrentOpenedTabWithFile(file);
-              saveFile();
-
-              file = {
-                filename: "main.py",
-                filepath: `${tempDirPath}/main.py`,
-                changed: false,
-                doc: new CodeMirror.Doc(`print("Olá, mundo!")`),
-              };
-              openedFiles.push(file);
-
-              currentOpenTab = 1;
+              currentOpenTab = openedFiles.length -1;
               changeCurrentOpenedTabWithFile(file);
               saveFile();
 
@@ -377,15 +393,14 @@ document.addEventListener("DOMContentLoaded", () => {
   "name": "${projectId}",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.mjs",
   "scripts": {
-    "start": "nodejs index.js"
+    "start": "nodejs index.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC"
-}`
-                ),
+}`),
               };
               openedFiles.push(file);
 
@@ -393,9 +408,6 @@ document.addEventListener("DOMContentLoaded", () => {
               changeCurrentOpenedTabWithFile(file);
               saveFile();
 
-              setTimeout(() => {
-                setActionFileStyle("main.py", false);
-              }, 1000);
             }
           };
           debug(apiSocket);
@@ -411,6 +423,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const { type, params } = JSON.parse(event.data);
             if (type === "fs") {
               renderFileSystemTree(params);
+            }
+            if (type === "host-port") {
+              const hostName = currentURL.hostname;
+              const hostPort = params;
+              urlField.value = `http://${hostName}:${hostPort}`;
+              browser.src = `http://${hostName}:${hostPort}`;
             }
             if (type === "open") {
               const { filename, filepath, content } = params;

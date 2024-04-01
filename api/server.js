@@ -48,7 +48,9 @@ app.get("/p/:pid", async (c) => {
   const indexPath = "index.html";
   try {
     const content = await fs.readFile(indexPath);
-    return c.html(content);
+    return c.html(content, 200, {
+      "X-Frame-Options": "SAMEORIGIN",
+    });
   } catch (error) {
     console.error(error);
     return new Response("Error on Server", {
@@ -106,7 +108,7 @@ app.get("/fs/file/open/:cid/:pathenc", async (c) => {
     const filepath = `${computerUnit.tempDirPath}/${filename}`;
     const content = await fs.readFile(filepath);
 
-    const ws = WSDB.get(computerUnit.containerId)
+    const ws = WSDB.get(computerUnit.containerId);
     if (ws) {
       ws.send(
         JSON.stringify({
@@ -168,6 +170,18 @@ async function connection(ws, req) {
     JSON.stringify({
       type: "fs",
       params: tree,
+    })
+  );
+
+  const containerInfo = await dockerConnection
+    .getContainer(containerId)
+    .inspect();
+  log(containerInfo.NetworkSettings);
+  const hostPort = containerInfo.NetworkSettings.Ports["8080/tcp"][0].HostPort;
+  ws.send(
+    JSON.stringify({
+      type: "host-port",
+      params: hostPort,
     })
   );
 
@@ -233,7 +247,7 @@ async function connection(ws, req) {
 
 async function handle_signals() {
   console.log("Ctrl-C was pressed");
-  computeUnitService && (await computeUnitService.removeComputerUnits());
+  // computeUnitService && (await computeUnitService.removeComputerUnits());
   server.close();
   wss.close();
 }

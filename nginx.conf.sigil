@@ -24,17 +24,47 @@ server {
   {{ if $.NOSSL_SERVER_NAME }}server_name {{ $.NOSSL_SERVER_NAME }}; {{ end }}
   access_log  {{ $.NGINX_ACCESS_LOG_PATH }}{{ if and ($.NGINX_ACCESS_LOG_FORMAT) (ne $.NGINX_ACCESS_LOG_PATH "off") }} {{ $.NGINX_ACCESS_LOG_FORMAT }}{{ end }};
   error_log   {{ $.NGINX_ERROR_LOG_PATH }};
+{{ if (and (eq $listen_port "80") ($.SSL_INUSE)) }}
+  include {{ $.DOKKU_ROOT }}/{{ $.APP }}/nginx.conf.d/*.conf;
+  location / {
+    return 301 https://$host:{{ $.PROXY_SSL_PORT }}$request_uri;
+  }
+{{ else }}
+  location = / {
+    proxy_http_version 1.1;
+    proxy_read_timeout 3600;
+    proxy_pass  http://api_backend;
+  }
 
-  location    / {
+  location ~ ^/containers/(.*)$ {
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_read_timeout 3600;
+    proxy_pass  http://docker_backend;
+  }
 
-    gzip on;
-    gzip_min_length  1100;
-    gzip_buffers  4 32k;
-    gzip_types    text/css text/javascript text/xml text/plain text/x-component application/javascript application/x-javascript application/wasm application/json application/xml application/rss+xml font/truetype application/x-font-ttf font/opentype application/vnd.ms-fontobject image/svg+xml;
-    gzip_vary on;
-    gzip_comp_level  6;
+  location ~ ^/vmws(.*)$ {
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_read_timeout 3600;
+    proxy_pass  http://api_backend;
+  }
 
-    proxy_pass  http://{{ $.APP }}-{{ $upstream_port }};
+  location /assets/ {
+    root  /etc/nginx/html/;
+    try_files $uri $uri/;
+  }
+
+  location ~ ^/assets/(.*)$ {
+    root  /etc/nginx/html;
+    try_files $uri $uri/;
+  }
+  
+  location ~ ^/(.*)$ {
+    proxy_pass  http://api_backend;
+    
     proxy_http_version 1.1;
     proxy_read_timeout {{ $.PROXY_READ_TIMEOUT }};
     proxy_buffer_size {{ $.PROXY_BUFFER_SIZE }};
@@ -48,7 +78,8 @@ server {
     proxy_set_header X-Forwarded-Port {{ $.PROXY_X_FORWARDED_PORT }};
     proxy_set_header X-Forwarded-Proto {{ $.PROXY_X_FORWARDED_PROTO }};
     proxy_set_header X-Request-Start $msec;
-    {{ if $.PROXY_X_FORWARDED_SSL }}proxy_set_header X-Forwarded-Ssl {{ $.PROXY_X_FORWARDED_SSL }};{{ end }}
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-NginX-Proxy true;
   }
 
   {{ if $.CLIENT_MAX_BODY_SIZE }}client_max_body_size {{ $.CLIENT_MAX_BODY_SIZE }};{{ end }}
@@ -213,13 +244,3 @@ server {
 {{ end }}{{ end }}
 {{ end }}
 {{ end }}
-
-{{ if $.DOKKU_APP_WEB_LISTENERS }}
-{{ range $upstream_port := $.PROXY_UPSTREAM_PORTS | split " " }}
-upstream {{ $.APP }}-{{ $upstream_port }} {
-{{ range $listeners := $.DOKKU_APP_WEB_LISTENERS | split " " }}
-{{ $listener_list := $listeners | split ":" }}
-{{ $listener_ip := index $listener_list 0 }}
-  server {{ $listener_ip }}:{{ $upstream_port }};{{ end }}
-}
-{{ end }}{{ end }}

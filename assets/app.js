@@ -52,6 +52,7 @@ function getExtensionIcon(filename, style) {
   const iconFileLabels = {
     py: "logo-python",
     js: "logo-javascript",
+    mjs: "logo-javascript",
     java: "cafe",
     html: "logo-html5",
     file: "document",
@@ -65,6 +66,9 @@ function getExtensionIcon(filename, style) {
   let iconName = iconFileLabels["file"];
   try {
     iconName = iconFileLabels[extension] || "document";
+    if (filename === "package.json" || filename === "package-lock.json") {
+      iconName = "logo-npm"
+    }
   } catch (error) {
     return `<ion-icon ${
       style ? iconFileStylePattern : null

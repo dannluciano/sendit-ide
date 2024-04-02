@@ -163,7 +163,7 @@ async function connection(ws, req) {
   WSDB.set(computerUnit.containerId, ws);
 
   const tree = directoryTree(computerUnit.tempDirPath, {
-    exclude: /\.npm|\.cache|env/,
+    exclude: /\.npm|\.cache|env|\.node_repl_history/,
   });
 
   ws.send(

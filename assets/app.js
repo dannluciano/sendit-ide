@@ -13,13 +13,22 @@ let openedFiles = [];
 let currentOpenTab = -1;
 let term;
 let newFileOrNewFolder;
-const browser = document.getElementById('browser');
 
 function debug() {
   if (debugIsActive) {
     console.log(...arguments);
   }
 }
+
+const debounce = (callback, wait) => {
+  let timeoutId = null;
+  return (...args) => {
+    window.clearTimeout(timeoutId);
+    timeoutId = window.setTimeout(() => {
+      callback.apply(null, args);
+    }, wait);
+  };
+};
 
 function terminalResize() {
   if (apiSocket && term) {
@@ -35,16 +44,6 @@ function terminalResize() {
 window.addEventListener("resize", terminalResize);
 
 CodeMirror.modeURL = "/assets/vendor/codemirror/mode/%N/%N.js";
-
-const debounce = (callback, wait) => {
-  let timeoutId = null;
-  return (...args) => {
-    window.clearTimeout(timeoutId);
-    timeoutId = window.setTimeout(() => {
-      callback.apply(null, args);
-    }, wait);
-  };
-};
 
 function getExtensionIcon(filename, style) {
   const iconFileStylePattern =
@@ -67,7 +66,7 @@ function getExtensionIcon(filename, style) {
   try {
     iconName = iconFileLabels[extension] || "document";
     if (filename === "package.json" || filename === "package-lock.json") {
-      iconName = "logo-npm"
+      iconName = "logo-npm";
     }
   } catch (error) {
     return `<ion-icon ${
@@ -206,7 +205,7 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
         commands.push(`python -m pip install -r ${filepath}\n`);
       }
       if (filepath.includes("manage.py")) {
-        commands.pop()
+        commands.pop();
         commands.push(`python3 -m venv env\n`);
         commands.push(`source env/bin/activate\n`);
         commands.push(`python ${filepath} runserver 0.0.0.0:8080\n`);
@@ -256,12 +255,6 @@ function createNewFileOrFolder(event) {
     }
     filenameField.value = "";
     filenameField.style.display = "none";
-  }
-}
-
-function watchForUrlChange(event) {
-  if (event.key === "Enter") {
-    browser.src = event.target.value
   }
 }
 
@@ -323,9 +316,6 @@ document.addEventListener("DOMContentLoaded", () => {
     saveFile();
   });
 
-  const urlField = document.getElementById("url");
-  urlField.addEventListener("keypress", debounce(watchForUrlChange, 250));
-
   fetch(`/container/create/${projectId}`, {
     method: "POST",
   })
@@ -385,7 +375,7 @@ server.listen(8080, '0.0.0.0', () => {
               };
               openedFiles.push(file);
 
-              currentOpenTab = openedFiles.length -1;
+              currentOpenTab = openedFiles.length - 1;
               changeCurrentOpenedTabWithFile(file);
               saveFile();
 
@@ -411,7 +401,6 @@ server.listen(8080, '0.0.0.0', () => {
               currentOpenTab = 2;
               changeCurrentOpenedTabWithFile(file);
               saveFile();
-
             }
           };
           debug(apiSocket);
@@ -431,8 +420,8 @@ server.listen(8080, '0.0.0.0', () => {
             if (type === "host-port") {
               const hostName = currentURL.hostname;
               const hostPort = params;
-              urlField.value = `http://${hostName}:${hostPort}`;
-              browser.src = `http://${hostName}:${hostPort}`;
+              const shareLink = document.getElementById('open-new-tab');
+              shareLink.href = `http://${hostName}:${hostPort}`;
             }
             if (type === "open") {
               const { filename, filepath, content } = params;

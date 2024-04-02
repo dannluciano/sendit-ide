@@ -27,7 +27,7 @@ export default class ComputerUnit {
         console.log(event, path);
         if (this.ws) {
           const tree = directoryTree(tempDirPath, {
-            exclude: /\.npm|\.cache|env/,
+            exclude: /\.npm|\.cache|env|\.node_repl_history/,
           });
           this.ws.send(
             JSON.stringify({

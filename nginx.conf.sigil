@@ -146,6 +146,15 @@ server {
     internal;
   }
 
+  location ^~ /.well-known/acme-challenge/ {
+    default_type "text/plain";
+    root         /var/www/letsencrypt;
+  }
+
+  location = /.well-known/acme-challenge/ {
+      return 404;
+  }
+
   location = / {
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;

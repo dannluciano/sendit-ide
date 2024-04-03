@@ -1,5 +1,0 @@
-{
-  "scripts": {
-    "postdeploy": "cd /var/www/sendit-ide && make update"
-  }
-}

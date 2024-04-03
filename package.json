@@ -1,0 +1,14 @@
+{
+  "name": "sendit-ide",
+  "version": "1.0.0",
+  "description": "A SendIT editor and shell",
+  "main": "index.js",
+  "dependencies": {
+  },
+  "scripts": {
+    "start": "npx http-server assets"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -21,8 +21,4 @@ deploy:
 
 update:
 	git pull --rebase
-	cp -r assets/ /etc/nginx/html/
-	docker compose -f docker-compose.prod.yml build
-	cp sendit-ide.service /etc/systemd/system
-	systemctl daemon-reload
-	systemctl restart sendit-ide.service
+	docker compose -f docker-compose.prod.yml up

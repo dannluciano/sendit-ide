@@ -1,4 +1,7 @@
-FROM nginx
+FROM ubuntu:20.04
 
-COPY assets            /usr/share/nginx/html/assets
-# COPY assets/index.html /usr/share/nginx/html
+EXPOSE 1234
+
+COPY assets .
+
+RUN python -m SimpleHTTPServer 1234

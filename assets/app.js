@@ -152,6 +152,14 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
     txt: {
       ...defaultOptions,
     },
+    html: {
+      ...defaultOptions,
+      mode: "html",
+    },
+    css: {
+      ...defaultOptions,
+      mode: "css",
+    }
   };
   try {
     return (

@@ -418,10 +418,9 @@ server.listen(8080, '0.0.0.0', () => {
               renderFileSystemTree(params);
             }
             if (type === "host-port") {
-              const hostName = currentURL.hostname;
               const hostPort = params;
               const shareLink = document.getElementById('open-new-tab');
-              shareLink.href = `http://${hostName}:${hostPort}`;
+              shareLink.href = `http://62.72.9.104:${hostPort}`;
             }
             if (type === "open") {
               const { filename, filepath, content } = params;

@@ -153,13 +153,13 @@ const apiWS = new WebSocketServer({ noServer: true });
 const dockerWS = new WebSocketServer({ noServer: true });
 
 server.on("upgrade", function upgrade(request, socket, head) {
-  const { pathname } = new URL(request.url);
+  const url = new URL(request.url, "https://example.org/");
 
-  if (pathname.match("^/containers/(.*)$")) {
+  if (url.pathname.match("^/containers/(.*)$")) {
     dockerWS.handleUpgrade(request, socket, head, function done(ws) {
       dockerWS.emit("connection", ws, request);
     });
-  } else if (pathname.startsWith("/vmws")) {
+  } else if (url.pathname.startsWith("/vmws")) {
     apiWS.handleUpgrade(request, socket, head, function done(ws) {
       apiWS.emit("connection", ws, request);
     });

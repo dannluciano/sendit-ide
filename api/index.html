@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="sl-theme-dark">
 
 <head>
   <meta charset="UTF-8" />
@@ -30,6 +30,16 @@
   <script src="/assets/vendor/codemirror/addons/loadmode.js"></script>
   <script src="/assets/vendor/codemirror/mode/meta.js"></script>
 
+  <link rel="stylesheet" media="(prefers-color-scheme:light)"
+    href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/themes/light.css" />
+  <link rel="stylesheet" media="(prefers-color-scheme:dark)"
+    href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/themes/dark.css"
+    onload="document.documentElement.classList.add('sl-theme-dark');" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/themes/dark.css"
+    onload="document.documentElement.classList.add('sl-theme-dark');" />
+  <script type="module"
+    src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/shoelace-autoloader.js"></script>
+
   <title>SendIT IDE</title>
 </head>
 
@@ -40,86 +50,100 @@
         <a style="margin: 0" class="navbar-brand" href="#">
           <h1 class="drac-text drac-text-green">SendIT IDE</h1>
         </a>
-
         <div style="width: calc(75% + 0.5rem)" class="actions">
-          <button id="run-button">
-            <ion-icon name="play"></ion-icon>
-          </button>
-          <button id="save-button">
-            <ion-icon name="save"></ion-icon>
-          </button>
+          <sl-button id="run-button">
+            <sl-icon slot="prefix" name="play"></sl-icon>
+          </sl-button>
+          <sl-button id="save-button">
+            <sl-icon slot="prefix" name="save"></sl-icon>
+          </sl-button>
           <a id="open-new-tab" href="#" target="_blank" rel="noopener noreferrer">
-            <button>
-              <ion-icon name="enter"></ion-icon>
-            </button>
+            <sl-button>
+              <sl-icon slot="prefix" name="share"></sl-icon>
+            </sl-button>
           </a>
         </div>
       </div>
     </nav>
   </header>
-  <main>
-    <div id="workbench">
-      <div id="filesystem">
-        <div id="fs-options-section">
-          <div class="toggle-sidebar-container" style="display: flex; align-items: top">
-            <ion-icon onclick="toggleFilesystemSidebar()" class="no-filesystem-icon" name="file-tray">
-            </ion-icon>
-          </div>
-          <div>
-            <input id="input-filename" placeholder="" id="file-name" type="text" size="16" width="auto"
-              style="display: none;" />
-          </div>
-          <div id="create-file-container-icons">
-            <button style="margin-left: 0.5rem;" id="new-file-button">
-              <div style="display: flex; align-items: flex-end">
-                <ion-icon name="document"></ion-icon>
-              </div>
-            </button>
-            <button style="margin-left: 0.5rem;" id="new-folder-button">
-              <div style="display: flex; align-items: flex-end">
-                <ion-icon name="folder"></ion-icon>
-              </div>
-            </button>
-          </div>
-        </div>
-        <div id="file-system-tree__section" class="drac-text-white" open="">
-          <ul class="tree">
-            <li>
-              <details style="user-select: none" open="">
-                <summary>
-                  <div onclick="toggleFolderIcon(this)" class="drac-text drac-text-green">
-                    <ion-icon class="filesystem-folder-icon" name="folder-open"></ion-icon>
-                    <span>root</span>
+  <sl-split-panel primary="end" vertical style="height: 100vh; --divider-width: 10px;">
+    <sl-icon slot="divider" name="grip-horizontal"></sl-icon>
+    <div slot="start">
+      <main>
+        <div id="workbench">
+          <sl-split-panel position="30" style="width: 100%; --divider-width: 10px;">
+            <sl-icon slot="divider" name="grip-vertical"></sl-icon>
+            <div slot="start">
+              <div id="filesystem">
+                <div id="fs-options-section">
+                  <div class="toggle-sidebar-container" style="display: flex; align-items: top">
+                    <ion-icon onclick="toggleFilesystemSidebar()" class="no-filesystem-icon" name="file-tray">
+                    </ion-icon>
                   </div>
-                </summary>
-                <ul id="file-system-tree"></ul>
-              </details>
-            </li>
-          </ul>
+                  <div>
+                    <input id="input-filename" placeholder="" id="file-name" type="text" size="16" width="auto"
+                      style="display: none;" />
+                  </div>
+                  <div id="create-file-container-icons">
+                    <button style="margin-left: 0.5rem;" id="new-file-button">
+                      <div style="display: flex; align-items: flex-end">
+                        <ion-icon name="document"></ion-icon>
+                      </div>
+                    </button>
+                    <button style="margin-left: 0.5rem;" id="new-folder-button">
+                      <div style="display: flex; align-items: flex-end">
+                        <ion-icon name="folder"></ion-icon>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+                <div id="file-system-tree__section" class="drac-text-white" open="">
+                  <ul class="tree">
+                    <li>
+                      <details style="user-select: none" open="">
+                        <summary>
+                          <div onclick="toggleFolderIcon(this)" class="drac-text drac-text-green">
+                            <ion-icon class="filesystem-folder-icon" name="folder-open"></ion-icon>
+                            <span>root</span>
+                          </div>
+                        </summary>
+                        <ul id="file-system-tree"></ul>
+                      </details>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div onclick="toggleFilesystemSidebar()" class="display-none" id="sidebar-no-show-filesystem">
+                <ion-icon class="no-filesystem-icon" name="file-tray-full"></ion-icon>
+              </div>
+            </div>
+            <div slot="end">
+              <div id="editor-container">
+                <nav id="file-title-bar">
+                  <ul id="tabs">
+                    <li id="filename-tab" data-filepath="">scratch</li>
+                  </ul>
+                </nav>
+                <div id="editor-wrapper" style="position: relative">
+                  <textarea name="editor" id="editor" cols="30" rows="10"></textarea>
+                </div>
+              </div>
+            </div>
+          </sl-split-panel>
         </div>
-      </div>
-      <!--  -->
-      <div onclick="toggleFilesystemSidebar()" class="display-none" id="sidebar-no-show-filesystem">
-        <ion-icon class="no-filesystem-icon" name="file-tray-full"></ion-icon>
-      </div>
-      <div id="editor-container">
-        <nav id="file-title-bar">
-          <ul id="tabs">
-            <li id="filename-tab" data-filepath="">scratch</li>
-          </ul>
-        </nav>
-        <div id="editor-wrapper" style="position: relative">
-          <textarea name="editor" id="editor" cols="30" rows="10"></textarea>
-        </div>
-      </div>
+      </main>
     </div>
-  </main>
+    <div slot="end">
+      <footer>
+        <div id="terminal-section">
+          <div id="terminal"></div>
+        </div>
+      </footer>
+    </div>
+  </sl-split-panel>
 
-  <footer>
-    <div id="terminal-section">
-      <div id="terminal"></div>
-    </div>
-  </footer>
+
+
 
   <script src="/assets/term.js"></script>
   <script src="/assets/app.js"></script>

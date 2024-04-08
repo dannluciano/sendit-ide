@@ -17,7 +17,7 @@ import DB from "./database.js";
 import { nanoid } from "nanoid";
 import ComputerUnit from "./computer_unit/computer_unit.js";
 
-const __dirname = new URL("./assets/", import.meta.url).pathname;
+const __dirname = new URL("./", import.meta.url).pathname;
 
 let dockerConnection;
 const WSDB = new Map();
@@ -26,7 +26,7 @@ function log() {
   console.info("API ==>", ...arguments);
 }
 
-log(__dirname)
+log("Current DIR", __dirname);
 
 try {
   log("Connecting to Docker Daemon");
@@ -46,7 +46,7 @@ const app = new Hono();
 
 app.use("*", logger());
 
-app.use("/assets/*", serveStatic({ root: './api' }));
+app.use("/assets/*", serveStatic({ root: "./api" }));
 
 app.get("/", async (c) => {
   const projectId = nanoid();
@@ -172,7 +172,7 @@ server.on("upgrade", function upgrade(request, socket, head) {
 apiWS.on("connection", apiWSConnection);
 
 async function apiWSConnection(ws, req) {
-  console.info(`WebSocket Connection opened: ${JSON.stringify(req.url)}`);
+  console.info(`API WebSocket Connection Opened: ${JSON.stringify(req.url)}`);
 
   const containerId = new URL(req.url, "http://localhost").searchParams.get(
     "cid"
@@ -277,14 +277,16 @@ dockerWS.on("connection", dockerWSConnection);
 
 async function dockerWSConnection(clientToServerWS, req) {
   console.info(
-    `WebSocket -> Server Connection opened: ${JSON.stringify(req.url)}`
+    `WebSocket -> Server Connection Opened: ${JSON.stringify(req.url)}`
   );
 
   const serverToDockerWS = new WebSocket(
     `ws+unix:///var/run/docker.sock:${req.url}`
   );
   serverToDockerWS.on("open", function () {
-    console.info(`WebSocket -> Docker Connection Opened:`);
+    console.info(
+      `WebSocket -> Docker Connection Opened: ${JSON.stringify(req.url)}`
+    );
   });
 
   serverToDockerWS.on("message", async function message(message) {

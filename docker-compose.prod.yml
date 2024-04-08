@@ -5,7 +5,7 @@ services:
     build: ./docker/vm
   api:
     container_name: api
-    build: api
+    build: .
     environment:
       - PORT=8001
     ports:
@@ -16,18 +16,5 @@ services:
       - /tmp:/tmp
     extra_hosts:
       - "host.docker.internal:host-gateway"
-  wsapi:
-    container_name: wsapi
-    build: ./api
-    environment:
-      - PORT=7001
-    ports:
-      - 7001:7001
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /tmp:/tmp
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    command: node wsserver.js
 volumes:
   db-data:

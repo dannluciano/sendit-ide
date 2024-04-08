@@ -1,10 +1,13 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import { parse } from "node:url";
 
 import { serve } from "@hono/node-server";
+import { serveStatic } from "@hono/node-server/serve-static";
+
 import { Hono } from "hono";
 import { logger } from "hono/logger";
-import { WebSocketServer } from "ws";
+import { WebSocketServer, WebSocket } from "ws";
 import * as dockerode from "dockerode";
 
 import { default as directoryTree } from "directory-tree";
@@ -14,12 +17,16 @@ import DB from "./database.js";
 import { nanoid } from "nanoid";
 import ComputerUnit from "./computer_unit/computer_unit.js";
 
+const __dirname = new URL("./assets/", import.meta.url).pathname;
+
 let dockerConnection;
 const WSDB = new Map();
 
 function log() {
   console.info("API ==>", ...arguments);
 }
+
+log(__dirname)
 
 try {
   log("Connecting to Docker Daemon");
@@ -39,13 +46,15 @@ const app = new Hono();
 
 app.use("*", logger());
 
+app.use("/assets/*", serveStatic({ root: './api' }));
+
 app.get("/", async (c) => {
   const projectId = nanoid();
   return c.redirect(`/p/${projectId}`);
 });
 
 app.get("/p/:pid", async (c) => {
-  const indexPath = "index.html";
+  const indexPath = new URL("./index.html", import.meta.url).pathname;
   try {
     const content = await fs.readFile(indexPath);
     return c.html(content, 200, {
@@ -141,14 +150,30 @@ const server = serve(
   }
 );
 
-const wss = new WebSocketServer({
-  server,
+const apiWS = new WebSocketServer({ noServer: true });
+const dockerWS = new WebSocketServer({ noServer: true });
+
+server.on("upgrade", function upgrade(request, socket, head) {
+  const { pathname } = parse(request.url);
+
+  if (pathname.match("^/containers/(.*)$")) {
+    dockerWS.handleUpgrade(request, socket, head, function done(ws) {
+      dockerWS.emit("connection", ws, request);
+    });
+  } else if (pathname.match("^/vmws/(.*)$")) {
+    apiWS.handleUpgrade(request, socket, head, function done(ws) {
+      apiWS.emit("connection", ws, request);
+    });
+  } else {
+    socket.destroy();
+  }
 });
 
-wss.on("connection", connection);
+apiWS.on("connection", apiWSConnection);
 
-async function connection(ws, req) {
+async function apiWSConnection(ws, req) {
   console.info(`WebSocket Connection opened: ${JSON.stringify(req.url)}`);
+
   const containerId = new URL(req.url, "http://localhost").searchParams.get(
     "cid"
   );
@@ -157,7 +182,10 @@ async function connection(ws, req) {
   const cuJSON = DB.get(containerId);
   if (cuJSON) {
     computerUnit = computeUnitService.fromJSON(cuJSON);
+  } else {
+    return;
   }
+
   computerUnit.ws = ws;
 
   WSDB.set(computerUnit.containerId, ws);
@@ -245,11 +273,46 @@ async function connection(ws, req) {
   ws.on("error", console.error);
 }
 
+dockerWS.on("connection", dockerWSConnection);
+
+async function dockerWSConnection(clientToServerWS, req) {
+  console.info(
+    `WebSocket -> Server Connection opened: ${JSON.stringify(req.url)}`
+  );
+
+  const serverToDockerWS = new WebSocket(
+    `ws+unix:///var/run/docker.sock:${req.url}`
+  );
+  serverToDockerWS.on("open", function () {
+    console.info(`WebSocket -> Docker Connection Opened:`);
+  });
+
+  serverToDockerWS.on("message", async function message(message) {
+    clientToServerWS.send(message);
+  });
+
+  serverToDockerWS.on("close", async function close() {
+    console.info(`WebSocket -> Docker Connection closed:`);
+  });
+  serverToDockerWS.on("error", console.error);
+
+  clientToServerWS.on("message", async function message(message) {
+    if (serverToDockerWS.readyState === serverToDockerWS.OPEN) {
+      serverToDockerWS.send(message);
+    }
+  });
+
+  clientToServerWS.on("close", async function close() {
+    console.info(`WebSocket -> Server Connection closed:`);
+  });
+  clientToServerWS.on("error", console.error);
+}
+
 async function handle_signals() {
   console.log("Ctrl-C was pressed");
   // computeUnitService && (await computeUnitService.removeComputerUnits());
   server.close();
-  wss.close();
+  apiWS.close();
 }
 
 process.on("SIGINT", handle_signals);

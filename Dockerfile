@@ -10,15 +10,15 @@ ENV NODE_ENV $NODE_ENV
 WORKDIR /app
 
 # default to port 8000 for node
-ARG PORT=8000
+ARG PORT=8001
 ENV PORT $PORT
 EXPOSE $PORT
 
 COPY package.json .
 COPY package-lock.json .
-RUN npm ci
+RUN npm ci --silent
 
 # copy in our source code last, as it changes the most
-COPY --chown=root:root assets assets
+COPY --chown=root:root . .
 
-CMD [ "npx", "http-server", "assets" ]
+CMD [ "npm", "start" ]

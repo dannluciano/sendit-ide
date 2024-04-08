@@ -1,14 +1,23 @@
 {
-  "name": "sendit-ide",
+  "name": "backend",
   "version": "1.0.0",
-  "description": "A SendIT editor and shell",
-  "main": "index.js",
-  "dependencies": {
-  },
+  "description": "",
+  "main": "server.js",
+  "type": "module",
   "scripts": {
-    "start": "npx http-server ."
+    "start": "node api/server.js"
   },
-  "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@hono/node-server": "^1.7.0",
+    "better-sqlite3": "^9.4.3",
+    "chokidar": "^3.5.3",
+    "directory-tree": "^3.5.1",
+    "dockerode": "^4.0.2",
+    "ejs": "^3.1.9",
+    "hono": "^3.12.8",
+    "nanoid": "5.0.6",
+    "ws": "^8.16.0"
+  }
 }

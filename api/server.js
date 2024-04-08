@@ -160,7 +160,7 @@ server.on("upgrade", function upgrade(request, socket, head) {
     dockerWS.handleUpgrade(request, socket, head, function done(ws) {
       dockerWS.emit("connection", ws, request);
     });
-  } else if (pathname.match("^/vmws/(.*)$")) {
+  } else if (pathname.startsWith("/vmws")) {
     apiWS.handleUpgrade(request, socket, head, function done(ws) {
       apiWS.emit("connection", ws, request);
     });

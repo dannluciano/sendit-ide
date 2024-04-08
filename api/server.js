@@ -1,6 +1,5 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import { parse } from "node:url";
 
 import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
@@ -154,7 +153,7 @@ const apiWS = new WebSocketServer({ noServer: true });
 const dockerWS = new WebSocketServer({ noServer: true });
 
 server.on("upgrade", function upgrade(request, socket, head) {
-  const { pathname } = parse(request.url);
+  const { pathname } = new URL(request.url);
 
   if (pathname.match("^/containers/(.*)$")) {
     dockerWS.handleUpgrade(request, socket, head, function done(ws) {

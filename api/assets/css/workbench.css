@@ -1,10 +1,7 @@
-main {
-  width: 100%;
-  font-family: "Fira Code";
-}
-
 #workbench {
   width: 100%;
+  height: var(--workbench-height);
   display: flex;
   align-items: top;
+  font-family: "Fira Code";
 }

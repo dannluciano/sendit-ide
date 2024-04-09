@@ -11,6 +11,12 @@
   background: #c2d8e8;
 }
 
+:root {
+  --header-height: 80px;
+  --workbench-height: 60vh; 
+  --terminal-height: calc(100vh - var(--workbench-height))
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -19,6 +25,10 @@
 
 body {
   background-color: var(--black) !important;
+  overflow: hidden;
+  max-height: 100vh;
+  min-height: 100vh;
+  height: 100vh;
 }
 
 li {
@@ -28,8 +38,4 @@ li {
 
 .display-none {
   display: none !important;
-}
-
-#tabs {
-  overflow-y: auto;
 }

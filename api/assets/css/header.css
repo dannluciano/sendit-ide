@@ -1,5 +1,6 @@
 header {
   width: 100%;
+  height: var(--header-height);
   padding: 1rem !important;
   background-color: #000000;
 }
@@ -13,10 +14,6 @@ header h1 {
 header select {
   width: 300px !important;
   margin-right: 1rem !important;
-}
-
-#language-select {
-  padding: 0.2rem;
 }
 
 .actions button {

@@ -268,7 +268,7 @@ function createNewFileOrFolder(event) {
 
 document.addEventListener("DOMContentLoaded", () => {
   editor = CodeMirror.fromTextArea(document.querySelector("#editor"));
-  editor.setSize("100%", "470px");
+  editor.setSize("100%", "100%");
   editor.setOption("extraKeys", {
     "Ctrl-S": function (cm) {
       saveFile();

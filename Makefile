@@ -1,5 +1,5 @@
 all: run
-	@echo 'Listening on http://localhost:81'
+	@echo 'Listening on http://localhost:8001'
 
 down:
 	docker compose down
@@ -18,7 +18,3 @@ watch:
 
 deploy:
 	git push dokku main
-
-update:
-	git pull --rebase
-	docker compose -f docker-compose.prod.yml up

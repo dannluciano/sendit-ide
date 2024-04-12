@@ -17,7 +17,6 @@ pathencoded=$(echo -n $filepath | basenc --base64url)
 
 hostname=$(uname -n)
 
-url="https://ide.dannluciano.com.br/fs/file/open/${hostname}/${pathencoded}"
+url="https://ide.sendit.dannluciano.com.br/fs/file/open/${hostname}/${pathencoded}"
 
-echo $url
 curl $url 2> /dev/null > /dev/null

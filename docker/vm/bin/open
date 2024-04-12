@@ -17,4 +17,7 @@ pathencoded=$(echo -n $filepath | basenc --base64url)
 
 hostname=$(uname -n)
 
-curl "http://host.docker.internal:81/fs/file/open/${hostname}/${pathencoded}" 2> /dev/null > /dev/null
+url="http://host.docker.internal:8001/fs/file/open/${hostname}/${pathencoded}"
+
+echo $url
+curl $url 2> /dev/null > /dev/null

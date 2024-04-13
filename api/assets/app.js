@@ -204,6 +204,8 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
     c: [`g++ -o main ${filepath}\n`, `./main`],
     sql: [`cat ${filepath} | sqlite3 db.sqlite \n`],
     scratch: [],
+    html: [`python3 -m http.server -b 0.0.0.0 8080`],
+    css: [`python3 -m http.server -b 0.0.0.0 8080`]
   };
   try {
     const commands = runCommandsPerLanguages[fileExtention] || [];

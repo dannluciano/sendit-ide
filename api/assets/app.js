@@ -119,6 +119,7 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
     },
     json: {
       ...defaultOptions,
+      indentUnit: 2,
       mode: {
         name: "javascript",
         json: true,

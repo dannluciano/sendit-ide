@@ -227,7 +227,7 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
       commands.push(`test ! -d env && python3 -m venv env\n`);
       commands.push(`test -d env && source env/bin/activate\n`);
       commands.push(
-        `test -f requirements.txt && python -m pip install -r requirements\n`
+        `test -f requirements.txt && python -m pip install -r requirements.txt\n`
       );
       commands.push(`python ${filepath} runserver 0.0.0.0:8080\n`);
     }

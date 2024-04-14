@@ -200,6 +200,7 @@ function changeEditorConfigsAndMode(filename) {
 }
 
 function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
+  debug(filepath);
   const runCommandsPerLanguages = {
     py: [`python3 ${filepath}\n`],
     js: [`node ${filepath}\n`],
@@ -215,23 +216,26 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
   };
   try {
     const commands = runCommandsPerLanguages[fileExtention] || [];
-    if (commands.length === 0) {
-      if (filepath.includes("requirements.txt")) {
-        commands.push(`python3 -m venv env\n`);
-        commands.push(`source env/bin/activate\n`);
-        commands.push(`python -m pip install -r ${filepath}\n`);
-      }
-      if (filepath.includes("manage.py")) {
-        commands.pop();
-        commands.push(`python3 -m venv env\n`);
-        commands.push(`source env/bin/activate\n`);
-        commands.push(`python ${filepath} runserver 0.0.0.0:8080\n`);
-      }
-      if (filepath.includes("package.json")) {
-        commands.push(`npm install\n`);
-        commands.push(`npm start\n`);
-      }
+
+    if (filepath.includes("requirements.txt")) {
+      commands.push(`python3 -m venv env\n`);
+      commands.push(`source env/bin/activate\n`);
+      commands.push(`python -m pip install -r ${filepath}\n`);
     }
+    if (filepath.includes("manage.py")) {
+      commands.pop();
+      commands.push(`test ! -d env && python3 -m venv env\n`);
+      commands.push(`test -d env && source env/bin/activate\n`);
+      commands.push(
+        `test -f requirements.txt && python -m pip install -r requirements\n`
+      );
+      commands.push(`python ${filepath} runserver 0.0.0.0:8080\n`);
+    }
+    if (filepath.includes("package.json")) {
+      commands.push(`npm install\n`);
+      commands.push(`npm start\n`);
+    }
+
     return commands;
   } catch (error) {
     console.error(error);

@@ -1,50 +1,18 @@
 #filesystem {
-  width: 25%;
-  padding: 1rem;
-}
-
-#sidebar-no-show-filesystem {
-  display: flex;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.no-filesystem-icon {
-  color: var(--green);
-  font-size: 1.5rem !important;
-  cursor: pointer;
-}
-
-#fs-options-section {
-  display: flex;
-  align-items: top;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-#fs-options-section input {
-  padding: 0 0.5rem;
-  border: none;
-  border-radius: 5px;
-  max-width: 100%;
-  margin-left: 0.5rem;
-  height: 25px !important;
-  width: 100%;
-}
-
-#fs-options-section button {
-  background-color: var(--black);
-  border: none;
-  color: var(--green);
-  font-size: 1.5rem;
-}
-
-#fs-options-section button:hover {
-  opacity: 0.8;
+  width: 30%;
+  min-width: 25%;
+  max-width: 35%;
+  padding: 0 0;
+  padding-left: 1em;
 }
 
 #file-system-tree__section {
-  margin-top: 1rem;
+  min-height: 60vh;
+  overflow-y: scroll;
+}
+
+#filesystem ul:first-child {
+  padding-left: 0;
 }
 
 summary::-webkit-details-marker {
@@ -72,18 +40,20 @@ ul li span {
   margin-left: 0.5rem;
 }
 
-@media (max-width: 1393px) {
-  #fs-options-section input {
-    width: 100%;
-  }
-
-  .toggle-sidebar-container {
-    margin-bottom: 0.5rem;
-  }
-}
-
 .file-open {
   color: var(--green);
   background-color: var(--grey);
   border-radius: 5px;
+}
+
+#help {
+  height: 40vh;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  border-top: 1px solid #282a36;
+}
+
+#help code {
+  display: inline-block;
+  width: calc(100% - 1em);
 }

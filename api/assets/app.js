@@ -13,6 +13,11 @@ let openedFiles = [];
 let currentOpenTab = -1;
 let term;
 let newFileOrNewFolder;
+let initialCommand = ""
+
+if (currentURL.searchParams.has("command")) {
+  initialCommand = currentURL.searchParams.get("command")
+}
 
 function debug() {
   if (debugIsActive) {
@@ -346,6 +351,10 @@ document.addEventListener("DOMContentLoaded", () => {
             term = new Term();
             term.attach(containerSocket);
             debug(containerSocket);
+
+            if (initialCommand) {
+              containerSocket.send(`${initialCommand}\n`);
+            }
           };
 
           containerSocket.onclose = function (code, reason) {

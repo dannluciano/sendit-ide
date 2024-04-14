@@ -1,4 +1,9 @@
+#terminal-section {
+  width: var(--terminal-width);
+  height: var(--terminal-height);
+}
+
 #terminal {
   width: 100%;
-  height: calc(var(--terminal-height) - var(--header-height));
+  height: 100%;
 }

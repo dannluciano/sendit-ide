@@ -1,20 +1,10 @@
-::-webkit-scrollbar-track {
-  background-color: #f4f4f4;
-}
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-  background: #f4f4f4;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #c2d8e8;
-}
-
 :root {
-  --header-height: 80px;
-  --workbench-height: 60vh; 
-  --terminal-height: calc(100vh - var(--workbench-height))
+  --workbench-width: 100%;
+  --workbench-height: 100vh;
+  --editor-width: 100%;
+  --editor-height: 60vh;
+  --terminal-width: 100%;
+  --terminal-height: calc(var(--workbench-height) - var(--editor-height));
 }
 
 * {
@@ -32,10 +22,24 @@ body {
 }
 
 li {
-    list-style-type: none;
-    cursor: pointer;
+  list-style-type: none;
+  cursor: pointer;
 }
 
-.display-none {
+.hidden {
   display: none !important;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f4f4f4;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background: #f4f4f4;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c2d8e8;
 }

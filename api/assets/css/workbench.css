@@ -1,7 +1,14 @@
 #workbench {
-  width: 100%;
+  width: var(--workbench-width);
   height: var(--workbench-height);
   display: flex;
+  flex-direction: row;
   align-items: top;
   font-family: "Fira Code";
+}
+
+#editor-term-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }

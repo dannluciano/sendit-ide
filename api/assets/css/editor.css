@@ -1,9 +1,11 @@
-#editor-container {
-  width: 75%;
+#editor-section {
+  width: var(--editor-width);
+  height: var(--editor-height);
   overflow: auto !important;
+  background-color: #282a36;
 }
 
-.filsystem-colapsed {
+.file-system-colapsed {
   width: calc(100% - 56px) !important;
 }
 

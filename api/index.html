@@ -37,25 +37,25 @@
 <body>
   <main id="workbench">
     <div id="actions-options-section">
-      <button>
+      <button style="color: var(--purple);">
         <ion-icon onclick="toggleFilesystemSidebar(this)" name="file-tray">
         </ion-icon>
       </button>
       <hr>
-      <button id="new-folder-button">
+      <button id="new-folder-button" style="color: var(--red);">
         <ion-icon name="folder"></ion-icon>
       </button>
-      <button id="new-file-button">
+      <button id="new-file-button" style="color: var(--orange);">
         <ion-icon name="document"></ion-icon>
       </button>
-      <button id="save-button">
+      <button id="save-button" style="color: var(--yellow);">
         <ion-icon name="save"></ion-icon>
       </button>
       <hr>
       <button id="run-button">
         <ion-icon name="play"></ion-icon>
       </button>
-      
+
       <hr>
       <button>
         <a id="open-new-tab" href="#" target="_blank" rel="noopener noreferrer">
@@ -65,7 +65,7 @@
     </div>
     <div id="filesystem">
       <div id="file-system-tree__section" class="drac-text-white" open="">
-        <h5>Arquivos</h5>
+        <h5>Arquivos:</h5>
         <ul class="tree">
           <li>
             <details style="user-select: none" open="">

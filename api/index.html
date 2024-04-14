@@ -40,7 +40,13 @@
         <ion-icon onclick="toggleFilesystemSidebar(this)" name="file-tray">
         </ion-icon>
       </button>
-      <br />
+      <hr>
+      <button id="new-file-button">
+        <ion-icon name="document"></ion-icon>
+      </button>
+      <button id="new-folder-button">
+        <ion-icon name="folder"></ion-icon>
+      </button>
       <button id="run-button">
         <ion-icon name="play"></ion-icon>
       </button>
@@ -51,12 +57,6 @@
         <a id="open-new-tab" href="#" target="_blank" rel="noopener noreferrer">
           <ion-icon name="enter"></ion-icon>
         </a>
-      </button>
-      <button id="new-file-button">
-        <ion-icon name="document"></ion-icon>
-      </button>
-      <button id="new-folder-button">
-        <ion-icon name="folder"></ion-icon>
       </button>
     </div>
     <div id="filesystem">
@@ -78,36 +78,56 @@
       </div>
       <section id="help" class="drac-text-white">
         <h5>Ajuda:</h5>
-        <dl>
-            <dt>Criar um Arquivo</dt>
-            <dd>
+        <ul>
+          <li>
+            <details>
+              <summary>Criar um Arquivo</summary>
               <code>~# touch nome_do_arquivo</code>
-            </dd>
-            <dt>Criar uma Pasta</dt>
-            <dd>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Criar uma Pasta</summary>
               <code>~# mkdir nome_da_pasta</code>
-            </dd>
-            <dt>Criar uma Estrutura de Pastas</dt>
-            <dd>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Criar uma Estrutura de Pastas</summary>
               <code>~# mkdir -p pasta_a/pasta_b/pasta_c</code>
-            </dd>
-            <dt>Remover um Arquivo</dt>
-            <dd>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Remover um Arquivo</summary>
               <code>~# rm nome_do_arquivo</code>
-            </dd>
-            <dt>Remover uma Pasta</dt>
-            <dd>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Remover uma Pasta</summary>
               <code>~# rm -rf nome_da_pasta</code>
-            </dd>
-            <dt>Mover um Arquivo ou uma Pasta</dt>
-            <dd>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Mover um Arquivo ou uma Pasta</summary>
               <code>~# mv arquivo_origem arquivo_destino</code>
-            </dd>
-            <dt>Criar uma Pasta</dt>
-            <dd>
-              <code>~# mkdir -p nome_da_pasta</code>
-            </dd>
-        </dl>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Copiar um Arquivo</summary>
+              <code>~# cp arquivo_origem arquivo_destino</code>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Copiar uma Pasta</summary>
+              <code>~# cp -r pasta_origem pasta_destino</code>
+            </details>
+          </li>
+        </ul>
       </section>
     </div>
     <section id="editor-term-section">
@@ -125,9 +145,9 @@
         <div id="terminal"></div>
       </div>
     </section>
-    <section id="dialog-section" class="hidden">
-      <input type="text" id="input-filename">
-    </section>
+    <dialog id="filename-dialog">
+      <input type="text" id="input-filename" class="drac-input">
+    </dialog>
   </main>
 
   <script src="/assets/term.js"></script>

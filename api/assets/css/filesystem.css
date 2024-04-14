@@ -11,7 +11,7 @@
   overflow-y: scroll;
 }
 
-#filesystem ul:first-child {
+.tree {
   padding-left: 0;
 }
 
@@ -51,6 +51,11 @@ ul li span {
   overflow-y: auto;
   scroll-behavior: smooth;
   border-top: 1px solid #282a36;
+  overflow-y: scroll;
+}
+
+#help ul {
+  padding-left: 0;
 }
 
 #help code {

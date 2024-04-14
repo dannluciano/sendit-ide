@@ -26,6 +26,20 @@ li {
   cursor: pointer;
 }
 
+dialog {
+  margin: 0 auto;
+  margin-top: 10%;
+  width: 80vw;
+  border: 1px solid var(--green);
+  background-color: var(--black);
+}
+
+#input-filename {
+  width: calc(100% - 2em);
+  margin: 0.5em 1em;
+  background-color: var(--blackSecondary);
+}
+
 .hidden {
   display: none !important;
 }

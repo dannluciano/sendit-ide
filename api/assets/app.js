@@ -3,6 +3,7 @@ const sProtocol = document.location.protocol === "http:" ? "" : "s";
 const currentURL = new URL(document.location);
 const debugIsActive = currentURL.searchParams.has("debug");
 const testIsActive = currentURL.searchParams.has("test");
+const filenameDialog = document.getElementById("filename-dialog");
 let projectId = currentURL.pathname.replace("/p/", "");
 let containerId;
 let tempDirPath;
@@ -13,10 +14,10 @@ let openedFiles = [];
 let currentOpenTab = -1;
 let term;
 let newFileOrNewFolder;
-let initialCommand = ""
+let initialCommand = "";
 
 if (currentURL.searchParams.has("command")) {
-  initialCommand = currentURL.searchParams.get("command")
+  initialCommand = currentURL.searchParams.get("command");
 }
 
 function debug() {
@@ -165,7 +166,7 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
     css: {
       ...defaultOptions,
       mode: "css",
-    }
+    },
   };
   try {
     return (
@@ -210,7 +211,7 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
     sql: [`cat ${filepath} | sqlite3 db.sqlite \n`],
     scratch: [],
     html: [`python3 -m http.server -b 0.0.0.0 8080 \n`],
-    css: [`python3 -m http.server -b 0.0.0.0 8080 \n`]
+    css: [`python3 -m http.server -b 0.0.0.0 8080 \n`],
   };
   try {
     const commands = runCommandsPerLanguages[fileExtention] || [];
@@ -270,7 +271,7 @@ function createNewFileOrFolder(event) {
       makeFolder(folderpath);
     }
     filenameField.value = "";
-    filenameField.style.display = "none";
+    filenameDialog.close();
   }
 }
 
@@ -313,6 +314,7 @@ document.addEventListener("DOMContentLoaded", () => {
     newFileOrNewFolder = "file";
     filenameField.placeholder = "File Name (doc.txt)";
     filenameField.style.display = "block";
+    filenameDialog.showModal();
     filenameField.focus();
   });
 
@@ -321,6 +323,7 @@ document.addEventListener("DOMContentLoaded", () => {
     newFileOrNewFolder = "folder";
     filenameField.placeholder = "Folder Name (src/core)";
     filenameField.style.display = "block";
+    filenameDialog.showModal();
     filenameField.focus();
   });
 
@@ -439,7 +442,7 @@ server.listen(8080, '0.0.0.0', () => {
             }
             if (type === "host-port") {
               const hostPort = params;
-              const shareLink = document.getElementById('open-new-tab');
+              const shareLink = document.getElementById("open-new-tab");
               shareLink.href = `http://62.72.9.104:${hostPort}`;
             }
             if (type === "open") {

@@ -1,6 +1,7 @@
 :root {
   --workbench-width: 100%;
   --workbench-height: 100vh;
+  --actions-width: 75px
   --editor-width: 100%;
   --editor-height: 60vh;
   --terminal-width: 100%;

@@ -1,8 +1,8 @@
 #actions-options-section {
   display: flex;
   flex-direction: column;
-  width: 75px;
-  min-width: 75px;
+  width: var(--actions-width);
+  min-width: var(--actions-width);
   align-items: center;
   border-right: 1px solid #282a36;
 }

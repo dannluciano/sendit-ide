@@ -754,3 +754,31 @@ function makeFolder(folderpath) {
     })
   );
 }
+
+function controlC(elementButton) {
+  var input = document.getElementsByClassName("xterm-helper-textarea")[0];
+  var keyboard = Keysim.Keyboard.US_ENGLISH;
+  let ctrl_c = new Keysim.Keystroke(Keysim.Keystroke.CTRL, 67);
+  keyboard.dispatchEventsForKeystroke(ctrl_c, input);
+  debug("CTRL+C");
+}
+
+function controlZ() {
+  var input = document.getElementsByClassName("xterm-helper-textarea")[0];
+  var keyboard = Keysim.Keyboard.US_ENGLISH;
+  let ctrl_c = new Keysim.Keystroke(Keysim.Keystroke.CTRL, 90);
+  keyboard.dispatchEventsForKeystroke(ctrl_c, input);
+  debug("CTRL+C");
+}
+
+function controlL() {
+  var input = document.getElementsByClassName("xterm-helper-textarea")[0];
+  var keyboard = Keysim.Keyboard.US_ENGLISH;
+  let ctrl_l = new Keysim.Keystroke(Keysim.Keystroke.CTRL, 76);
+  keyboard.dispatchEventsForKeystroke(ctrl_l, input);
+  debug("CTRL+L");
+}
+
+var script = document.createElement("script");
+script.src = "/assets/vendor/keysim/keysim.js";
+document.body.appendChild(script);

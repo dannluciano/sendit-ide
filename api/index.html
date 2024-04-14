@@ -146,6 +146,11 @@
         </div>
       </div>
       <div id="terminal-section">
+        <div id="terminal-buttons">
+          <button id="control-c" class="drac-btn" onclick="controlC(this)">CTRL+C</button>
+          <button id="control-z" class="drac-btn" onclick="controlZ(this)">CTRL+Z</button>
+          <button id="control-l" class="drac-btn" onclick="controlL(this)">CLEAR</button>
+        </div>
         <div id="terminal"></div>
       </div>
     </section>
@@ -153,9 +158,7 @@
       <input type="text" id="input-filename" class="drac-input">
     </dialog>
   </main>
-
   <script src="/assets/term.js"></script>
-  <script src="/assets/app.js"></script>
   <script src="/assets/open-folder-icon.js"></script>
   <script src="/assets/sidebar-colapse.js"></script>
   <script src="/assets/vendor/bootstrap/bootstrap.bundle.min.js"
@@ -163,6 +166,7 @@
     crossorigin="anonymous"></script>
   <!-- <script type="module" src="/assets/vendor/ionicons/ionicons.esm.js"></script> -->
   <script src="/assets/vendor/ionicons/ionicons.js"></script>
+  <script src="/assets/app.js"></script>
 </body>
 
 </html>

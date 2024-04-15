@@ -23,5 +23,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 
 COPY ./bin/ /usr/local/bin
 
+ENV PORT 8080
 
 CMD ["bash"]

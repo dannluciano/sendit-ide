@@ -755,7 +755,7 @@ function makeFolder(folderpath) {
   );
 }
 
-function controlC(elementButton) {
+function controlC() {
   var input = document.getElementsByClassName("xterm-helper-textarea")[0];
   var keyboard = Keysim.Keyboard.US_ENGLISH;
   let ctrl_c = new Keysim.Keystroke(Keysim.Keystroke.CTRL, 67);

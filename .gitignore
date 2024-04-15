@@ -130,3 +130,8 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# sqlite
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal

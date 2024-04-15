@@ -1,6 +1,6 @@
 const terminalTheme = {
   foreground: "#F8F8F2",
-  background: "#000000",
+  background: "#21222c",
   black: "#282A36",
   brightBlack: "#4D4D4D",
   red: "#FF5555",

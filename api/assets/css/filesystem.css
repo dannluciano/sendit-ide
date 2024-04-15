@@ -59,8 +59,11 @@ ul li span {
 }
 
 #help code {
-  display: inline-block;
-  width: calc(100% - 1em);
+  margin-left: 1em;
+}
+
+#help .block {
+  width: calc(100% - 2em);
 }
 
 @media (max-width: 991px) {

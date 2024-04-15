@@ -3,6 +3,12 @@
   height: var(--terminal-height);
 }
 
+#terminal-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5em;
+}
+
 #terminal {
   width: 100%;
   height: 100%;

@@ -45,6 +45,14 @@ dialog {
   display: none !important;
 }
 
+.inline {
+  display: inline;
+}
+
+.block {
+  display: block;
+}
+
 ::-webkit-scrollbar-track {
   background-color: #f4f4f4;
 }

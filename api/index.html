@@ -65,7 +65,7 @@
     </div>
     <div id="filesystem">
       <div id="file-system-tree__section" class="drac-text-white" open="">
-        <h5>Arquivos:</h5>
+        <h5>Arquivos</h5>
         <ul class="tree">
           <li>
             <details style="user-select: none" open="">
@@ -81,54 +81,91 @@
         </ul>
       </div>
       <section id="help" class="drac-text-white">
-        <h5>Ajuda:</h5>
+        <h5>Ajuda</h5>
         <ul>
+          <h6>Atalhos:</h6>
+          <li>
+            <details>
+              <summary>Salvar um Arquivo</summary>
+              <code>Control + S</code> 
+              | 
+              <code>Command + S</code>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Executar um Arquivo</summary>
+              <code>Control + R</code>
+              <code>Command + R</code>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Interromper um Processo</summary>
+              <code>Control + C</code>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Suspender um Processo</summary>
+              <code>Control + Z</code>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Limpar Terminal</summary>
+              <code>Control + L</code>
+            </details>
+          </li>
+        </ul>
+        <ul>
+          <h6>Sistema de Arquivos:</h6>
           <li>
             <details>
               <summary>Criar um Arquivo</summary>
-              <code>~# touch nome_do_arquivo</code>
+              <code class="block">~# touch nome_do_arquivo</code>
             </details>
           </li>
           <li>
             <details>
               <summary>Criar uma Pasta</summary>
-              <code>~# mkdir nome_da_pasta</code>
+              <code class="block">~# mkdir nome_da_pasta</code>
             </details>
           </li>
           <li>
             <details>
               <summary>Criar uma Estrutura de Pastas</summary>
-              <code>~# mkdir -p pasta_a/pasta_b/pasta_c</code>
+              <code class="block">~# mkdir -p pasta_a/pasta_b/pasta_c</code>
             </details>
           </li>
           <li>
             <details>
               <summary>Remover um Arquivo</summary>
-              <code>~# rm nome_do_arquivo</code>
+              <code class="block">~# rm nome_do_arquivo</code>
             </details>
           </li>
           <li>
             <details>
               <summary>Remover uma Pasta</summary>
-              <code>~# rm -rf nome_da_pasta</code>
+              <code class="block">~# rm -rf nome_da_pasta</code>
             </details>
           </li>
           <li>
             <details>
               <summary>Mover um Arquivo ou uma Pasta</summary>
-              <code>~# mv arquivo_origem arquivo_destino</code>
+              <code class="block">~# mv arquivo_origem arquivo_destino</code>
             </details>
           </li>
           <li>
             <details>
               <summary>Copiar um Arquivo</summary>
-              <code>~# cp arquivo_origem arquivo_destino</code>
+              <code class="block">~# cp arquivo_origem arquivo_destino</code>
             </details>
           </li>
           <li>
             <details>
               <summary>Copiar uma Pasta</summary>
-              <code>~# cp -r pasta_origem pasta_destino</code>
+              <code class="block">~# cp -r pasta_origem pasta_destino</code>
             </details>
           </li>
         </ul>

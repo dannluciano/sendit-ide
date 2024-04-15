@@ -379,7 +379,7 @@ document.addEventListener("DOMContentLoaded", () => {
             debug("API WebSocket Connection Opened");
             setTimeout(function () {
               terminalResize();
-            }, 1000);
+            }, 100);
 
             if (testIsActive) {
               let file = {

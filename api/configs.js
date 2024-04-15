@@ -2,7 +2,7 @@ const DATABASE_PROD_PATH = "/var/storages/sendit-ide/sendit-ide.sqlite3";
 const DATABASE_DEV_PATH = "sendit-ide.sqlite3";
 let DATABASE_PATH = DATABASE_DEV_PATH;
 
-if (process.env["ENV"] == "production") {
+if (process.env["NODE_ENV"] == "production") {
   DATABASE_PATH = DATABASE_PROD_PATH;
 }
 

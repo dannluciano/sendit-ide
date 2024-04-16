@@ -216,7 +216,7 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
     sqlite3: [`sqlite3 ${filepath}\n`],
   };
   try {
-    const commands = runCommandsPerLanguages[fileExtention] || [];
+    const commands = ['\x03\n', ...runCommandsPerLanguages[fileExtention]];
 
     if (filepath.includes("requirements.txt")) {
       commands.push(`python3 -m venv env\n`);

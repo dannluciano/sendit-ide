@@ -96,6 +96,7 @@
             <details>
               <summary>Executar um Arquivo</summary>
               <code>Control + R</code>
+              |
               <code>Command + R</code>
             </details>
           </li>
@@ -184,9 +185,10 @@
       </div>
       <div id="terminal-section">
         <div id="terminal-buttons">
-          <button id="control-c" class="drac-btn" onclick="controlC(this)">CTRL+C</button>
-          <button id="control-z" class="drac-btn" onclick="controlZ(this)">CTRL+Z</button>
-          <button id="control-l" class="drac-btn" onclick="controlL(this)">CLEAR</button>
+          <button id="control-c" class="drac-btn" data-key="C" onclick="sendControl(this)">^+C</button>
+          <button id="control-c" class="drac-btn" data-key="D" onclick="sendControl(this)">^+D</button>
+          <button id="control-l" class="drac-btn" data-key="L" onclick="sendControl(this)">^+L</button>
+          <button id="control-z" class="drac-btn" data-key="Z" onclick="sendControl(this)">^+Z</button>
         </div>
         <div id="terminal"></div>
       </div>
@@ -201,7 +203,6 @@
   <script src="/assets/vendor/bootstrap/bootstrap.bundle.min.js"
     integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
     crossorigin="anonymous"></script>
-  <!-- <script type="module" src="/assets/vendor/ionicons/ionicons.esm.js"></script> -->
   <script src="/assets/vendor/ionicons/ionicons.js"></script>
   <script src="/assets/app.js"></script>
 </body>

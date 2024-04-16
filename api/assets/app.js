@@ -759,28 +759,19 @@ function makeFolder(folderpath) {
   );
 }
 
-function controlC() {
+function sendControl(element) {
+  const mapKey = {
+    C: 67,
+    D: 68,
+    L: 76,
+    Z: 90,
+  };
+  const key = element.dataset.key || "";
   var input = document.getElementsByClassName("xterm-helper-textarea")[0];
   var keyboard = Keysim.Keyboard.US_ENGLISH;
-  let ctrl_c = new Keysim.Keystroke(Keysim.Keystroke.CTRL, 67);
-  keyboard.dispatchEventsForKeystroke(ctrl_c, input);
-  debug("CTRL+C");
-}
-
-function controlZ() {
-  var input = document.getElementsByClassName("xterm-helper-textarea")[0];
-  var keyboard = Keysim.Keyboard.US_ENGLISH;
-  let ctrl_c = new Keysim.Keystroke(Keysim.Keystroke.CTRL, 90);
-  keyboard.dispatchEventsForKeystroke(ctrl_c, input);
-  debug("CTRL+C");
-}
-
-function controlL() {
-  var input = document.getElementsByClassName("xterm-helper-textarea")[0];
-  var keyboard = Keysim.Keyboard.US_ENGLISH;
-  let ctrl_l = new Keysim.Keystroke(Keysim.Keystroke.CTRL, 76);
-  keyboard.dispatchEventsForKeystroke(ctrl_l, input);
-  debug("CTRL+L");
+  const ctrlKey = new Keysim.Keystroke(Keysim.Keystroke.CTRL, mapKey[key]);
+  keyboard.dispatchEventsForKeystroke(ctrlKey, input);
+  debug("CTRL"+mapKey[key]);
 }
 
 var script = document.createElement("script");

@@ -211,6 +211,7 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
     c: [`g++ -o main ${filepath}\n`, `./main`],
     sql: [`cat ${filepath} | sqlite3 db.sqlite \n`],
     scratch: [],
+    txt: [],
     html: [`python3 -m http.server -b $HOST $PORT \n`],
     css: [`python3 -m http.server -b $HOST $PORT \n`],
     sqlite3: [`sqlite3 ${filepath}\n`],

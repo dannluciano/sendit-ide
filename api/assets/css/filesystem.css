@@ -69,8 +69,8 @@ ul li span {
 
 @media (max-width: 991px) {
   #filesystem {
-    width: 90%;
-    min-width: 85%;
-    max-width: 95%;
+    width: 80%;
+    min-width: 75%;
+    max-width: 85%;
   }
 }

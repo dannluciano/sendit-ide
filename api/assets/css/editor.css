@@ -49,3 +49,9 @@
 .cm-scroller {
   overflow: auto;
 }
+
+@media (max-width: 991px) {
+  #editor-section {
+    height: 50vh;
+  }
+}

@@ -19,15 +19,33 @@ const terminalTheme = {
   brightWhite: "#E6E6E6",
 };
 
+let globalTerm = null;
+
+
 class Term {
   constructor() {
+    this.terminalElement = document.getElementById("terminal");
     this.term = new Terminal({
       theme: terminalTheme,
     });
+    this.term.__connection = "";
     this.fitAddon = new FitAddon.FitAddon();
     this.term.loadAddon(this.fitAddon);
-    this.term.open(document.getElementById("terminal"));
+    this.term.open(this.terminalElement);
     this.term.write("\x1B[1;3;31mCarregando...\x1B[0m $ ");
+    this.term.onResize(function (evt) {
+      console.log(evt)
+    });
+    globalTerm = this;
+    this.xterm_resize_ob = new ResizeObserver(function (entries) {
+      try {
+        // console.log(entries)
+        globalTerm.fit();
+      } catch (err) {
+        console.log(err);
+      }
+    });
+    this.xterm_resize_ob.observe(this.terminalElement);
   }
   fit() {
     debug("Term Resize");
@@ -36,6 +54,7 @@ class Term {
   }
 
   attach(containerSocket) {
+    this.connection = containerSocket;
     const attachAddon = new AttachAddon.AttachAddon(containerSocket);
     this.term.loadAddon(attachAddon);
     this.fit();
@@ -52,6 +71,6 @@ class Term {
     return {
       w: this.term.cols,
       h: this.term.rows,
-    }
+    };
   }
 }

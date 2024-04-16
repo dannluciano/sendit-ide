@@ -15,15 +15,11 @@ import ComputerUnitService from "./computer_unit/computer_unit_service.js";
 import DB from "./database.js";
 import { nanoid } from "nanoid";
 import ComputerUnit from "./computer_unit/computer_unit.js";
-
+import { log } from "./utils.js";
 const __dirname = new URL("./", import.meta.url).pathname;
 
 let dockerConnection;
 const WSDB = new Map();
-
-function log() {
-  console.info("API ==>", ...arguments);
-}
 
 log("Current DIR", __dirname);
 

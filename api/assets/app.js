@@ -213,6 +213,7 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
     scratch: [],
     html: [`python3 -m http.server -b 0.0.0.0 8080 \n`],
     css: [`python3 -m http.server -b 0.0.0.0 8080 \n`],
+    sqlite3: [`sqlite3 ${filepath}\n`],
   };
   try {
     const commands = runCommandsPerLanguages[fileExtention] || [];

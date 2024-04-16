@@ -236,6 +236,9 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
       commands.push(`npm install\n`);
       commands.push(`npm start\n`);
     }
+    if (filepath.includes(".db.json")) {
+      commands.push(`npx --yes json-server ${filepath}\n`);
+    }
 
     return commands;
   } catch (error) {

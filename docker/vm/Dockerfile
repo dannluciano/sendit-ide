@@ -1,28 +1,37 @@
-FROM ubuntu:latest
+FROM ubuntu:24.04
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+# Tools
     build-essential \
+    tmux \
     htop \
-    cmatrix \
+    btop \
+    tree \
+    curl \
+    httpie \
+# Program Languages Runtimes
     nodejs \
     npm \
     python3 \
     python3-pip \
     python3-venv \
-    openjdk-11-jdk-headless \
+    openjdk-21-jdk-headless \
+# Database
     sqlite3 \
+# Editors
     nano \
     vim \
-    tree \
+    emacs \
+# TUI
     neofetch \
     nyancat \
+    cmatrix \
+# Remove APT CACHE
     && rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-    curl
 
 COPY ./bin/ /usr/local/bin
 
 ENV PORT 8080
+ENV HOST 0.0.0.0
 
 CMD ["bash"]

@@ -1,210 +1,248 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/favicon/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/assets/site.webmanifest" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png" />
-  <link rel="manifest" href="/assets/site.webmanifest" />
+    <link rel="stylesheet" href="/assets/css/style.css" />
+    <link rel="stylesheet" href="/assets/css/actions.css" />
+    <link rel="stylesheet" href="/assets/css/workbench.css" />
+    <link rel="stylesheet" href="/assets/css/filesystem.css" />
+    <link rel="stylesheet" href="/assets/css/editor.css" />
+    <link rel="stylesheet" href="/assets/css/terminal.css" />
+    <link rel="stylesheet" href="/assets/css/help.css" />
 
-  <link rel="stylesheet" href="/assets/css/style.css" />
-  <link rel="stylesheet" href="/assets/css/actions.css" />
-  <link rel="stylesheet" href="/assets/css/workbench.css" />
-  <link rel="stylesheet" href="/assets/css/filesystem.css" />
-  <link rel="stylesheet" href="/assets/css/editor.css" />
-  <link rel="stylesheet" href="/assets/css/terminal.css" />
+    <link rel="stylesheet" href="/assets/vendor/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="/assets/dracula-ui.css" />
+    <link rel="stylesheet" href="/assets/vendor/xterm/xterm.css" />
 
-  <link rel="stylesheet" href="/assets/vendor/bootstrap/bootstrap.min.css" />
-  <link rel="stylesheet" href="/assets/dracula-ui.css" />
-  <link rel="stylesheet" href="/assets/vendor/xterm/xterm.css" />
+    <link
+      rel="stylesheet"
+      href="/assets/vendor/codemirror/lib/codemirror.css"
+    />
+    <link rel="stylesheet" href="/assets/vendor/codemirror/theme/dracula.css" />
 
-  <link rel="stylesheet" href="/assets/vendor/codemirror/lib/codemirror.css" />
-  <link rel="stylesheet" href="/assets/vendor/codemirror/theme/dracula.css" />
+    <script src="/assets/vendor/xterm/xterm.js"></script>
+    <script src="/assets/vendor/xterm/xterm-addon-attach.js"></script>
+    <script src="/assets/vendor/xterm/xterm-addon-fit.js"></script>
 
-  <script src="/assets/vendor/xterm/xterm.js"></script>
-  <script src="/assets/vendor/xterm/xterm-addon-attach.js"></script>
-  <script src="/assets/vendor/xterm/xterm-addon-fit.js"></script>
+    <script src="/assets/vendor/codemirror/lib/codemirror.js"></script>
+    <script src="/assets/vendor/codemirror/addons/loadmode.js"></script>
+    <script src="/assets/vendor/codemirror/mode/meta.js"></script>
 
-  <script src="/assets/vendor/codemirror/lib/codemirror.js"></script>
-  <script src="/assets/vendor/codemirror/addons/loadmode.js"></script>
-  <script src="/assets/vendor/codemirror/mode/meta.js"></script>
+    <title>SendIT IDE</title>
+  </head>
 
-  <title>SendIT IDE</title>
-</head>
+  <body>
+    <main id="workbench">
+      <div id="actions-options-section">
+        <button style="color: var(--purple)">
+          <ion-icon onclick="toggleFilesystemSidebar(this)" name="file-tray">
+          </ion-icon>
+        </button>
+        <hr />
+        <button id="new-folder-button" style="color: var(--red)">
+          <ion-icon name="folder"></ion-icon>
+        </button>
+        <button id="new-file-button" style="color: var(--orange)">
+          <ion-icon name="document"></ion-icon>
+        </button>
+        <button id="save-button" style="color: var(--yellow)">
+          <ion-icon name="save"></ion-icon>
+        </button>
+        <hr />
+        <button id="run-button">
+          <ion-icon name="play"></ion-icon>
+        </button>
 
-<body>
-  <main id="workbench">
-    <div id="actions-options-section">
-      <button style="color: var(--purple);">
-        <ion-icon onclick="toggleFilesystemSidebar(this)" name="file-tray">
-        </ion-icon>
-      </button>
-      <hr>
-      <button id="new-folder-button" style="color: var(--red);">
-        <ion-icon name="folder"></ion-icon>
-      </button>
-      <button id="new-file-button" style="color: var(--orange);">
-        <ion-icon name="document"></ion-icon>
-      </button>
-      <button id="save-button" style="color: var(--yellow);">
-        <ion-icon name="save"></ion-icon>
-      </button>
-      <hr>
-      <button id="run-button">
-        <ion-icon name="play"></ion-icon>
-      </button>
-
-      <hr>
-      <button>
-        <a id="open-new-tab" href="#" target="_blank" rel="noopener noreferrer">
-          <ion-icon name="enter"></ion-icon>
-        </a>
-      </button>
-    </div>
-    <div id="filesystem">
-      <div id="file-system-tree__section" class="drac-text-white" open="">
-        <h5>Arquivos</h5>
-        <ul class="tree">
-          <li>
-            <details style="user-select: none" open="">
-              <summary>
-                <div onclick="toggleFolderIcon(this)" class="drac-text drac-text-green">
-                  <ion-icon class="filesystem-folder-icon" name="folder-open"></ion-icon>
-                  <span>root</span>
-                </div>
-              </summary>
-              <ul id="file-system-tree"></ul>
-            </details>
-          </li>
-        </ul>
+        <hr />
+        <button>
+          <a
+            id="open-new-tab"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <ion-icon name="enter"></ion-icon>
+          </a>
+        </button>
       </div>
-      <section id="help" class="drac-text-white">
-        <h5>Ajuda</h5>
-        <ul>
-          <h6>Atalhos:</h6>
-          <li>
-            <details>
-              <summary>Salvar um Arquivo</summary>
-              <code>Control + S</code> 
-              | 
-              <code>Command + S</code>
-            </details>
-          </li>
-          <li>
-            <details>
-              <summary>Executar um Arquivo</summary>
-              <code>Control + R</code>
-              |
-              <code>Command + R</code>
-            </details>
-          </li>
-          <li>
-            <details>
-              <summary>Interromper um Processo</summary>
-              <code>Control + C</code>
-            </details>
-          </li>
-          <li>
-            <details>
-              <summary>Suspender um Processo</summary>
-              <code>Control + Z</code>
-            </details>
-          </li>
-          <li>
-            <details>
-              <summary>Limpar Terminal</summary>
-              <code>Control + L</code>
-            </details>
-          </li>
-        </ul>
-        <ul>
-          <h6>Sistema de Arquivos:</h6>
-          <li>
-            <details>
-              <summary>Criar um Arquivo</summary>
-              <code class="block">~# touch nome_do_arquivo</code>
-            </details>
-          </li>
-          <li>
-            <details>
-              <summary>Criar uma Pasta</summary>
-              <code class="block">~# mkdir nome_da_pasta</code>
-            </details>
-          </li>
-          <li>
-            <details>
-              <summary>Criar uma Estrutura de Pastas</summary>
-              <code class="block">~# mkdir -p pasta_a/pasta_b/pasta_c</code>
-            </details>
-          </li>
-          <li>
-            <details>
-              <summary>Remover um Arquivo</summary>
-              <code class="block">~# rm nome_do_arquivo</code>
-            </details>
-          </li>
-          <li>
-            <details>
-              <summary>Remover uma Pasta</summary>
-              <code class="block">~# rm -rf nome_da_pasta</code>
-            </details>
-          </li>
-          <li>
-            <details>
-              <summary>Mover um Arquivo ou uma Pasta</summary>
-              <code class="block">~# mv arquivo_origem arquivo_destino</code>
-            </details>
-          </li>
-          <li>
-            <details>
-              <summary>Copiar um Arquivo</summary>
-              <code class="block">~# cp arquivo_origem arquivo_destino</code>
-            </details>
-          </li>
-          <li>
-            <details>
-              <summary>Copiar uma Pasta</summary>
-              <code class="block">~# cp -r pasta_origem pasta_destino</code>
-            </details>
-          </li>
-        </ul>
-      </section>
-    </div>
-    <section id="editor-term-section">
-      <div id="editor-section">
-        <nav id="file-title-bar">
-          <ul id="tabs">
-            <li id="filename-tab" data-filepath="">scratch</li>
+      <div id="filesystem">
+        <div id="file-system-tree__section" class="drac-text-white" open="">
+          <ul class="tree">
+            <li>
+              <details style="user-select: none" open="">
+                <summary>
+                  <div
+                    onclick="toggleFolderIcon(this)"
+                    class="drac-text drac-text-green"
+                  >
+                    <ion-icon
+                      class="filesystem-folder-icon"
+                      name="folder-open"
+                    ></ion-icon>
+                    <span>root</span>
+                  </div>
+                </summary>
+                <ul id="file-system-tree"></ul>
+              </details>
+            </li>
           </ul>
-        </nav>
-        <div id="editor-wrapper" style="position: relative">
-          <textarea name="editor" id="editor" cols="30" rows="10"></textarea>
         </div>
-      </div>
-      <div id="terminal-section">
-        <div id="terminal-buttons">
-          <button id="control-c" class="drac-btn" data-key="C" onclick="sendControl(this)">^+C</button>
-          <button id="control-c" class="drac-btn" data-key="D" onclick="sendControl(this)">^+D</button>
-          <button id="control-l" class="drac-btn" data-key="L" onclick="sendControl(this)">^+L</button>
-          <button id="control-z" class="drac-btn" data-key="Z" onclick="sendControl(this)">^+Z</button>
-        </div>
-        <div id="terminal"></div>
-      </div>
-    </section>
-    <dialog id="filename-dialog">
-      <input type="text" id="input-filename" class="drac-input">
-    </dialog>
-  </main>
-  <script src="/assets/term.js"></script>
-  <script src="/assets/open-folder-icon.js"></script>
-  <script src="/assets/sidebar-colapse.js"></script>
-  <script src="/assets/vendor/bootstrap/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-    crossorigin="anonymous"></script>
-  <script src="/assets/vendor/ionicons/ionicons.js"></script>
-  <script src="/assets/app.js"></script>
-</body>
+        <section id="help" class="drac-text-white">
+          <ul>
+            <li>
+              <p>Salvar um Arquivo</p>
+              <div>
+                <code>Control + S</code>
+                <code>Command + S</code>
+              </div>
+            </li>
+            <li>
+              <p>Executar um Arquivo</p>
+              <div>
+                <code>Control + R</code>
 
+                <code>Command + R</code>
+              </div>
+            </li>
+            <li>
+              <p>Interromper um Processo</p>
+              <div><code>Control + C</code></div>
+            </li>
+            <li>
+              <p>Suspender um Processo</p>
+              <div><code>Control + Z</code></div>
+            </li>
+            <li>
+              <p>Limpar Terminal</p>
+              <div><code>Control + L</code></div>
+            </li>
+          </ul>
+          <ul style="border-top: 1px solid var(--blackSecondary)">
+            <li style="margin-top: 1rem">
+              <p>Criar um Arquivo</p>
+              <div><code class="block">~# touch nome_do_arquivo</code></div>
+            </li>
+            <li>
+              <p>Criar uma Pasta</p>
+              <div><code class="block">~# mkdir nome_da_pasta</code></div>
+            </li>
+            <li>
+              <p>Criar uma Estrutura de Pastas</p>
+              <div>
+                <code class="block">~# mkdir -p pasta_a/pasta_b/pasta_c</code>
+              </div>
+            </li>
+            <li>
+              <p>Remover um Arquivo</p>
+              <div><code class="block">~# rm nome_do_arquivo</code></div>
+            </li>
+            <li>
+              <p>Remover uma Pasta</p>
+              <div><code class="block">~# rm -rf nome_da_pasta</code></div>
+            </li>
+            <li>
+              <p>Mover um Arquivo ou uma Pasta</p>
+              <div>
+                <code class="block">~# mv arquivo_origem arquivo_destino</code>
+              </div>
+            </li>
+            <li>
+              <p>Copiar um Arquivo</p>
+              <div>
+                <code class="block">~# cp arquivo_origem arquivo_destino</code>
+              </div>
+            </li>
+            <li>
+              <p>Copiar uma Pasta</p>
+              <div>
+                <code class="block">~# cp -r pasta_origem pasta_destino</code>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </div>
+      <section id="editor-term-section">
+        <div id="editor-section">
+          <nav id="file-title-bar">
+            <ul id="tabs">
+              <li id="filename-tab" data-filepath="">scratch</li>
+            </ul>
+          </nav>
+          <div id="editor-wrapper" style="position: relative">
+            <textarea name="editor" id="editor" cols="30" rows="10"></textarea>
+          </div>
+        </div>
+        <div id="terminal-section">
+          <div id="terminal-buttons">
+            <button
+              id="control-c"
+              class="drac-btn"
+              data-key="C"
+              onclick="sendControl(this)"
+            >
+              ^+C
+            </button>
+            <button
+              id="control-c"
+              class="drac-btn"
+              data-key="D"
+              onclick="sendControl(this)"
+            >
+              ^+D
+            </button>
+            <button
+              id="control-l"
+              class="drac-btn"
+              data-key="L"
+              onclick="sendControl(this)"
+            >
+              ^+L
+            </button>
+            <button
+              id="control-z"
+              class="drac-btn"
+              data-key="Z"
+              onclick="sendControl(this)"
+            >
+              ^+Z
+            </button>
+          </div>
+          <div id="terminal"></div>
+        </div>
+      </section>
+      <dialog id="filename-dialog">
+        <input type="text" id="input-filename" class="drac-input" />
+      </dialog>
+    </main>
+    <script src="/assets/term.js"></script>
+    <script src="/assets/open-folder-icon.js"></script>
+    <script src="/assets/sidebar-colapse.js"></script>
+    <script
+      src="/assets/vendor/bootstrap/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+    <script src="/assets/vendor/ionicons/ionicons.js"></script>
+    <script src="/assets/app.js"></script>
+  </body>
 </html>

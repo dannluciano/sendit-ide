@@ -4,12 +4,13 @@
   max-width: 35%;
   padding: 0 0;
   padding-left: 1em;
+  padding-top: 0.5em;
   border-right: 1px solid #282a36;
 }
 
 #file-system-tree__section {
   min-height: 60vh;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .tree {
@@ -61,6 +62,10 @@ ul li span {
 
 #help code {
   margin-left: 1em;
+}
+
+#help code:first-child {
+  margin-left: 0;
 }
 
 #help .block {

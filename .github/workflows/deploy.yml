@@ -21,3 +21,15 @@ jobs:
           git_remote_url: 'ssh://dokku@ide.sendit.dannluciano.com.br:22/sendit-ide'
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           branch: 'main'
+
+      - name: Run commands after deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ide.sendit.dannluciano.com.br
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /var/www/sendit-ide/
+            git pull --rebase
+            docker compose build vm

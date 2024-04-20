@@ -362,12 +362,7 @@ function afterContainerCreation(data) {
 
   if (!containerId) return;
 
-  var tryContainerConection = setInterval(() => {
-    connectToContainerWS();
-    if (containerSocket.readyState == WebSocket.OPEN && tryContainerConection) {
-      clearInterval(tryContainerConection);
-    }
-  }, 100);
+  tryExecuteFunctionInLoopWithDelay(connectToContainerWS);
 }
 
 function connectToContainerWS() {
@@ -378,6 +373,8 @@ function connectToContainerWS() {
       term = new Term();
       term.attach(containerSocket);
       debug(containerSocket);
+
+      connectToApiWS();
 
       if (initialCommand) {
         containerSocket.send(`${initialCommand}\n`);
@@ -394,8 +391,6 @@ function connectToContainerWS() {
       term.close();
       console.error(err);
     };
-
-    connectToApiWS();
   } catch (error) {
     console.error(error);
   }
@@ -803,3 +798,40 @@ server.listen(8080, '0.0.0.0', () => {
 var script = document.createElement("script");
 script.src = "/assets/vendor/keysim/keysim.js";
 document.body.appendChild(script);
+
+function tryExecuteFunctionInLoopWithDelay(
+  func,
+  numAttempts = 5,
+  delayMs = 100,
+  ...args
+) {
+  const sleep = (ms) => {
+    const start = Date.now();
+    while (Date.now() - start < ms) {}
+  };
+
+  const attempt = (i) => {
+    try {
+      console.log(`Attempt ${i}: ${func.name}`);
+      if (typeof func === "function") {
+        return func(...args);
+      } else {
+        throw new Error("Provided argument is not a function");
+      }
+    } catch (error) {
+      console.error(
+        `An error occurred during function execution in attempt ${i}:`,
+        error.message
+      );
+      if (i < numAttempts) {
+        console.log(
+          `Waiting for ${delayMs} milliseconds before next attempt...`
+        );
+        sleep(delayMs);
+        return attempt(i + 1);
+      }
+    }
+  };
+
+  return attempt(1);
+}

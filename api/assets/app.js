@@ -217,12 +217,14 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
     sqlite3: [`sqlite3 ${filepath}\n`],
   };
   try {
-    const commands = ['\x03\n', ...runCommandsPerLanguages[fileExtention]];
+    const commands = ["\x03\n", ...runCommandsPerLanguages[fileExtention]];
 
     if (filepath.includes("requirements.txt")) {
       commands.push(`test ! -d env && python3 -m venv env\n`);
       commands.push(`test -d env && source env/bin/activate\n`);
-      commands.push(`test -f requirements.txt && python -m pip install -r ${filepath}\n`);
+      commands.push(
+        `test -f requirements.txt && python -m pip install -r ${filepath}\n`
+      );
     }
     if (filepath.includes("manage.py")) {
       commands.pop();
@@ -348,147 +350,121 @@ document.addEventListener("DOMContentLoaded", () => {
     method: "POST",
   })
     .then((res) => res.json())
-    .then((data) => {
-      containerId = data["container-id"];
-      tempDirPath = data["temp-dir-path"];
-      projectId = data["project-id"];
-
-      if (!containerId) return;
-
-      setTimeout(() => {
-        try {
-          const containerURL = `ws${sProtocol}://${host}/containers/${containerId}/attach/ws?logs=true&stream=true&stdin=true&stdout=true`; //&stderr=true
-          containerSocket = new WebSocket(containerURL);
-          containerSocket.onopen = function () {
-            term = new Term();
-            term.attach(containerSocket);
-            debug(containerSocket);
-
-            if (initialCommand) {
-              containerSocket.send(`${initialCommand}\n`);
-            }
-          };
-
-          containerSocket.onclose = function (code, reason) {
-            apiSocket.close();
-            term.close();
-            debug("Containet WebSocket Disconnected:", code, reason);
-          };
-          containerSocket.onerror = function (err) {
-            console.error(err);
-          };
-
-          const apiWSURL = `ws${sProtocol}://${host}/vmws?cid=${containerId}`;
-          apiSocket = new WebSocket(apiWSURL);
-          apiSocket.onopen = function () {
-            debug("API WebSocket Connection Opened");
-            setTimeout(function () {
-              terminalResize();
-            }, 100);
-
-            if (testIsActive) {
-              let file = {
-                filename: "index.mjs",
-                filepath: `${tempDirPath}/index.mjs`,
-                changed: false,
-                doc: new CodeMirror.Doc(`
-import { createServer } from 'node:http';
-
-const server = createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Hello World!');
-});
-
-// starts a simple http server locally on port 8080
-server.listen(8080, '0.0.0.0', () => {
-  console.log('Listening on 0.0.0.0:8080');
-});
-`),
-              };
-              openedFiles.push(file);
-
-              currentOpenTab = openedFiles.length - 1;
-              changeCurrentOpenedTabWithFile(file);
-              saveFile();
-
-              file = {
-                filename: "package.json",
-                filepath: `${tempDirPath}/package.json`,
-                changed: false,
-                doc: new CodeMirror.Doc(`{
-  "name": "${projectId}",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.mjs",
-  "scripts": {
-    "start": "nodejs index.mjs"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
-}`),
-              };
-              openedFiles.push(file);
-
-              currentOpenTab = 2;
-              changeCurrentOpenedTabWithFile(file);
-              saveFile();
-            }
-          };
-          debug(apiSocket);
-
-          apiSocket.onclose = function (code, reason) {
-            debug("API WebSocket Disconnected:", code, reason);
-          };
-          apiSocket.onerror = function (err) {
-            console.error(err);
-          };
-
-          apiSocket.addEventListener("message", (event) => {
-            const { type, params } = JSON.parse(event.data);
-            if (type === "fs") {
-              renderFileSystemTree(params);
-            }
-            if (type === "host-port") {
-              const hostPort = params;
-              const shareLink = document.getElementById("open-new-tab");
-              shareLink.href = `http://62.72.9.104:${hostPort}`;
-            }
-            if (type === "open") {
-              const { filename, filepath, content } = params;
-
-              const fileIsOpened = openedFiles.findIndex(function (file) {
-                return file.filepath === filepath;
-              });
-
-              let file;
-
-              if (fileIsOpened === -1) {
-                file = {
-                  filename,
-                  filepath,
-                  changed: false,
-                  doc: new CodeMirror.Doc(content),
-                };
-                openedFiles.push(file);
-              } else {
-                file = openedFiles[fileIsOpened];
-              }
-
-              changeCurrentOpenedTabWithFile(file);
-
-              renderFilesTabs();
-              editor.focus();
-            }
-          });
-        } catch (error) {
-          console.error(error);
-        }
-      }, 1000);
-    })
+    .then((data) => afterContainerCreation(data))
     .catch((error) => console.error(error));
   renderFilesTabs();
 });
+
+function afterContainerCreation(data) {
+  containerId = data["container-id"];
+  tempDirPath = data["temp-dir-path"];
+  projectId = data["project-id"];
+
+  if (!containerId) return;
+
+  var tryContainerConection = setInterval(() => {
+    connectToContainerWS();
+    if (containerSocket.readyState == WebSocket.OPEN && tryContainerConection) {
+      clearInterval(tryContainerConection);
+    }
+  }, 100);
+}
+
+function connectToContainerWS() {
+  try {
+    const containerURL = `ws${sProtocol}://${host}/containers/${containerId}/attach/ws?logs=true&stream=true&stdin=true&stdout=true`; //&stderr=true
+    containerSocket = new WebSocket(containerURL);
+    containerSocket.onopen = function () {
+      term = new Term();
+      term.attach(containerSocket);
+      debug(containerSocket);
+
+      if (initialCommand) {
+        containerSocket.send(`${initialCommand}\n`);
+      }
+    };
+
+    containerSocket.onclose = function (code, reason) {
+      apiSocket.close();
+      term.close();
+      debug("Containet WebSocket Disconnected:", code, reason);
+    };
+    containerSocket.onerror = function (err) {
+      apiSocket.close();
+      term.close();
+      console.error(err);
+    };
+
+    connectToApiWS();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function connectToApiWS() {
+  try {
+    const apiWSURL = `ws${sProtocol}://${host}/vmws?cid=${containerId}`;
+    apiSocket = new WebSocket(apiWSURL);
+    apiSocket.onopen = function () {
+      debug("API WebSocket Connection Opened");
+      setTimeout(function () {
+        terminalResize();
+      }, 100);
+
+      if (testIsActive) {
+        createTestFiles();
+      }
+    };
+    debug(apiSocket);
+
+    apiSocket.onclose = function (code, reason) {
+      debug("API WebSocket Disconnected:", code, reason);
+    };
+    apiSocket.onerror = function (err) {
+      console.error(err);
+    };
+
+    apiSocket.addEventListener("message", (event) => {
+      const { type, params } = JSON.parse(event.data);
+      if (type === "fs") {
+        renderFileSystemTree(params);
+      }
+      if (type === "host-port") {
+        const hostPort = params;
+        const shareLink = document.getElementById("open-new-tab");
+        shareLink.href = `http://62.72.9.104:${hostPort}`;
+      }
+      if (type === "open") {
+        const { filename, filepath, content } = params;
+
+        const fileIsOpened = openedFiles.findIndex(function (file) {
+          return file.filepath === filepath;
+        });
+
+        let file;
+
+        if (fileIsOpened === -1) {
+          file = {
+            filename,
+            filepath,
+            changed: false,
+            doc: new CodeMirror.Doc(content),
+          };
+          openedFiles.push(file);
+        } else {
+          file = openedFiles[fileIsOpened];
+        }
+
+        changeCurrentOpenedTabWithFile(file);
+
+        renderFilesTabs();
+        editor.focus();
+      }
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 function saveFile() {
   if (currentOpenTab >= 0 && openedFiles.length > 0) {
@@ -772,7 +748,56 @@ function sendControl(element) {
   var keyboard = Keysim.Keyboard.US_ENGLISH;
   const ctrlKey = new Keysim.Keystroke(Keysim.Keystroke.CTRL, mapKey[key]);
   keyboard.dispatchEventsForKeystroke(ctrlKey, input);
-  debug("CTRL"+mapKey[key]);
+  debug("CTRL" + mapKey[key]);
+}
+
+function createTestFiles() {
+  let file = {
+    filename: "index.mjs",
+    filepath: `${tempDirPath}/index.mjs`,
+    changed: false,
+    doc: new CodeMirror.Doc(`
+import { createServer } from 'node:http';
+
+const server = createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Hello World!');
+});
+
+// starts a simple http server locally on port 8080
+server.listen(8080, '0.0.0.0', () => {
+  console.log('Listening on 0.0.0.0:8080');
+});
+`),
+  };
+  openedFiles.push(file);
+
+  currentOpenTab = openedFiles.length - 1;
+  changeCurrentOpenedTabWithFile(file);
+  saveFile();
+
+  file = {
+    filename: "package.json",
+    filepath: `${tempDirPath}/package.json`,
+    changed: false,
+    doc: new CodeMirror.Doc(`{
+  "name": "${projectId}",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.mjs",
+  "scripts": {
+    "start": "nodejs index.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}`),
+  };
+  openedFiles.push(file);
+
+  currentOpenTab = 2;
+  changeCurrentOpenedTabWithFile(file);
+  saveFile();
 }
 
 var script = document.createElement("script");

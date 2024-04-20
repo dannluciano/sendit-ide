@@ -30,7 +30,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+# Tools
     git \
+# Remove APT CACHE
 && rm -rf /var/lib/apt/lists/*
 
 COPY ./bin/ /usr/local/bin

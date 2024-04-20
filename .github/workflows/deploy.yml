@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Cloning repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -20,3 +20,4 @@ jobs:
         with:
           git_remote_url: 'ssh://dokku@ide.sendit.dannluciano.com.br:22/sendit-ide'
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          branch: 'main'

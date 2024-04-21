@@ -175,6 +175,11 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
       ...defaultOptions,
       mode: "text/x-sh",
     },
+    md: {
+      ...defaultOptions,
+      mode: "text/x-markdown",
+      highlightFormatting: true,
+    },
   };
   try {
     return (

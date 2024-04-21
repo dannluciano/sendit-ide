@@ -10,6 +10,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
     curl \
     wget \
     httpie \
+    git \
 # Program Languages Runtimes
     nodejs \
     npm \
@@ -29,12 +30,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
     cmatrix \
 # Remove APT CACHE
     && rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-# Tools
-    git \
-# Remove APT CACHE
-&& rm -rf /var/lib/apt/lists/*
 
 RUN wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.5.0/gcm-linux_amd64.2.5.0.deb
 RUN dpkg -i gcm-linux_amd64.2.5.0.deb

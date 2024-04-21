@@ -335,6 +335,7 @@ function createNewFileOrFolder(event) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  loadSettings();
   editor = CodeMirror.fromTextArea(document.querySelector("#editor"));
   editor.setSize("100%", "100%");
   editor.setOption("extraKeys", {
@@ -394,6 +395,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const duplicateButton = document.getElementById("duplicate-button");
   duplicateButton.addEventListener("click", duplicateProject);
+
+  const settingsButton = document.getElementById("settings-button");
+  settingsButton.addEventListener("click", openOrCloseSettings);
+
+  const saveSettingsButton = document.getElementById("save-settings-button");
+  saveSettingsButton.addEventListener("click", saveSettings);
+
+  const cancelSettingsButton = document.getElementById(
+    "cancel-settings-button"
+  );
+  cancelSettingsButton.addEventListener("click", openOrCloseSettings);
 
   fetch(`/container/create/${projectId}`, {
     method: "POST",
@@ -746,6 +758,30 @@ function renderFile(child) {
   span.dataset.path = child.path;
   span.onclick = openFileInTree;
   return li;
+}
+
+function openOrCloseSettings(event) {
+  const settingsDialog = document.getElementById("settings-dialog");
+  if (settingsDialog.open) {
+    settingsDialog.close();
+  } else {
+    settingsDialog.showModal();
+  }
+}
+
+function saveSettings(event) {
+  const sshPrivateKeyField = document.getElementById("ssh-private-key");
+  const sshPrivateKeyValue = sshPrivateKeyField.value;
+  localStorage.setItem("sendit-ssh-private-key", sshPrivateKeyValue);
+
+  window.location.reload(true);
+}
+
+function loadSettings() {
+  const sshPrivateKeyValue = localStorage.getItem("sendit-ssh-private-key");
+  const sshPrivateKeyField = document.getElementById("ssh-private-key");
+
+  sshPrivateKeyField.value = sshPrivateKeyValue || "";
 }
 
 function openFileInTree(event) {

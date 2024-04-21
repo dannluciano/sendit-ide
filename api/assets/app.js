@@ -66,6 +66,8 @@ function getExtensionIcon(filename, style) {
     sql: "server",
     scratch: "document",
     sqlite: "file-tray-stacked",
+    Dockerfile: "logo-docker",
+    dockerignore: "logo-docker",
   };
   const extension = getFileExtension(filename);
   let iconName = iconFileLabels["file"];
@@ -74,10 +76,16 @@ function getExtensionIcon(filename, style) {
     if (filename === "package.json" || filename === "package-lock.json") {
       iconName = "logo-npm";
     }
+    if (filename === "docker-compose.yml") {
+      iconName =  "logo-docker"
+      iconName = "logo-docker";
+    }
   } catch (error) {
+    let iconName = "bug"
+    let iconName = "bug";
     return `<ion-icon ${
       style ? iconFileStylePattern : null
-    } name="document"></ion-icon>`;
+    } name="${iconName}"></ion-icon>`;
   }
   return `<ion-icon ${
     style ? iconFileStylePattern : null
@@ -179,6 +187,10 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
       ...defaultOptions,
       mode: "text/x-markdown",
       highlightFormatting: true,
+    },
+    Dockerfile: {
+      ...defaultOptions,
+      mode: "dockerfile",
     },
   };
   try {

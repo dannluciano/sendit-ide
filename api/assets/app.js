@@ -72,6 +72,7 @@ function getExtensionIcon(filename, style) {
     gitignore: "git-network",
     config: "settings",
     conf: "settings",
+    md: "book",
   };
   const extension = getFileExtension(filename);
   let iconName = iconFileLabels["file"];

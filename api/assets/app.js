@@ -429,7 +429,10 @@ function connectToApiWS() {
       if (type === "host-port") {
         const hostPort = params;
         const shareLink = document.getElementById("open-new-tab");
-        shareLink.href = `http://62.72.9.104:${hostPort}`;
+        const hostName = host.startsWith("localhost")
+          ? "localhost"
+          : "62.72.9.104";
+        shareLink.href = `http://${hostName}:${hostPort}`;
       }
       if (type === "open") {
         const { filename, filepath, content } = params;

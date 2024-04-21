@@ -69,6 +69,7 @@ function getExtensionIcon(filename, style) {
     Dockerfile: "logo-docker",
     dockerignore: "logo-docker",
     Makefile: "construct",
+    gitignore: "git-network"
   };
   const extension = getFileExtension(filename);
   let iconName = iconFileLabels["file"];
@@ -89,6 +90,16 @@ function getExtensionIcon(filename, style) {
   return `<ion-icon ${
     style ? iconFileStylePattern : null
   } name="${iconName}"></ion-icon>`;
+}
+
+function getFolderIcon(foldername) {
+  const iconFolderLabels = {
+    ".github": "logo-github",
+    ".git": "git-network",
+    "folder-open": "folder-open",
+  };
+  const iconName = iconFolderLabels[foldername] || "folder";
+  return iconName;
 }
 
 function getFileExtension(fileNameOrPath) {
@@ -680,7 +691,8 @@ function renderFolder(folder) {
   const summary = document.createElement("summary");
   const div = document.createElement("div");
   div.setAttribute("onclick", "toggleFolderIcon(this)");
-  div.innerHTML = `<ion-icon class="filesystem-folder-icon" name="folder"></ion-icon>`;
+  const folderIcon = getFolderIcon(folder.name);
+  div.innerHTML = `<ion-icon class="filesystem-folder-icon" name="${folderIcon}"></ion-icon>`;
   const span = document.createElement("span");
   span.textContent = folder.name;
 

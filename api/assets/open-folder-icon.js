@@ -1,8 +1,14 @@
 function toggleFolderIcon(element) {
   const icon = element.querySelector(".filesystem-folder-icon");
+  const foldername =
+    element.parentElement.parentElement.parentElement.dataset["path"]
+      .split("/")
+      .pop() || "folder";
   if (icon.getAttribute("name") === "folder") {
-    icon.setAttribute("name", "folder-open");
+    const folderIcon = getFolderIcon("folder-open");
+    icon.setAttribute("name", folderIcon);
   } else {
-    icon.setAttribute("name", "folder");
+    const folderIcon = getFolderIcon(foldername);
+    icon.setAttribute("name", folderIcon);
   }
 }

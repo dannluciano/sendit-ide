@@ -171,6 +171,10 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
       ...defaultOptions,
       mode: "text/x-yaml",
     },
+    sh: {
+      ...defaultOptions,
+      mode: "text/x-sh",
+    },
   };
   try {
     return (

@@ -78,11 +78,9 @@ function getExtensionIcon(filename, style) {
       iconName = "logo-npm";
     }
     if (filename === "docker-compose.yml") {
-      iconName =  "logo-docker"
       iconName = "logo-docker";
     }
   } catch (error) {
-    let iconName = "bug"
     let iconName = "bug";
     return `<ion-icon ${
       style ? iconFileStylePattern : null

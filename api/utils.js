@@ -1,7 +1,13 @@
 function log(moduleName = "API") {
   const args = Array.from(arguments);
-  args.unshift()
-  console.info(args[0], "==>", ...arguments);
+  args.unshift();
+  return function () {
+    console.info(args[0], "==>", ...arguments);
+  };
 }
 
-export { log };
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export { log, sleep };

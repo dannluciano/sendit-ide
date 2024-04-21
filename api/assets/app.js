@@ -342,9 +342,10 @@ document.addEventListener("DOMContentLoaded", () => {
   runButton.addEventListener("click", runCurrentOpenedFile);
 
   const saveButton = document.getElementById("save-button");
-  saveButton.addEventListener("click", function () {
-    saveFile();
-  });
+  saveButton.addEventListener("click", saveFile);
+
+  const duplicateButton = document.getElementById("duplicate-button");
+  duplicateButton.addEventListener("click", duplicateProject);
 
   fetch(`/container/create/${projectId}`, {
     method: "POST",
@@ -404,6 +405,7 @@ function connectToApiWS() {
       debug("API WebSocket Connection Opened");
       setTimeout(function () {
         terminalResize();
+        loaded();
       }, 100);
 
       if (testIsActive) {
@@ -459,6 +461,15 @@ function connectToApiWS() {
   } catch (error) {
     console.error(error);
   }
+}
+
+function duplicateProject() {
+  fetch(`/project/duplicate/${projectId}`, {
+    method: "POST",
+  })
+    .then((res) => res.json())
+    .then((data) => (window.location.pathname = data.path))
+    .catch((error) => console.error(error));
 }
 
 function saveFile() {
@@ -727,6 +738,19 @@ function makeFolder(folderpath) {
       params: {
         folderpath,
       },
+    })
+  );
+}
+
+function loaded() {
+  if (!apiSocket) {
+    return;
+  }
+
+  apiSocket.send(
+    JSON.stringify({
+      type: "loaded",
+      params: {},
     })
   );
 }

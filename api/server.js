@@ -15,7 +15,8 @@ import ComputerUnitService from "./computer_unit/computer_unit_service.js";
 import DB from "./database.js";
 import { nanoid } from "nanoid";
 import ComputerUnit from "./computer_unit/computer_unit.js";
-import { log } from "./utils.js";
+import { log, sleep } from "./utils.js";
+import { createTempDirAndCopyFilesFromPath } from "./computer_unit/temp_dir.js";
 const __dirname = new URL("./", import.meta.url).pathname;
 
 let dockerConnection;
@@ -80,6 +81,29 @@ app.post("/container/create/:pid", async (c) => {
 
     const containerCreateResponse = computerUnit.toJSON();
     return c.json(containerCreateResponse);
+  } catch (error) {
+    console.error(error);
+    return c.json(
+      {
+        msg: error.msg,
+      },
+      500
+    );
+  }
+});
+
+app.post("/project/duplicate/:pid", async (c) => {
+  try {
+    const projectId = nanoid();
+    const sourceProjectId = c.req.param("pid");
+    const sourceTempDir = DB.get(sourceProjectId)["temp-dir-path"];
+    const tempDirPath = await createTempDirAndCopyFilesFromPath(sourceTempDir);
+    const computerUnit = new ComputerUnit(null, tempDirPath, projectId);
+    DB.set(computerUnit.projectId, computerUnit.toJSON());
+
+    return c.json({
+      path: `/p/${projectId}`,
+    });
   } catch (error) {
     console.error(error);
     return c.json(
@@ -185,29 +209,6 @@ async function apiWSConnection(ws, req) {
 
   WSDB.set(computerUnit.containerId, ws);
 
-  const tree = directoryTree(computerUnit.tempDirPath, {
-    exclude: /\.npm|\.cache|env|\.node_repl_history/,
-  });
-
-  ws.send(
-    JSON.stringify({
-      type: "fs",
-      params: tree,
-    })
-  );
-
-  const containerInfo = await dockerConnection
-    .getContainer(containerId)
-    .inspect();
-  log(containerInfo.NetworkSettings);
-  const hostPort = containerInfo.NetworkSettings.Ports["8080/tcp"][0].HostPort;
-  ws.send(
-    JSON.stringify({
-      type: "host-port",
-      params: hostPort,
-    })
-  );
-
   ws.on("message", async function message(message) {
     try {
       const cmd = JSON.parse(message);
@@ -244,6 +245,32 @@ async function apiWSConnection(ws, req) {
               filepath,
               content: content.toString("utf-8"),
             },
+          })
+        );
+      }
+      if (cmd.type === "loaded") {
+        if (computerUnit.tempDirPath) {
+          var tree = directoryTree(computerUnit.tempDirPath, {
+            exclude: /\.npm|\.cache|env|\.node_repl_history/,
+          });
+          ws.send(
+            JSON.stringify({
+              type: "fs",
+              params: tree,
+            })
+          );
+        }
+
+        const containerInfo = await dockerConnection
+          .getContainer(containerId)
+          .inspect();
+        log(containerInfo.NetworkSettings);
+        const hostPort =
+          containerInfo.NetworkSettings.Ports["8080/tcp"][0].HostPort;
+        ws.send(
+          JSON.stringify({
+            type: "host-port",
+            params: hostPort,
           })
         );
       }

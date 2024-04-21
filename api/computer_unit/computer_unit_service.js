@@ -1,7 +1,5 @@
-import * as fs from "node:fs/promises";
-import * as path from "node:path";
-import * as os from "node:os";
 import ComputerUnit from "./computer_unit.js";
+import { createTempDir } from "./temp_dir.js";
 
 function log() {
   console.info("CPU ==>", ...arguments);
@@ -24,9 +22,7 @@ export default class ComputerUnitService {
 
       let tempDirPath = computer_unit.tempDirPath;
       if (!tempDirPath) {
-        log("Creating Temp Folder");
-        tempDirPath = await fs.mkdtemp(path.join(os.tmpdir(), "ide-vm-home-"));
-        console.info(`==> Created Temp Folder: ${tempDirPath}`);
+        tempDirPath = await createTempDir();
       }
 
       log("Creating container");
@@ -50,7 +46,7 @@ export default class ComputerUnitService {
         HostConfig: {
           Binds: [`${tempDirPath}:/root`],
           AutoRemove: true,
-          PublishAllPorts: true
+          PublishAllPorts: true,
         },
         Labels: {
           "com.docker.instances.service": "vm",

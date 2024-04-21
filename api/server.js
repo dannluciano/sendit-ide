@@ -15,7 +15,7 @@ import ComputerUnitService from "./computer_unit/computer_unit_service.js";
 import DB from "./database.js";
 import { nanoid } from "nanoid";
 import ComputerUnit from "./computer_unit/computer_unit.js";
-import { log, sleep } from "./utils.js";
+import { log, sleep, sortTree } from "./utils.js";
 import { createTempDirAndCopyFilesFromPath } from "./computer_unit/temp_dir.js";
 const __dirname = new URL("./", import.meta.url).pathname;
 
@@ -250,9 +250,14 @@ async function apiWSConnection(ws, req) {
       }
       if (cmd.type === "loaded") {
         if (computerUnit.tempDirPath) {
-          var tree = directoryTree(computerUnit.tempDirPath, {
-            exclude: /\.npm|\.cache|env|\.node_repl_history/,
+          const tree = directoryTree(computerUnit.tempDirPath, {
+            attributes: ["type"],
+            exclude: /\.npm|\.cache|env|\.node_repl_history|\.vscode/,
           });
+          if (tree.children) {
+            const sortedChildren = sortTree(tree.children);
+            tree.children = sortedChildren;
+          }
           ws.send(
             JSON.stringify({
               type: "fs",

@@ -69,7 +69,9 @@ function getExtensionIcon(filename, style) {
     Dockerfile: "logo-docker",
     dockerignore: "logo-docker",
     Makefile: "construct",
-    gitignore: "git-network"
+    gitignore: "git-network",
+    config: "settings",
+    conf: "settings",
   };
   const extension = getFileExtension(filename);
   let iconName = iconFileLabels["file"];
@@ -201,6 +203,14 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
     Dockerfile: {
       ...defaultOptions,
       mode: "dockerfile",
+    },
+    config: {
+      ...defaultOptions,
+      mode: "properties",
+    },
+    conf: {
+      ...defaultOptions,
+      mode: "properties",
     },
   };
   try {

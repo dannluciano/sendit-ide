@@ -1,8 +1,7 @@
 :root {
   --workbench-width: 100%;
   --workbench-height: 100vh;
-  --actions-width: 75px
-  --editor-width: 100%;
+  --actions-width: 75px --editor-width: 100%;
   --editor-height: 60vh;
   --terminal-width: 100%;
   --terminal-height: calc(var(--workbench-height) - var(--editor-height));
@@ -19,7 +18,7 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color:  var(--blackSecondary) !important;
+  background-color: var(--blackSecondary) !important;
 }
 
 ::-webkit-scrollbar-track {
@@ -53,6 +52,13 @@ dialog {
   margin: 0 auto;
   margin-top: 10%;
   width: 80vw;
+  border: 0;
+  background-color: var(--black);
+  border-radius: var(--rounded-lg);
+  padding: 1em;
+}
+
+#filename-dialog {
   border: 0;
   background-color: transparent;
 }

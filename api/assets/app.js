@@ -167,13 +167,17 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
       ...defaultOptions,
       mode: "css",
     },
+    yml: {
+      ...defaultOptions,
+      mode: "text/x-yaml",
+    },
   };
   try {
     return (
       fileConfigsAndExtentionModes[fileExtention] || {
         ...defaultOptions,
         mode: "properties",
-        readOnly: true,
+        readOnly: false,
       }
     );
   } catch (error) {

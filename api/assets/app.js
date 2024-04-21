@@ -241,6 +241,7 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
     html: [`python3 -m http.server -b $HOST $PORT \n`],
     css: [`python3 -m http.server -b $HOST $PORT \n`],
     sqlite3: [`sqlite3 ${filepath}\n`],
+    sh: [`bash ${filepath}\n`],
     Makefile: [`make -f ${filepath}\n`],
   };
   try {

@@ -68,6 +68,7 @@ function getExtensionIcon(filename, style) {
     sqlite: "file-tray-stacked",
     Dockerfile: "logo-docker",
     dockerignore: "logo-docker",
+    Makefile: "construct",
   };
   const extension = getFileExtension(filename);
   let iconName = iconFileLabels["file"];
@@ -240,6 +241,7 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
     html: [`python3 -m http.server -b $HOST $PORT \n`],
     css: [`python3 -m http.server -b $HOST $PORT \n`],
     sqlite3: [`sqlite3 ${filepath}\n`],
+    Makefile: [`make -f ${filepath}\n`],
   };
   try {
     const commands = ["\x03\n", ...runCommandsPerLanguages[fileExtention]];

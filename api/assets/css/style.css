@@ -53,8 +53,8 @@ dialog {
   margin: 0 auto;
   margin-top: 10%;
   width: 80vw;
-  border: 1px solid var(--green);
-  background-color: var(--black);
+  border: 0;
+  background-color: transparent;
 }
 
 #input-filename {

@@ -1,5 +1,6 @@
 import ComputerUnit from "./computer_unit.js";
 import { createTempDir } from "./temp_dir.js";
+import { getEnvsFromSettings } from "./envs.js";
 
 function log() {
   console.info("CPU ==>", ...arguments);
@@ -10,7 +11,7 @@ export default class ComputerUnitService {
     this.dockerConnection = dockerConnection;
   }
 
-  async getOrCreateComputerUnit(computer_unit) {
+  async getOrCreateComputerUnit(computer_unit, settings = {}) {
     try {
       let containerInstance = this.dockerConnection.getContainer(
         computer_unit.containerId
@@ -25,6 +26,8 @@ export default class ComputerUnitService {
         tempDirPath = await createTempDir();
       }
 
+      const envs = getEnvsFromSettings(settings);
+
       log("Creating container");
       containerInstance = await this.dockerConnection.createContainer({
         Image: "sendit-ide-vm",
@@ -33,6 +36,7 @@ export default class ComputerUnitService {
         AttachStderr: false,
         Tty: true,
         Cmd: ["/bin/bash"],
+        Env: envs,
         OpenStdin: true,
         StdinOnce: false,
         WorkingDir: "/root",

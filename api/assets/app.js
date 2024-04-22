@@ -15,6 +15,7 @@ let currentOpenTab = -1;
 let term;
 let newFileOrNewFolder;
 let initialCommand = "";
+let settings = {};
 
 if (currentURL.searchParams.has("command")) {
   initialCommand = currentURL.searchParams.get("command");
@@ -407,8 +408,13 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   cancelSettingsButton.addEventListener("click", openOrCloseSettings);
 
+  const settingsForm = document.getElementById("settings-form");
+  const settingsFormData = new FormData(settingsForm);
+  const settingsJSON = formDataToJSON(settingsFormData);
+  const settingsJSONString = JSON.stringify(settingsJSON);
   fetch(`/container/create/${projectId}`, {
     method: "POST",
+    body: settingsJSONString,
   })
     .then((res) => res.json())
     .then((data) => afterContainerCreation(data))
@@ -761,6 +767,7 @@ function renderFile(child) {
 }
 
 function openOrCloseSettings(event) {
+  event.preventDefault();
   const settingsDialog = document.getElementById("settings-dialog");
   if (settingsDialog.open) {
     settingsDialog.close();
@@ -770,18 +777,26 @@ function openOrCloseSettings(event) {
 }
 
 function saveSettings(event) {
-  const sshPrivateKeyField = document.getElementById("ssh-private-key");
-  const sshPrivateKeyValue = sshPrivateKeyField.value;
-  localStorage.setItem("sendit-ssh-private-key", sshPrivateKeyValue);
-
+  event.preventDefault();
+  const settingsForm = document.getElementById("settings-form");
+  const settingsFormData = new FormData(settingsForm);
+  const settings = formDataToJSON(settingsFormData);
+  const settingsJSONString = JSON.stringify(settings);
+  localStorage.setItem("settings", settingsJSONString);
   window.location.reload(true);
 }
 
 function loadSettings() {
-  const sshPrivateKeyValue = localStorage.getItem("sendit-ssh-private-key");
-  const sshPrivateKeyField = document.getElementById("ssh-private-key");
-
-  sshPrivateKeyField.value = sshPrivateKeyValue || "";
+  const settingsJSONString = localStorage.getItem("settings") || "{}";
+  settings = JSON.parse(settingsJSONString);
+  debug(settings);
+  const settingsFormData = new FormData();
+  for (const [key, value] of Object.entries(settings)) {
+    settingsFormData.append(key, value);
+  }
+  debug(settingsFormData);
+  const settingsForm = document.getElementById("settings-form");
+  formDataToForm(settingsForm, settingsFormData);
 }
 
 function openFileInTree(event) {
@@ -947,4 +962,31 @@ function tryExecuteFunctionInLoopWithDelay(
   };
 
   return attempt(1);
+}
+
+function formDataToJSON(formData) {
+  var object = {};
+  formData.forEach((value, key) => {
+    // Reflect.has in favor of: object.hasOwnProperty(key)
+    if (!Reflect.has(object, key)) {
+      object[key] = value;
+      return;
+    }
+    if (!Array.isArray(object[key])) {
+      object[key] = [object[key]];
+    }
+    object[key].push(value);
+  });
+  return object;
+}
+
+function formDataToForm(form, data) {
+  for (const [key, val] of new URLSearchParams(data).entries()) {
+    const input = form.elements[key];
+    if (input.type === "checkbox") {
+      input.checked = !!val;
+    } else {
+      input.value = val;
+    }
+  }
 }

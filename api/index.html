@@ -75,11 +75,6 @@
       <button id="settings-button" style="color: var(--white)">
         <ion-icon name="settings"></ion-icon>
       </button>
-      <button id="status-button" style="color: var(--white)">
-        <ion-icon name="alert-circle"></ion-icon>
-        <ion-icon name="wifi"></ion-icon>
-      </button>
-
     </div>
     <div id="filesystem">
       <div id="file-system-tree__section" class="drac-text-white" open="">
@@ -202,19 +197,34 @@
       <input type="text" id="input-filename" class="drac-input" />
     </dialog>
     <dialog id="settings-dialog">
-      <label class="drac-text drac-text-white" for="ssh-private-key">
-        SSH Private Key:
-      </label>
-      <input class="drac-input" name="ssh-private-key" id="ssh-private-key" />
-      <hr>
-      <button id="cancel-settings-button" class="drac-btn drac-bg-red-secondary">
-        Cancelar
-        <ion-icon name="save"></ion-icon>
-      </button>
-      <button id="save-settings-button" class="drac-btn drac-bg-green-secondary">
-        Salvar
-        <ion-icon name="save"></ion-icon>
-      </button>
+      <h1 class="drac-text-purple">Configurações</h1>
+      <form id="settings-form">
+        <label class="drac-text drac-text-white" for="git-username">
+          Git Username:
+        </label>
+        <input class="drac-input drac-text-purple" name="git-username" id="git-username" />
+
+        <label class="drac-text drac-text-white" for="git-email">
+          Git E-Mail:
+        </label>
+        <input class="drac-input drac-text-purple" name="git-email" id="git-email" />
+
+        <label class=" drac-text drac-text-white" for="ssh-private-key">
+          GitHub Auth Token:
+        </label>
+        <br>
+        <input class="drac-input drac-text-purple" type="password" name="github-auth-token" id="github-auth-token" />
+        <hr>
+        <button id="cancel-settings-button" class="drac-btn drac-bg-red-secondary" type="button">
+          Cancelar
+          <ion-icon name="close-circle"></ion-icon>
+        </button>
+        <button id="save-settings-button" class="drac-btn drac-bg-green-secondary" type="submit">
+          Salvar
+          <ion-icon name="save"></ion-icon>
+        </button>
+      </form>
+
     </dialog>
   </main>
   <script src="/assets/term.js"></script>

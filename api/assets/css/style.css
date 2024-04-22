@@ -94,3 +94,34 @@ dialog {
 ::-webkit-scrollbar-thumb {
   background: #c2d8e8;
 }
+
+.drac-textarea {
+  background: var(--blackSecondary);
+  border: .3rem solid transparent;
+  border-radius: var(--rounded-lg);
+  box-sizing: border-box;
+  outline: none;
+  transition: all .3s ease-in-out;
+  width: 100%;
+  padding: 0 var(--spacing-4);
+  height: var(--spacing-32);
+  font-size: var(--font-md);
+}
+
+.drac-textarea:focus {
+  border-color: var(--white);
+}
+
+.drac-textarea::placeholder {
+  color: var(--blackTernary);
+}
+
+.drac-textarea-outline {
+  background: transparent;
+  border-color: var(--blackTernary);
+}
+
+#settings-button {
+  position: fixed;
+  bottom: 1em;
+}

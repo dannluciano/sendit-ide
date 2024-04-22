@@ -11,6 +11,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
     wget \
     httpie \
     git \
+    openssh-client \
 # Program Languages Runtimes
     nodejs \
     npm \
@@ -30,11 +31,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
     cmatrix \
 # Remove APT CACHE
     && rm -rf /var/lib/apt/lists/*
-
-RUN wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.5.0/gcm-linux_amd64.2.5.0.deb
-RUN dpkg -i gcm-linux_amd64.2.5.0.deb
-RUN git config --global credential.helper cache
-RUN git config --global credential.credentialStore cache
 
 COPY ./bin/ /usr/local/bin
 

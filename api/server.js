@@ -67,13 +67,15 @@ app.get("/p/:pid", async (c) => {
 app.post("/container/create/:pid", async (c) => {
   try {
     const projectId = c.req.param("pid");
+    const settings = await c.req.json();
     const cuJSON = DB.get(projectId);
     let computerUnit = new ComputerUnit(null, null, projectId);
     if (cuJSON) {
       computerUnit = computeUnitService.fromJSON(cuJSON);
     }
     computerUnit = await computeUnitService.getOrCreateComputerUnit(
-      computerUnit
+      computerUnit,
+      settings
     );
 
     DB.set(computerUnit.containerId, computerUnit.toJSON());

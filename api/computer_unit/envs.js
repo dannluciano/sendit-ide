@@ -5,8 +5,9 @@ function log() {
 function getEnvsFromSettings(settings) {
   log(settings);
   const envsNameFromSettingsMap = {
-    "git-username": "GIT_AUTHOR_NAME",
-    "git-email": "EMAIL",
+    name: "GIT_AUTHOR_NAME",
+    email: "EMAIL",
+    "github-username": "GITHUB_USERNAME",
     "github-auth-token": "GITHUB_TOKEN",
   };
   const envs = [];
@@ -19,7 +20,7 @@ function getEnvsFromSettings(settings) {
   log(envs);
   envs.push(`GIT_CONFIG_COUNT=2`);
   envs.push(`GIT_CONFIG_KEY_0=credential.https://github.com.username`);
-  envs.push(`GIT_CONFIG_VALUE_0=${settings["git-username"]}`);
+  envs.push(`GIT_CONFIG_VALUE_0=${settings["github-username"]}`);
   envs.push(`GIT_CONFIG_KEY_1=credential.https://github.com.helper`);
   envs.push(
     `GIT_CONFIG_VALUE_1=!f() { test "$1" = get && echo "password=$(echo $GITHUB_TOKEN)"; }; f`

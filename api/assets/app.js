@@ -983,10 +983,12 @@ function formDataToJSON(formData) {
 function formDataToForm(form, data) {
   for (const [key, val] of new URLSearchParams(data).entries()) {
     const input = form.elements[key];
-    if (input.type === "checkbox") {
-      input.checked = !!val;
-    } else {
-      input.value = val;
+    if (input) {
+      if (input.type === "checkbox") {
+        input.checked = !!val;
+      } else {
+        input.value = val;
+      }
     }
   }
 }

@@ -125,3 +125,11 @@ dialog {
   position: fixed;
   bottom: 1em;
 }
+
+#settings-button {
+  ion-icon:hover {
+    rotate: 270deg;
+    animation: 0.5s;
+    animation-delay: 100ms;
+  }
+}

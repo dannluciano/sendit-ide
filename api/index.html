@@ -198,28 +198,63 @@
     </dialog>
     <dialog id="settings-dialog">
       <h1 class="drac-text-purple">Configurações</h1>
-      <form id="settings-form">
-        <label class="drac-text drac-text-white" for="git-username">
-          Git Username:
-        </label>
-        <input class="drac-input drac-text-purple" name="git-username" id="git-username" />
-
-        <label class="drac-text drac-text-white" for="git-email">
-          Git E-Mail:
-        </label>
-        <input class="drac-input drac-text-purple" name="git-email" id="git-email" />
-
-        <label class=" drac-text drac-text-white" for="ssh-private-key">
-          GitHub Auth Token:
-        </label>
+      <form id="settings-form" class="form">
+        <fieldset>
+          <legend class="drac-text-purple">
+            <ion-icon name="person"></ion-icon>
+            Pessoal
+          </legend>
+          <div class="form-group">
+            <label class="drac-text drac-text-white" for="name">
+              Nome:
+            </label>
+            <input class="form-control drac-input drac-text-purple" name="name" id="name" />
+          </div>
+          <br>
+          <div class="form-group">
+            <label class="drac-text drac-text-white" for="email">
+              E-Mail:
+            </label>
+            <input class="form-control drac-input drac-text-purple" name="email" id="email" />
+          </div>
+        </fieldset>
         <br>
-        <input class="drac-input drac-text-purple" type="password" name="github-auth-token" id="github-auth-token" />
+        <fieldset>
+          <legend class="drac-text-purple">
+            <ion-icon name="logo-github"></ion-icon>
+            GitHub
+          </legend>
+          <div class="form-group">
+            <label class="drac-text drac-text-white" for="github-username">
+              GitHub Username:
+            </label>
+            <input class="form-control drac-input drac-text-purple" name="github-username" id="github-username" />
+          </div>
+          <br>
+          <div class="form-group">
+            <label class=" drac-text drac-text-white" for="github-auth-token">
+              GitHub Auth Token:
+            </label>
+            <input class="form-control drac-input drac-text-purple" type="password" name="github-auth-token"
+              id="github-auth-token" />
+            <small id="github-auth-token-help" class="form-text drac-text-pink">
+              Crie uma <strong>Personal Access Token</strong> e cole aqui.
+              Para mais informações <a
+                href="https://docs.github.com/pt/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">
+                clique aqui
+              </a>
+            </small>
+          </div>
+        </fieldset>
+
         <hr>
+
         <button id="cancel-settings-button" class="drac-btn drac-bg-red-secondary" type="button">
           Cancelar
           <ion-icon name="close-circle"></ion-icon>
         </button>
-        <button id="save-settings-button" class="drac-btn drac-bg-green-secondary" type="submit">
+
+        <button id="save-settings-button" class="drac-btn drac-bg-green" type="submit">
           Salvar
           <ion-icon name="save"></ion-icon>
         </button>

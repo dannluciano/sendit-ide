@@ -20,7 +20,7 @@ export default class ComputerUnit {
     console.info(`==> Watching Temp Dir: ${tempDirPath} Enable`);
     chokidar
       .watch(tempDirPath, {
-        ignored: /(^|[\/\\])\..|.cache|env/,
+        ignored: /(^|[\/\\])\..|.cache|env|node_modules/,
         ignoreInitial: true,
       })
       .on("all", (event, path) => {
@@ -44,7 +44,7 @@ export default class ComputerUnit {
       "container-id": this.containerId,
       "temp-dir-path": this.tempDirPath,
       "project-id": this.projectId,
-      "ws": this.ws
+      ws: this.ws,
     };
   }
 }

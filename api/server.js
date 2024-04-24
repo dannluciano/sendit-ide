@@ -49,6 +49,24 @@ app.get("/", async (c) => {
   return c.redirect(`/p/${projectId}`);
 });
 
+app.get("/.well-known/assetlinks.json", async (c) => {
+  const assetlinksPath = new URL("./assetlinks.json", import.meta.url).pathname;
+  try {
+    const content = await fs.readFile(assetlinksPath);
+    return new Response(content, {
+      status: 201,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  } catch (error) {
+    console.error(error);
+    return new Response("Error on Server", {
+      status: 500,
+    });
+  }
+});
+
 app.get("/p/:pid", async (c) => {
   const indexPath = new URL("./index.html", import.meta.url).pathname;
   try {

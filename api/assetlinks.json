@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "br.com.dannluciano.sendit.ide.twa",
+        "sha256_cert_fingerprints": ["5E:FC:80:28:1E:52:A8:20:B3:1A:74:E5:EE:62:7C:D7:E6:4E:C2:3B:4F:06:78:0C:4B:A3:FE:CF:E9:B9:13:3D"]
+      }
+    }]

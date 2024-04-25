@@ -874,6 +874,11 @@ function sendControl(element) {
   debug("CTRL" + mapKey[key]);
 }
 
+function sendTab(element) {
+  containerSocket.send("\t");
+  debug("TAB");
+}
+
 function createTestFiles() {
   let file = {
     filename: "index.mjs",

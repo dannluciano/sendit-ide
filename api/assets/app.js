@@ -412,13 +412,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const settingsFormData = new FormData(settingsForm);
   const settingsJSON = formDataToJSON(settingsFormData);
   const settingsJSONString = JSON.stringify(settingsJSON);
-  fetch(`/container/create/${projectId}`, {
+  fetch(`/api/container/create/${projectId}`, {
     method: "POST",
     body: settingsJSONString,
   })
     .then((res) => res.json())
     .then((data) => afterContainerCreation(data))
-    .catch((error) => console.error(error));
+    .catch((error) => {
+      console.error(error);
+      const messagesDialog = document.getElementById("messages-dialog");
+      messagesDialog.innerHTML = `
+      <h1 class="dract-text drac-text-purple">Autenticação Falhou!</h1>
+      <p class="dract-text drac-text-white">Tente novamente</p>
+      `;
+      messagesDialog.showModal();
+    });
   renderFilesTabs();
 });
 
@@ -533,7 +541,7 @@ function connectToApiWS() {
 }
 
 function duplicateProject() {
-  fetch(`/project/duplicate/${projectId}`, {
+  fetch(`/api/project/duplicate/${projectId}`, {
     method: "POST",
   })
     .then((res) => res.json())

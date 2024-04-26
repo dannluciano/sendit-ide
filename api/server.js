@@ -6,6 +6,8 @@ import { serveStatic } from "@hono/node-server/serve-static";
 
 import { Hono } from "hono";
 import { logger } from "hono/logger";
+import { basicAuth } from "hono/basic-auth";
+import { getSignedCookie, setSignedCookie } from "hono/cookie";
 import { WebSocketServer, WebSocket } from "ws";
 import * as dockerode from "dockerode";
 
@@ -15,14 +17,14 @@ import ComputerUnitService from "./computer_unit/computer_unit_service.js";
 import DB from "./database.js";
 import { nanoid } from "nanoid";
 import ComputerUnit from "./computer_unit/computer_unit.js";
-import { log, sleep, sortTree } from "./utils.js";
+import { log, sortTree } from "./utils.js";
 import { createTempDirAndCopyFilesFromPath } from "./computer_unit/temp_dir.js";
 const __dirname = new URL("./", import.meta.url).pathname;
 
 let dockerConnection;
 const WSDB = new Map();
 
-log("Current DIR", __dirname);
+log("SERVER", "Current DIR", __dirname);
 
 try {
   log("Connecting to Docker Daemon");
@@ -40,9 +42,47 @@ try {
 const computeUnitService = new ComputerUnitService(dockerConnection);
 const app = new Hono();
 
-app.use("*", logger());
+// app.use("*", logger());
 
 app.use("/assets/*", serveStatic({ root: "./api" }));
+
+app.use(
+  "/api/*",
+  basicAuth({
+    verifyUser: async (username, password, c) => {
+      const authFormData = new FormData();
+      authFormData.set("username", username);
+      authFormData.set("password", password);
+      const response = await fetch(
+        `${configs.AUTH_SERVER_URL_INTERNAL}/api/auth/`,
+        {
+          body: authFormData,
+          method: "POST",
+        }
+      );
+      if (response.status !== 403) {
+        const authDataJSON = await response.json();
+        c.set("auth-data", authDataJSON);
+        setSignedCookie(
+          c,
+          "user_id",
+          authDataJSON.user.id,
+          configs.COOKIE_SECRET
+        );
+        setSignedCookie(
+          c,
+          "user_username",
+          authDataJSON.user.username,
+          configs.COOKIE_SECRET
+        );
+        log("AUTH", "Success");
+        return true;
+      }
+      log("AUTH", "Failure");
+      return false;
+    },
+  })
+);
 
 app.get("/", async (c) => {
   const projectId = nanoid();
@@ -56,9 +96,9 @@ app.get("/.well-known/assetlinks.json", async (c) => {
     return new Response(content, {
       status: 201,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-    })
+    });
   } catch (error) {
     console.error(error);
     return new Response("Error on Server", {
@@ -71,9 +111,7 @@ app.get("/p/:pid", async (c) => {
   const indexPath = new URL("./index.html", import.meta.url).pathname;
   try {
     const content = await fs.readFile(indexPath);
-    return c.html(content, 200, {
-      "X-Frame-Options": "SAMEORIGIN",
-    });
+    return c.html(content, 200);
   } catch (error) {
     console.error(error);
     return new Response("Error on Server", {
@@ -82,7 +120,7 @@ app.get("/p/:pid", async (c) => {
   }
 });
 
-app.post("/container/create/:pid", async (c) => {
+app.post("/api/container/create/:pid", async (c) => {
   try {
     const projectId = c.req.param("pid");
     const settings = await c.req.json();
@@ -112,7 +150,7 @@ app.post("/container/create/:pid", async (c) => {
   }
 });
 
-app.post("/project/duplicate/:pid", async (c) => {
+app.post("/api/project/duplicate/:pid", async (c) => {
   try {
     const projectId = nanoid();
     const sourceProjectId = c.req.param("pid");
@@ -185,7 +223,7 @@ const server = serve(
     port: configs.PORT,
   },
   (info) => {
-    console.log(`Listening on http://localhost:${info.port}`);
+    log("SERVER", `Listening on http://localhost:${info.port}`);
   }
 );
 

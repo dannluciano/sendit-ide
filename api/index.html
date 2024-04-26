@@ -41,38 +41,45 @@
 <body>
   <main id="workbench">
     <div id="actions-options-section">
-      <button style="color: var(--purple)">
+      <button title="Mostar/Esconder Sistema de Arquivo" data-toggle="tooltip" aria-label="show-hidden-filesystem"
+        aria-description="Mostar/Esconder Sistema de Arquivo" style="color: var(--purple)">
         <ion-icon onclick="toggleFilesystemSidebar(this)" name="file-tray">
         </ion-icon>
       </button>
       <hr />
-      <button id="new-folder-button" style="color: var(--red)">
+      <button id="new-folder-button" title="Nova Pasta" data-toggle="tooltip" aria-label="new-folder"
+        aria-description="Nova Pasta" style="color: var(--red)">
         <ion-icon name="folder-open"></ion-icon>
       </button>
-      <button id="new-file-button" style="color: var(--orange)">
+      <button id="new-file-button" title="Novo Arquivo" data-toggle="tooltip" aria-label="new-file"
+        aria-description="Novo Arquivo" style="color: var(--orange)">
         <ion-icon name="document"></ion-icon>
       </button>
-      <button id="save-button" style="color: var(--yellow)">
+      <button id="save-button" title="Salvar" data-toggle="tooltip" aria-label="save" aria-description="Salvar"
+        style="color: var(--yellow)">
         <ion-icon name="save"></ion-icon>
       </button>
       <hr />
-      <button id="run-button">
+      <button id="run-button" title="Executar" data-toggle="tooltip" aria-label="run" aria-description="Executar">
         <ion-icon name="play"></ion-icon>
       </button>
 
       <hr />
-      <button>
+      <button title="Abrir em Outra Aba" data-toggle="tooltip" aria-label="open-other-tab"
+        aria-description="Abrir em Outra Aba">
         <a id="open-new-tab" href="#" target="_blank" rel="noopener noreferrer">
           <ion-icon name="enter"></ion-icon>
         </a>
       </button>
 
       <hr />
-      <button id="duplicate-button" style="color: var(--cyan)">
+      <button id="duplicate-button" title="Duplicar" data-toggle="tooltip" aria-label="duplicate"
+        aria-description="Duplicar" style="color: var(--cyan)">
         <ion-icon name="duplicate"></ion-icon>
       </button>
       <hr />
-      <button id="settings-button" style="color: var(--white)">
+      <button id="settings-button" title="Configurações" data-toggle="tooltip" aria-label="settings"
+        aria-description="Configurações" style="color: var(--white)">
         <ion-icon name="settings"></ion-icon>
       </button>
     </div>

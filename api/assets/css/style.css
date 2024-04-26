@@ -41,6 +41,7 @@ body {
   max-height: 100vh;
   min-height: 100vh;
   height: 100vh;
+  font-family: Fira Code, monospace;
 }
 
 li {
@@ -55,12 +56,8 @@ dialog {
   border: 0;
   background-color: var(--black);
   border-radius: var(--rounded-lg);
+  border: 1px solid var(--white);
   padding: 1em;
-}
-
-#filename-dialog {
-  border: 0;
-  background-color: transparent;
 }
 
 #input-filename {
@@ -132,4 +129,13 @@ dialog {
     animation: 0.5s;
     animation-delay: 100ms;
   }
+}
+
+.close-dialog {
+  position: absolute;
+  top: 2px;
+  right: 0.125em;
+  color: var(--white);
+  background-color: transparent;
+  border-color: transparent;
 }

@@ -184,29 +184,37 @@
       </div>
       <div id="terminal-section">
         <div id="terminal-buttons">
-          <button id="tab" class="drac-btn" data-key="Tab" onclick="sendTab(this)">
+          <button id="tab" class="drac-btn drac-btn-sm" data-key="Tab" onclick="sendTab(this)">
             Tab
           </button>
-          <button id="control-c" class="drac-btn" data-key="C" onclick="sendControl(this)">
+          <button id="control-c" class="drac-btn drac-btn-sm" data-key="C" onclick="sendControl(this)">
             ^+C
           </button>
-          <button id="control-c" class="drac-btn" data-key="D" onclick="sendControl(this)">
+          <button id="control-c" class="drac-btn drac-btn-sm" data-key="D" onclick="sendControl(this)">
             ^+D
           </button>
-          <button id="control-l" class="drac-btn" data-key="L" onclick="sendControl(this)">
+          <button id="control-l" class="drac-btn drac-btn-sm" data-key="L" onclick="sendControl(this)">
             ^+L
           </button>
-          <button id="control-z" class="drac-btn" data-key="Z" onclick="sendControl(this)">
+          <button id="control-z" class="drac-btn drac-btn-sm" data-key="Z" onclick="sendControl(this)">
             ^+Z
           </button>
         </div>
         <div id="terminal"></div>
       </div>
     </section>
+
     <dialog id="filename-dialog">
+      <button class="close-dialog" onclick="closeDialog(this)">
+        <ion-icon name="close-circle"></ion-icon>
+      </button>
       <input type="text" id="input-filename" class="drac-input" />
     </dialog>
+
     <dialog id="settings-dialog">
+      <button class="close-dialog" onclick="closeDialog(this)">
+        <ion-icon name="close-circle"></ion-icon>
+      </button>
       <h1 class="drac-text-purple">Configurações</h1>
       <form id="settings-form" class="form">
         <fieldset>
@@ -271,6 +279,7 @@
       </form>
 
     </dialog>
+
     <dialog id="messages-dialog">
       <h1 class="dract-text drac-text-purple">Autenticação Falhou!</h1>
       <p class="dract-text drac-text-white">Tente novamente</p>

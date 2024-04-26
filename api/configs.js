@@ -8,6 +8,9 @@ const AUTH_SERVER_URL_INTERNAL =
   process.env["AUTH_SERVER_URL"] || "http://host.docker.internal:8000";
 const COOKIE_SECRET = process.env["COOKIE_SECRET"] || "cookie-secret-random";
 
+const ENV = process.env["ENV"] || "development";
+const BYPASS_AUTH = ENV === "development" ? true : false;
+
 let DATABASE_PATH = DATABASE_DEV_PATH;
 
 if (process.env["NODE_ENV"] == "production") {
@@ -25,4 +28,6 @@ export default {
   AUTH_SERVER_URL_INTERNAL,
   DATABASE_NAME,
   COOKIE_SECRET,
+  ENV,
+  BYPASS_AUTH,
 };

@@ -50,6 +50,9 @@ app.use(
   "/api/*",
   basicAuth({
     verifyUser: async (username, password, c) => {
+      if (configs.BYPASS_AUTH) {
+        return true;
+      }
       const authFormData = new FormData();
       authFormData.set("username", username);
       authFormData.set("password", password);

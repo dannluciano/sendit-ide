@@ -421,10 +421,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch((error) => {
       console.error(error);
       const messagesDialog = document.getElementById("messages-dialog");
-      messagesDialog.innerHTML = `
-      <h1 class="dract-text drac-text-purple">Autenticação Falhou!</h1>
-      <p class="dract-text drac-text-white">Tente novamente</p>
-      `;
       messagesDialog.showModal();
     });
   renderFilesTabs();
@@ -1004,4 +1000,8 @@ function formDataToForm(form, data) {
       }
     }
   }
+}
+
+function closeDialog(element) {
+  element.parentNode.close();
 }

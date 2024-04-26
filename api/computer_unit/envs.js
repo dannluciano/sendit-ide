@@ -3,7 +3,6 @@ function log() {
 }
 
 function getEnvsFromSettings(settings) {
-  log(settings);
   const envsNameFromSettingsMap = {
     name: "GIT_AUTHOR_NAME",
     email: "EMAIL",
@@ -17,7 +16,6 @@ function getEnvsFromSettings(settings) {
       envs.push(`${envName}=${value}`);
     } catch (error) {}
   }
-  log(envs);
   envs.push(`GIT_CONFIG_COUNT=2`);
   envs.push(`GIT_CONFIG_KEY_0=credential.https://github.com.username`);
   envs.push(`GIT_CONFIG_VALUE_0=${settings["github-username"]}`);

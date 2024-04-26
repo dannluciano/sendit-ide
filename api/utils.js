@@ -1,9 +1,11 @@
-function log(moduleName = "API") {
-  const args = Array.from(arguments);
-  args.unshift();
-  return function () {
-    console.info(args[0], "==>", ...arguments);
-  };
+function log(moduleName = "API", msg) {
+  if (msg) {
+    const args = Array.from(arguments);
+    args.shift();
+    console.info(moduleName, "==>", ...args);
+  } else {
+    console.info(...arguments);
+  }
 }
 
 function sleep(ms) {

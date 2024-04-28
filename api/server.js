@@ -20,6 +20,7 @@ import ComputerUnit from "./computer_unit/computer_unit.js";
 import { log, sortTree } from "./utils.js";
 import { createTempDirAndCopyFilesFromPath } from "./computer_unit/temp_dir.js";
 import { gitClone } from "./git-clone/git_clone_controller.js";
+import { downloadProject } from "./projects/projects_controller.js";
 
 const __dirname = new URL("./", import.meta.url).pathname;
 
@@ -126,6 +127,8 @@ app.get("/p/:pid", async (c) => {
 });
 
 app.get("/c/*", gitClone);
+
+app.post("/public/project/download/:pid", downloadProject);
 
 app.post("/api/container/create/:pid", async (c) => {
   try {

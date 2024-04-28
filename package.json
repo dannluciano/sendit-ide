@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@hono/node-server": "^1.7.0",
+    "archiver": "^7.0.1",
     "better-sqlite3": "^9.4.3",
     "chokidar": "^3.5.3",
     "directory-tree": "^3.5.1",

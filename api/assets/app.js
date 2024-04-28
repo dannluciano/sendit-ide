@@ -397,6 +397,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const duplicateButton = document.getElementById("duplicate-button");
   duplicateButton.addEventListener("click", duplicateProject);
 
+  const downloadButton = document.getElementById("download-button");
+  downloadButton.addEventListener("click", downloadProject);
+
   const settingsButton = document.getElementById("settings-button");
   settingsButton.addEventListener("click", openOrCloseSettings);
 
@@ -542,6 +545,21 @@ function duplicateProject() {
   })
     .then((res) => res.json())
     .then((data) => (window.location.pathname = data.path))
+    .catch((error) => console.error(error));
+}
+
+function downloadProject() {
+  fetch(`/public/project/download/${projectId}`, {
+    method: "POST",
+  })
+    .then((res) => res.blob())
+    .then((blob) => {
+      const file = window.URL.createObjectURL(blob);
+      const elm = document.createElement("a");
+      elm.href = file;
+      elm.setAttribute("download", "project.zip");
+      elm.click();
+    })
     .catch((error) => console.error(error));
 }
 

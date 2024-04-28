@@ -12,6 +12,20 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function debounce(func, wait, immediate) {
+  var timeout;
+  return function () {
+    var context = this,
+      args = arguments;
+    clearTimeout(timeout);
+    if (immediate && !timeout) func.apply(context, args);
+    timeout = setTimeout(function () {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    }, wait);
+  };
+}
+
 function sortTree(treeChildren = [], type = "directory") {
   let targetArray = [];
   let restArray = [];
@@ -34,4 +48,4 @@ function sortTree(treeChildren = [], type = "directory") {
   return resultTree;
 }
 
-export { log, sleep, sortTree };
+export { log, sleep, throttle, debounce, sortTree };

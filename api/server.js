@@ -14,18 +14,20 @@ import * as dockerode from "dockerode";
 import { default as directoryTree } from "directory-tree";
 import configs from "./configs.js";
 import ComputerUnitService from "./computer_unit/computer_unit_service.js";
-import DB from "./database.js";
+import { DB, WSDB } from "./database.js";
 import { nanoid } from "nanoid";
 import ComputerUnit from "./computer_unit/computer_unit.js";
 import { log, sortTree } from "./utils.js";
-import { createTempDirAndCopyFilesFromPath } from "./computer_unit/temp_dir.js";
+import {
+  createTempDirAndCopyFilesFromPath,
+  watchTempDir,
+} from "./computer_unit/temp_dir.js";
 import { gitClone } from "./git-clone/git_clone_controller.js";
 import { downloadProject } from "./projects/projects_controller.js";
 
 const __dirname = new URL("./", import.meta.url).pathname;
 
 let dockerConnection;
-const WSDB = new Map();
 
 log("SERVER", "Current DIR", __dirname);
 
@@ -146,6 +148,8 @@ app.post("/api/container/create/:pid", async (c) => {
 
     DB.set(computerUnit.containerId, computerUnit.toJSON());
     DB.set(computerUnit.projectId, computerUnit.toJSON());
+
+    watchTempDir(computerUnit);
 
     const containerCreateResponse = computerUnit.toJSON();
     return c.json(containerCreateResponse);
@@ -337,7 +341,7 @@ async function apiWSConnection(ws, req) {
         const containerInfo = await dockerConnection
           .getContainer(containerId)
           .inspect();
-        log(containerInfo.NetworkSettings);
+        // log(containerInfo.NetworkSettings);
         const hostPort =
           containerInfo.NetworkSettings.Ports["8080/tcp"][0].HostPort;
         ws.send(

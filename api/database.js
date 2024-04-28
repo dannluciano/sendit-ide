@@ -26,7 +26,8 @@ function toObj(str) {
   }
 }
 
-// const DB = new Map();
+const WSDB = new Map();
+
 const DB = {
   get: function (key) {
     const row = db.prepare("SELECT value FROM kv WHERE key = ?").get(key);
@@ -60,3 +61,4 @@ const DB = {
 };
 
 export default DB;
+export { DB, WSDB };

@@ -12,7 +12,7 @@ export default class ComputerUnit {
     this.projectId = projectId;
     this.ws = null;
 
-    if (!tempDirPath) {
+    if (!tempDirPath || !containerInstance) {
       console.info(`==> Watching Temp Dir Disable`);
       return;
     }

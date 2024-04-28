@@ -51,7 +51,7 @@ li {
 
 dialog {
   margin: 0 auto;
-  margin-top: 10%;
+  margin-top: 2em;
   width: 80vw;
   border: 0;
   background-color: var(--black);

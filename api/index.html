@@ -47,25 +47,26 @@
         </ion-icon>
       </button>
       <hr />
-      <button id="new-folder-button" title="Nova Pasta" data-toggle="tooltip" aria-label="new-folder"
+      <button id="new-folder-button" title="Criar Nova Pasta" data-toggle="tooltip" aria-label="new-folder"
         aria-description="Nova Pasta" style="color: var(--red)">
         <ion-icon name="folder-open"></ion-icon>
       </button>
-      <button id="new-file-button" title="Novo Arquivo" data-toggle="tooltip" aria-label="new-file"
+      <button id="new-file-button" title="Criar Novo Arquivo" data-toggle="tooltip" aria-label="new-file"
         aria-description="Novo Arquivo" style="color: var(--orange)">
         <ion-icon name="document"></ion-icon>
       </button>
-      <button id="save-button" title="Salvar" data-toggle="tooltip" aria-label="save" aria-description="Salvar"
+      <button id="save-button" title="Salvar Arquivo" data-toggle="tooltip" aria-label="save" aria-description="Salvar"
         style="color: var(--yellow)">
         <ion-icon name="save"></ion-icon>
       </button>
       <hr />
-      <button id="run-button" title="Executar" data-toggle="tooltip" aria-label="run" aria-description="Executar">
+      <button id="run-button" title="Executar Arquivo" data-toggle="tooltip" aria-label="run"
+        aria-description="Executar">
         <ion-icon name="play"></ion-icon>
       </button>
 
       <hr />
-      <button title="Abrir em Outra Aba" data-toggle="tooltip" aria-label="open-other-tab"
+      <button title="Abrir Servidor Web em Outra Aba" data-toggle="tooltip" aria-label="open-other-tab"
         aria-description="Abrir em Outra Aba">
         <a id="open-new-tab" href="#" target="_blank" rel="noopener noreferrer">
           <ion-icon name="enter"></ion-icon>
@@ -304,6 +305,9 @@
     </dialog>
 
     <dialog id="messages-dialog">
+      <button class="close-dialog" onclick="closeDialog(this)">
+        <ion-icon name="close-circle"></ion-icon>
+      </button>
       <h1 class="dract-text drac-text-purple">Autenticação Falhou!</h1>
       <p class="dract-text drac-text-white">Tente novamente</p>
       <hr>
@@ -311,6 +315,15 @@
         Fechar
         <ion-icon name="close-circle"></ion-icon>
       </button>
+    </dialog>
+
+    <dialog id="loading-dialog" open="">
+      <button class="close-dialog" onclick="closeDialog(this)">
+        <ion-icon name="close-circle"></ion-icon>
+      </button>
+      <div id="loader-container">
+        <span class="loader"></span>
+      </div>
     </dialog>
   </main>
   <script src="/assets/term.js"></script>

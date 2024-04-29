@@ -4,6 +4,7 @@ const currentURL = new URL(document.location);
 const debugIsActive = currentURL.searchParams.has("debug");
 const testIsActive = currentURL.searchParams.has("test");
 const filenameDialog = document.getElementById("filename-dialog");
+const loadingDialog = document.getElementById("loading-dialog");
 let projectId = currentURL.pathname.replace("/p/", "");
 let containerId;
 let tempDirPath;
@@ -534,6 +535,7 @@ function connectToApiWS() {
         editor.focus();
       }
     });
+    loadingDialog.close();
   } catch (error) {
     console.error(error);
   }

@@ -416,6 +416,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const settingsFormData = new FormData(settingsForm);
   const settingsJSON = formDataToJSON(settingsFormData);
   const settingsJSONString = JSON.stringify(settingsJSON);
+
+  document.addEventListener(
+    "keyup",
+    (event) => {
+      if (event.ctrlKey) {
+        if (event.key == "s") saveFile();
+        if (event.key == "r") runCurrentOpenedFile();
+      }
+      if (event.metaKey) {
+        if (event.key == "s") saveFile();
+        if (event.key == "r") runCurrentOpenedFile();
+      }
+    },
+    false
+  );
+
   fetch(`/api/container/create/${projectId}`, {
     method: "POST",
     body: settingsJSONString,

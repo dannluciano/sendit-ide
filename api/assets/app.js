@@ -49,7 +49,7 @@ function terminalResize() {
     );
   }
 }
-window.addEventListener("resize", terminalResize);
+window.addEventListener("resize", debounce(terminalResize, 1000));
 
 CodeMirror.modeURL = "/assets/vendor/codemirror/mode/%N/%N.js";
 

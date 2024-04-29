@@ -48,4 +48,4 @@ function sortTree(treeChildren = [], type = "directory") {
   return resultTree;
 }
 
-export { log, sleep, throttle, debounce, sortTree };
+export { log, sleep, debounce, sortTree };

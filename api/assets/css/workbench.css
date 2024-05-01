@@ -8,7 +8,8 @@
 }
 
 #editor-term-section {
-  width: 100%;
   display: flex;
   flex-direction: column;
+  width: var(--editor-width);
+  height: var(--editor-height);
 }

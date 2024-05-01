@@ -3,6 +3,8 @@ const sProtocol = document.location.protocol === "http:" ? "" : "s";
 const currentURL = new URL(document.location);
 const debugIsActive = currentURL.searchParams.has("debug");
 const testIsActive = currentURL.searchParams.has("test");
+const filesystemSection = document.getElementById("filesystem");
+const editorTermSection = document.getElementById("editor-term-section");
 const filenameDialog = document.getElementById("filename-dialog");
 const loadingDialog = document.getElementById("loading-dialog");
 let projectId = currentURL.pathname.replace("/p/", "");
@@ -17,9 +19,16 @@ let term;
 let newFileOrNewFolder;
 let initialCommand = "";
 let settings = {};
+let onMobile = window.screen.width <= 991;
+let orientation =
+  window.screen.height > window.screen.width ? "portrait" : "landscape";
 
 if (currentURL.searchParams.has("command")) {
   initialCommand = currentURL.searchParams.get("command");
+}
+
+if (onMobile) {
+  editorTermSection.classList.add("hidden");
 }
 
 function debug() {
@@ -50,6 +59,11 @@ function terminalResize() {
   }
 }
 window.addEventListener("resize", debounce(terminalResize, 1000));
+window.addEventListener("orientationchange", function () {
+  orientation =
+    window.screen.height > window.screen.width ? "portrait" : "landscape";
+  terminalResize();
+});
 
 CodeMirror.modeURL = "/assets/vendor/codemirror/mode/%N/%N.js";
 
@@ -120,6 +134,7 @@ function getEditorConfigsAndModeWithFileExtension(fileExtention) {
     styleActiveLine: true,
     viewportMargin: 25,
     readOnly: false,
+    lineWrapping: true,
   };
   const fileConfigsAndExtentionModes = {
     py: {
@@ -339,7 +354,7 @@ function createNewFileOrFolder(event) {
 document.addEventListener("DOMContentLoaded", () => {
   loadSettings();
   editor = CodeMirror.fromTextArea(document.querySelector("#editor"));
-  editor.setSize("100%", "100%");
+  // editor.setSize("280px", "100%");
   editor.setOption("extraKeys", {
     "Ctrl-S": function (cm) {
       saveFile();
@@ -842,6 +857,10 @@ function loadSettings() {
 function openFileInTree(event) {
   const filepath = event.target.dataset.path;
   openFile(filepath);
+
+  if (onMobile) {
+    toggleFilesystemSidebar();
+  }
 }
 
 function openFile(filepath) {

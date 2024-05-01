@@ -1,12 +1,8 @@
 #editor-section {
-  width: var(--editor-width);
   height: var(--editor-height);
-  overflow: auto !important;
+  overflow-y: auto;
   background-color: #282a36;
-}
-
-.file-system-colapsed {
-  width: calc(100% - 56px) !important;
+  flex-shrink: 0;
 }
 
 #tabs {
@@ -48,10 +44,4 @@
 
 .cm-scroller {
   overflow: auto;
-}
-
-@media (max-width: 991px) {
-  #editor-section {
-    height: 50vh;
-  }
 }

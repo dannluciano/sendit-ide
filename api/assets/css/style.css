@@ -1,9 +1,11 @@
 :root {
   --workbench-width: 100%;
   --workbench-height: 100vh;
-  --actions-width: 75px --editor-width: 100%;
+  --actions-width: 50px;
+  --filesystem-width: 30vw;
+  --editor-width: calc(var(--workbench-width) - var(--actions-width) - var(--filesystem-width));
   --editor-height: 60vh;
-  --terminal-width: 100%;
+  --terminal-width: calc(var(--workbench-width) - var(--actions-width) - var(--filesystem-width));
   --terminal-height: calc(var(--workbench-height) - var(--editor-height));
 }
 
@@ -67,7 +69,7 @@ dialog {
 }
 
 .hidden {
-  display: none !important;
+  visibility: hidden;
 }
 
 .inline {
@@ -173,4 +175,35 @@ dialog {
     background-color: #FFF2;
     box-shadow: 32px 0 #FFF, -32px 0 #FFF2;
   }
+}
+
+@media (max-width: 991px) {
+
+  :root {
+    --workbench-width: 100%;
+    --workbench-height: 100vh;
+    --actions-width: 40px;
+    --filesystem-width: 80vw;
+    --editor-width: calc(var(--workbench-width) - var(--actions-width) - var(--filesystem-width));
+    --editor-height: 50vh;
+    --terminal-width: calc(var(--workbench-width) - var(--actions-width) - var(--filesystem-width));
+    --terminal-height: calc(var(--workbench-height) - var(--editor-height));
+  }
+
+  /* .hidden-on-mobile {
+    display: none;
+  } */
+
+  #settings-button {
+    bottom: 0;
+  }
+
+}
+
+@media (max-height: 450px) {
+
+  .hidden-on-mobile-landscape {
+    display: none;
+  }
+
 }

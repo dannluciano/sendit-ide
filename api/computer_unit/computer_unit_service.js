@@ -55,6 +55,9 @@ export default class ComputerUnitService {
         Labels: {
           "com.docker.instances.service": "vm",
         },
+        StorageOpt: {
+          "dm.basesize": "2G",
+        },
       });
 
       log("Starting container: ", containerInstance.id);

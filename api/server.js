@@ -7,23 +7,26 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { basicAuth } from "hono/basic-auth";
-import { getSignedCookie, setSignedCookie } from "hono/cookie";
+
 import { WebSocketServer, WebSocket } from "ws";
 import * as dockerode from "dockerode";
 
 import { default as directoryTree } from "directory-tree";
 import configs from "./configs.js";
-import ComputerUnitService from "./computer_unit/computer_unit_service.js";
 import { DB, WSDB } from "./database.js";
-import { nanoid } from "nanoid";
-import ComputerUnit from "./computer_unit/computer_unit.js";
 import { log, sortTree } from "./utils.js";
-import {
-  createTempDirAndCopyFilesFromPath,
-  watchTempDir,
-} from "./computer_unit/temp_dir.js";
+
 import { gitClone } from "./git-clone/git_clone_controller.js";
-import { downloadProject } from "./projects/projects_controller.js";
+import {
+  downloadProject,
+  duplicateProject,
+  showProject,
+} from "./projects/projects_controller.js";
+import verifyUser from "./auth/auth.js";
+import home from "./home/home_controller.js";
+import assetlinks from "./pwa/assetslinks.js";
+import ComputerUnitController from "./computer_unit/computer_unit_controller.js";
+import ComputerUnitService from "./computer_unit/computer_unit_service.js";
 
 const __dirname = new URL("./", import.meta.url).pathname;
 
@@ -45,147 +48,37 @@ try {
 }
 
 const computeUnitService = new ComputerUnitService(dockerConnection);
-const app = new Hono();
+const computerUnitController = new ComputerUnitController(computeUnitService);
 
-// app.use("*", logger());
+const app = new Hono();
 
 app.use("/assets/*", serveStatic({ root: "./api" }));
 
-app.use(
-  "/api/*",
-  basicAuth({
-    verifyUser: async (username, password, c) => {
-      if (configs.BYPASS_AUTH) {
-        return true;
-      }
-      const authFormData = new FormData();
-      authFormData.set("username", username);
-      authFormData.set("password", password);
-      const response = await fetch(
-        `${configs.AUTH_SERVER_URL_INTERNAL}/api/auth/`,
-        {
-          body: authFormData,
-          method: "POST",
-        }
-      );
-      if (response.status !== 403) {
-        const authDataJSON = await response.json();
-        c.set("auth-data", authDataJSON);
-        setSignedCookie(
-          c,
-          "user_id",
-          authDataJSON.user.id,
-          configs.COOKIE_SECRET
-        );
-        setSignedCookie(
-          c,
-          "user_username",
-          authDataJSON.user.username,
-          configs.COOKIE_SECRET
-        );
-        log("AUTH", "Success");
-        return true;
-      }
-      log("AUTH", "Failure");
-      return false;
-    },
-  })
-);
+app.get("/", home);
 
-app.get("/", async (c) => {
-  const projectId = nanoid();
-  return c.redirect(`/p/${projectId}`);
-});
+app.get("/.well-known/assetlinks.json", assetlinks);
 
-app.get("/.well-known/assetlinks.json", async (c) => {
-  const assetlinksPath = new URL("./assetlinks.json", import.meta.url).pathname;
-  try {
-    const content = await fs.readFile(assetlinksPath);
-    return new Response(content, {
-      status: 201,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  } catch (error) {
-    console.error(error);
-    return new Response("Error on Server", {
-      status: 500,
-    });
-  }
-});
-
-app.get("/p/:pid", async (c) => {
-  const indexPath = new URL("./index.html", import.meta.url).pathname;
-  try {
-    const content = await fs.readFile(indexPath);
-    return c.html(content, 200);
-  } catch (error) {
-    console.error(error);
-    return new Response("Error on Server", {
-      status: 500,
-    });
-  }
-});
+app.get("/p/:pid", showProject);
 
 app.get("/c/*", gitClone);
 
+app.use("/public/*", logger());
 app.post("/public/project/download/:pid", downloadProject);
 
-app.post("/api/container/create/:pid", async (c) => {
-  try {
-    const projectId = c.req.param("pid");
-    const settings = await c.req.json();
-    const cuJSON = DB.get(projectId);
-    let computerUnit = new ComputerUnit(null, null, projectId);
-    if (cuJSON) {
-      computerUnit = computeUnitService.fromJSON(cuJSON);
-    }
-    computerUnit = await computeUnitService.getOrCreateComputerUnit(
-      computerUnit,
-      settings
-    );
+app.use("/api/*", logger());
+app.use(
+  "/api/*",
+  basicAuth({
+    verifyUser: verifyUser,
+  })
+);
 
-    DB.set(computerUnit.containerId, computerUnit.toJSON());
-    DB.set(computerUnit.projectId, computerUnit.toJSON());
+app.post(
+  "/api/container/create/:pid",
+  computerUnitController.createComputerUnit.bind(computerUnitController)
+);
 
-    watchTempDir(computerUnit);
-
-    const containerCreateResponse = computerUnit.toJSON();
-    return c.json(containerCreateResponse);
-  } catch (error) {
-    console.error(error);
-    return c.json(
-      {
-        msg: error.msg,
-      },
-      500
-    );
-  }
-});
-
-app.post("/api/project/duplicate/:pid", async (c) => {
-  try {
-    const projectId = nanoid();
-    const sourceProjectId = c.req.param("pid");
-    const sourceTempDir = DB.get(sourceProjectId)["temp-dir-path"];
-    const tempDirPath = await createTempDirAndCopyFilesFromPath(sourceTempDir);
-    const computerUnit = new ComputerUnit(null, tempDirPath, projectId);
-    DB.set(computerUnit.projectId, computerUnit.toJSON());
-
-    return c.json({
-      path: `/p/${projectId}`,
-    });
-  } catch (error) {
-    console.error(error);
-    return c.json(
-      {
-        msg: error.msg,
-      },
-      500
-    );
-  }
-});
+app.post("/api/project/duplicate/:pid", duplicateProject);
 
 app.get("/version", async (c) => {
   return c.text("v0.0.1");

@@ -1,10 +1,7 @@
 import ComputerUnit from "./computer_unit.js";
 import { createTempDir } from "./temp_dir.js";
 import { getEnvsFromSettings } from "./envs.js";
-
-function log() {
-  console.info("CPU ==>", ...arguments);
-}
+import { log } from "../utils.js";
 
 export default class ComputerUnitService {
   constructor(dockerConnection) {
@@ -17,7 +14,7 @@ export default class ComputerUnitService {
         computer_unit.containerId
       );
       if (containerInstance.Id) {
-        log("Return Existing Container", containerInstance.Id);
+        log("CPU", "Return Existing Container", containerInstance.Id);
         return computer_unit;
       }
 
@@ -60,10 +57,10 @@ export default class ComputerUnitService {
         },
       });
 
-      log("Starting container: ", containerInstance.id);
+      log("CPU", "Starting container: ", containerInstance.id);
       await containerInstance.start();
 
-      log("Return New Container");
+      log("CPU", "Return New Container");
       return new ComputerUnit(
         containerInstance,
         tempDirPath,

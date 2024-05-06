@@ -342,7 +342,9 @@
   <script src="/assets/vendor/ionicons/ionicons.js"></script>
   <script src="/assets/app.js"></script>
   <script>
-    navigator.serviceWorker.register("/assets/service-worker.js")
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.register("/assets/service-worker.js")
+    }
   </script>
 </body>
 

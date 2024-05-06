@@ -1,5 +1,5 @@
 ---
-name: 'deploy'
+name: "deploy"
 
 on:
   push:
@@ -15,12 +15,27 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Run Tests
+        run: npm test
+
       - name: Push to dokku
         uses: dokku/github-action@master
         with:
-          git_remote_url: 'ssh://dokku@ide.sendit.dannluciano.com.br:22/sendit-ide'
+          git_remote_url: "ssh://dokku@ide.sendit.dannluciano.com.br:22/sendit-ide"
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          branch: 'main'
+          branch: "main"
 
       - name: Run commands after deploy
         uses: appleboy/ssh-action@v1.0.3

@@ -31,7 +31,7 @@ jobs:
         run: npm test
 
       - name: Run End to End Tests
-        run: npm test:e2e
+        run: npm run test:e2e
 
       - name: Push to dokku
         uses: dokku/github-action@master

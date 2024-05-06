@@ -2,7 +2,6 @@ import ComputerUnit from "./computer_unit.js";
 import { watchTempDir } from "./temp_dir.js";
 
 import { DB } from "../database.js";
-import ComputerUnitService from "./computer_unit_service.js";
 
 class ComputerUnitController {
   dockerConnection = "";

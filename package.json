@@ -6,7 +6,10 @@
   "type": "module",
   "scripts": {
     "start": "node api/server.js",
-    "dev": "nodemon api/server.js"
+    "dev": "nodemon api/server.js",
+    "test": "node --test 'api/**/*.test.js'",
+    "test:watch": "node --test 'api/**/*.test.js' --watch",
+    "test:e2e": "cypress run --browser firefox"
   },
   "author": "",
   "license": "ISC",

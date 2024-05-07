@@ -31,7 +31,10 @@ jobs:
         run: npm test
 
       - name: Run End to End Tests
-        run: npm run test:e2e
+        uses: cypress-io/github-action@v6
+        with:
+          build: npm run build --if-present
+          start: npm start
 
       - name: Push to dokku
         uses: dokku/github-action@master

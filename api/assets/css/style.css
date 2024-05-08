@@ -123,6 +123,7 @@ dialog {
 #settings-button {
   position: fixed;
   bottom: 1em;
+  left: 0.5em;
 }
 
 #settings-button {

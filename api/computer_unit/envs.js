@@ -21,7 +21,7 @@ function getEnvsFromSettings(settings) {
   envs.push(`GIT_CONFIG_VALUE_0=${settings["github-username"]}`);
   envs.push(`GIT_CONFIG_KEY_1=credential.https://github.com.helper`);
   envs.push(
-    `GIT_CONFIG_VALUE_1=!f() { test "$1" = get && echo "password=$(echo $GITHUB_TOKEN)"; }; f`
+    `GIT_CONFIG_VALUE_1=!f() { test "$1" = get && echo "password=$(echo $GITHUB_TOKEN)"; }; f`,
   );
 
   return envs;

@@ -4,11 +4,11 @@ import { Readable } from "node:stream";
 
 import archiver from "archiver";
 
-import { log } from "../utils.js";
 import DB from "../database.js";
+import { log } from "../utils.js";
 
-import { createTempDirAndCopyFilesFromPath } from "../computer_unit/temp_dir.js";
 import ComputerUnit from "../computer_unit/computer_unit.js";
+import { createTempDirAndCopyFilesFromPath } from "../computer_unit/temp_dir.js";
 
 function downloadProject(c) {
   try {
@@ -20,14 +20,14 @@ function downloadProject(c) {
       zlib: { level: 9 },
     });
 
-    archive.on("warning", function (err) {
+    archive.on("warning", (err) => {
       if (err.code === "ENOENT") {
         log("DOWNLOAD-PROJECT", err);
       } else {
         throw err;
       }
     });
-    archive.on("error", function (err) {
+    archive.on("error", (err) => {
       throw err;
     });
 
@@ -77,7 +77,7 @@ async function duplicateProject(c) {
       {
         msg: error.msg,
       },
-      500
+      500,
     );
   }
 }

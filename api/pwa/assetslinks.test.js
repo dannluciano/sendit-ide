@@ -1,5 +1,5 @@
-import test from "node:test";
 import assert from "node:assert";
+import test from "node:test";
 import { app } from "../app.js";
 
 test("/.well-known/assetlinks.json", async (t) => {

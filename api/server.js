@@ -10,7 +10,7 @@ const server = serve(
   },
   (info) => {
     log("SERVER", `Listening on http://localhost:${info.port}`);
-  }
+  },
 );
 
 server.on("upgrade", upgradeToWebSocket);

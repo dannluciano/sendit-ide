@@ -13,13 +13,13 @@ let tempDirPath;
 let editor;
 let apiSocket;
 let containerSocket;
-let openedFiles = [];
+const openedFiles = [];
 let currentOpenTab = -1;
 let term;
 let newFileOrNewFolder;
 let initialCommand = "";
 let settings = {};
-let onMobile = window.screen.width <= 991;
+const onMobile = window.screen.width <= 991;
 let orientation =
   window.screen.height > window.screen.width ? "portrait" : "landscape";
 
@@ -54,12 +54,12 @@ function terminalResize() {
       JSON.stringify({
         type: "resize",
         params: term.getDimensions(),
-      })
+      }),
     );
   }
 }
 window.addEventListener("resize", debounce(terminalResize, 1000));
-window.addEventListener("orientationchange", function () {
+window.addEventListener("orientationchange", () => {
   orientation =
     window.screen.height > window.screen.width ? "portrait" : "landscape";
   terminalResize();
@@ -101,7 +101,7 @@ function getExtensionIcon(filename, style) {
       iconName = "logo-docker";
     }
   } catch (error) {
-    let iconName = "bug";
+    const iconName = "bug";
     return `<ion-icon ${
       style ? iconFileStylePattern : null
     } name="${iconName}"></ion-icon>`;
@@ -288,7 +288,7 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
       commands.push(`test ! -d env && python3 -m venv env\n`);
       commands.push(`test -d env && source env/bin/activate\n`);
       commands.push(
-        `test -f requirements.txt && python -m pip install -r ${filepath}\n`
+        `test -f requirements.txt && python -m pip install -r ${filepath}\n`,
       );
     }
     if (filepath.includes("manage.py")) {
@@ -296,7 +296,7 @@ function getRunCommandsWithFileExtensionAndFilepath(fileExtention, filepath) {
       commands.push(`test ! -d env && python3 -m venv env\n`);
       commands.push(`test -d env && source env/bin/activate\n`);
       commands.push(
-        `test -f requirements.txt && python -m pip install -r requirements.txt\n`
+        `test -f requirements.txt && python -m pip install -r requirements.txt\n`,
       );
       commands.push(`python ${filepath} runserver $HOST:$PORT\n`);
     }
@@ -325,7 +325,7 @@ function runCurrentOpenedFile() {
 
   const commands = getRunCommandsWithFileExtensionAndFilepath(
     extension,
-    filepathWithOutHomePath
+    filepathWithOutHomePath,
   );
   debug(commands);
   for (const command of commands) {
@@ -356,20 +356,20 @@ document.addEventListener("DOMContentLoaded", () => {
   editor = CodeMirror.fromTextArea(document.querySelector("#editor"));
   // editor.setSize("280px", "100%");
   editor.setOption("extraKeys", {
-    "Ctrl-S": function (cm) {
+    "Ctrl-S": (cm) => {
       saveFile();
     },
-    "Cmd-S": function (cm) {
+    "Cmd-S": (cm) => {
       saveFile();
     },
-    "Ctrl-R": function (cm) {
+    "Ctrl-R": (cm) => {
       runCurrentOpenedFile();
     },
-    "Cmd-R": function (cm) {
+    "Cmd-R": (cm) => {
       runCurrentOpenedFile();
     },
   });
-  editor.on("changes", function () {
+  editor.on("changes", () => {
     if (currentOpenTab >= 0) {
       const fileWasChanged = openedFiles[currentOpenTab].changed;
       openedFiles[currentOpenTab].changed = true;
@@ -383,11 +383,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const filenameField = document.getElementById("input-filename");
   filenameField.addEventListener(
     "keypress",
-    debounce(createNewFileOrFolder, 250)
+    debounce(createNewFileOrFolder, 250),
   );
 
   const newFileButton = document.getElementById("new-file-button");
-  newFileButton.addEventListener("click", function () {
+  newFileButton.addEventListener("click", () => {
     newFileOrNewFolder = "file";
     filenameField.placeholder = "File Name (doc.txt)";
     filenameField.style.display = "block";
@@ -396,7 +396,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const newFolderButton = document.getElementById("new-folder-button");
-  newFolderButton.addEventListener("click", function () {
+  newFolderButton.addEventListener("click", () => {
     newFileOrNewFolder = "folder";
     filenameField.placeholder = "Folder Name (src/core)";
     filenameField.style.display = "block";
@@ -423,7 +423,7 @@ document.addEventListener("DOMContentLoaded", () => {
   saveSettingsButton.addEventListener("click", saveSettings);
 
   const cancelSettingsButton = document.getElementById(
-    "cancel-settings-button"
+    "cancel-settings-button",
   );
   cancelSettingsButton.addEventListener("click", openOrCloseSettings);
 
@@ -444,7 +444,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (event.key == "r") runCurrentOpenedFile();
       }
     },
-    false
+    false,
   );
 
   fetch(`/api/container/create/${projectId}`, {
@@ -475,7 +475,7 @@ function connectToContainerWS() {
   try {
     const containerURL = `ws${sProtocol}://${host}/containers/${containerId}/attach/ws?logs=true&stream=true&stdin=true&stdout=true`; //&stderr=true
     containerSocket = new WebSocket(containerURL);
-    containerSocket.onopen = function () {
+    containerSocket.onopen = () => {
       term = new Term();
       term.attach(containerSocket);
       debug(containerSocket);
@@ -487,12 +487,12 @@ function connectToContainerWS() {
       }
     };
 
-    containerSocket.onclose = function (code, reason) {
+    containerSocket.onclose = (code, reason) => {
       apiSocket.close();
       term.close();
       debug("Containet WebSocket Disconnected:", code, reason);
     };
-    containerSocket.onerror = function (err) {
+    containerSocket.onerror = (err) => {
       apiSocket.close();
       term.close();
       console.error(err);
@@ -506,9 +506,9 @@ function connectToApiWS() {
   try {
     const apiWSURL = `ws${sProtocol}://${host}/vmws?cid=${containerId}`;
     apiSocket = new WebSocket(apiWSURL);
-    apiSocket.onopen = function () {
+    apiSocket.onopen = () => {
       debug("API WebSocket Connection Opened");
-      setTimeout(function () {
+      setTimeout(() => {
         terminalResize();
         loaded();
       }, 100);
@@ -519,10 +519,10 @@ function connectToApiWS() {
     };
     debug(apiSocket);
 
-    apiSocket.onclose = function (code, reason) {
+    apiSocket.onclose = (code, reason) => {
       debug("API WebSocket Disconnected:", code, reason);
     };
-    apiSocket.onerror = function (err) {
+    apiSocket.onerror = (err) => {
       console.error(err);
     };
 
@@ -542,9 +542,9 @@ function connectToApiWS() {
       if (type === "open") {
         const { filename, filepath, content } = params;
 
-        const fileIsOpened = openedFiles.findIndex(function (file) {
-          return file.filepath === filepath;
-        });
+        const fileIsOpened = openedFiles.findIndex(
+          (file) => file.filepath === filepath,
+        );
 
         let file;
 
@@ -719,7 +719,7 @@ function renderFilesTabs() {
 }
 
 function changeCurrentOpenedTab(event) {
-  const tabindex = parseInt(event.target.dataset.fileindex);
+  const tabindex = Number.parseInt(event.target.dataset.fileindex);
   const file = openedFiles[tabindex];
   const filepath = file.filepath;
 
@@ -730,9 +730,9 @@ function changeCurrentOpenedTabWithFile(file) {
   closeFileStyle();
   setActionFileStyle(file.filename, false);
 
-  const tabindex = openedFiles.findIndex(function (currentFile) {
-    return currentFile.filepath === file.filepath;
-  });
+  const tabindex = openedFiles.findIndex(
+    (currentFile) => currentFile.filepath === file.filepath,
+  );
   editor.swapDoc(file.doc);
   changeEditorConfigsAndMode(file.filename);
   currentOpenTab = tabindex;
@@ -746,7 +746,7 @@ function closeTab(event) {
     setActionFileStyle(element.textContent, true);
   }
 
-  const tabindex = parseInt(event.target.parentNode.dataset.fileindex);
+  const tabindex = Number.parseInt(event.target.parentNode.dataset.fileindex);
   openedFiles.splice(tabindex, 1);
   if (openedFiles.length == 0) {
     currentOpenTab = -1;
@@ -870,7 +870,7 @@ function openFile(filepath) {
       params: {
         filepath: filepath,
       },
-    })
+    }),
   );
 }
 
@@ -886,7 +886,7 @@ function writeFile(filepath, source) {
         filepath,
         source,
       },
-    })
+    }),
   );
 }
 
@@ -901,7 +901,7 @@ function makeFolder(folderpath) {
       params: {
         folderpath,
       },
-    })
+    }),
   );
 }
 
@@ -914,7 +914,7 @@ function loaded() {
     JSON.stringify({
       type: "loaded",
       params: {},
-    })
+    }),
   );
 }
 
@@ -1013,11 +1013,11 @@ function tryExecuteFunctionInLoopWithDelay(
     } catch (error) {
       console.error(
         `An error occurred during function execution in attempt ${i}:`,
-        error.message
+        error.message,
       );
       if (i < numAttempts) {
         console.log(
-          `Waiting for ${delayMs} milliseconds before next attempt...`
+          `Waiting for ${delayMs} milliseconds before next attempt...`,
         );
         sleep(delayMs);
         return attempt(i + 1);
@@ -1059,4 +1059,44 @@ function formDataToForm(form, data) {
 
 function closeDialog(element) {
   element.parentNode.close();
+}
+
+function toggleFolderIcon(element) {
+  const icon = element.querySelector(".filesystem-folder-icon");
+  const foldername =
+    element.parentElement.parentElement.parentElement.dataset.path
+      .split("/")
+      .pop() || "folder";
+  if (icon.getAttribute("name") === "folder") {
+    const folderIcon = getFolderIcon("folder-open");
+    icon.setAttribute("name", folderIcon);
+  } else {
+    const folderIcon = getFolderIcon(foldername);
+    icon.setAttribute("name", folderIcon);
+  }
+}
+
+function toggleFilesystemSidebar(element) {
+  const filesystem = document.querySelector("#filesystem");
+  const editorTermSection = document.querySelector("#editor-term-section");
+  if (!element) {
+    element = document.getElementById("file-tray-icon");
+  }
+
+  if (filesystem.classList.contains("hidden")) {
+    if (!onMobile) {
+      document.documentElement.style.setProperty("--filesystem-width", "30vw");
+    } else {
+      document.documentElement.style.setProperty("--filesystem-width", "80vw");
+    }
+    editorTermSection.classList.toggle("hidden");
+    filesystem.classList.toggle("hidden");
+    element.name = "file-tray";
+  } else {
+    document.documentElement.style.setProperty("--filesystem-width", "0vw");
+    filesystem.classList.toggle("hidden");
+    editorTermSection.classList.toggle("hidden");
+    element.name = "file-tray-full";
+  }
+  terminalResize();
 }

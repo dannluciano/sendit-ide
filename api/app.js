@@ -4,28 +4,28 @@ import * as path from "node:path";
 import { serveStatic } from "@hono/node-server/serve-static";
 
 import { Hono } from "hono";
-import { logger } from "hono/logger";
 import { basicAuth } from "hono/basic-auth";
+import { logger } from "hono/logger";
 
-import { WebSocketServer, WebSocket } from "ws";
 import * as dockerode from "dockerode";
+import { WebSocket, WebSocketServer } from "ws";
 
 import { default as directoryTree } from "directory-tree";
 import configs from "./configs.js";
 import { DB, WSDB } from "./database.js";
 import { log, sortTree } from "./utils.js";
 
+import verifyUser from "./auth/auth.js";
+import ComputerUnitController from "./computer_unit/computer_unit_controller.js";
+import ComputerUnitService from "./computer_unit/computer_unit_service.js";
 import { gitClone } from "./git-clone/git_clone_controller.js";
+import home from "./home/home_controller.js";
 import {
   downloadProject,
   duplicateProject,
   showProject,
 } from "./projects/projects_controller.js";
-import verifyUser from "./auth/auth.js";
-import home from "./home/home_controller.js";
 import assetlinks from "./pwa/assetslinks.js";
-import ComputerUnitController from "./computer_unit/computer_unit_controller.js";
-import ComputerUnitService from "./computer_unit/computer_unit_service.js";
 
 const __dirname = new URL("./", import.meta.url).pathname;
 
@@ -69,12 +69,12 @@ app.use(
   "/api/*",
   basicAuth({
     verifyUser: verifyUser,
-  })
+  }),
 );
 
 app.post(
   "/api/container/create/:pid",
-  computerUnitController.createComputerUnit.bind(computerUnitController)
+  computerUnitController.createComputerUnit.bind(computerUnitController),
 );
 
 app.post("/api/project/duplicate/:pid", duplicateProject);
@@ -110,7 +110,7 @@ app.get("/fs/file/open/:cid/:pathenc", async (c) => {
             filepath,
             content: content.toString("utf-8"),
           },
-        })
+        }),
       );
     }
 
@@ -148,7 +148,7 @@ async function apiWSConnection(ws, req) {
   console.info(`API WebSocket Connection Opened: ${JSON.stringify(req.url)}`);
 
   const containerId = new URL(req.url, "http://localhost").searchParams.get(
-    "cid"
+    "cid",
   );
 
   let computerUnit;
@@ -199,7 +199,7 @@ async function apiWSConnection(ws, req) {
               filepath,
               content: content.toString("utf-8"),
             },
-          })
+          }),
         );
       }
       if (cmd.type === "loaded") {
@@ -216,7 +216,7 @@ async function apiWSConnection(ws, req) {
             JSON.stringify({
               type: "fs",
               params: tree,
-            })
+            }),
           );
         }
 
@@ -230,7 +230,7 @@ async function apiWSConnection(ws, req) {
           JSON.stringify({
             type: "host-port",
             params: hostPort,
-          })
+          }),
         );
       }
     } catch (error) {
@@ -258,15 +258,15 @@ dockerWS.on("connection", dockerWSConnection);
 
 async function dockerWSConnection(clientToServerWS, req) {
   console.info(
-    `WebSocket -> Server Connection Opened: ${JSON.stringify(req.url)}`
+    `WebSocket -> Server Connection Opened: ${JSON.stringify(req.url)}`,
   );
 
   const serverToDockerWS = new WebSocket(
-    `ws+unix:///var/run/docker.sock:${req.url}`
+    `ws+unix:///var/run/docker.sock:${req.url}`,
   );
-  serverToDockerWS.on("open", function () {
+  serverToDockerWS.on("open", () => {
     console.info(
-      `WebSocket -> Docker Connection Opened: ${JSON.stringify(req.url)}`
+      `WebSocket -> Docker Connection Opened: ${JSON.stringify(req.url)}`,
     );
   });
 

@@ -1,5 +1,5 @@
-import configs from "./configs.js";
 import Database from "better-sqlite3";
+import configs from "./configs.js";
 
 function log() {
   console.log("DB ==>", ...arguments);
@@ -15,7 +15,7 @@ db.pragma("foreign_keys = true");
 db.pragma("temp_store = memory");
 
 db.exec(
-  "CREATE TABLE IF NOT EXISTS kv (key BLOB UNIQUE, value BLOB, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)"
+  "CREATE TABLE IF NOT EXISTS kv (key BLOB UNIQUE, value BLOB, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)",
 );
 
 function toObj(str) {
@@ -29,7 +29,7 @@ function toObj(str) {
 const WSDB = new Map();
 
 const DB = {
-  get: function (key) {
+  get: (key) => {
     const row = db.prepare("SELECT value FROM kv WHERE key = ?").get(key);
     if (row) {
       const obj = toObj(row.value);
@@ -40,21 +40,14 @@ const DB = {
       }
     }
   },
-  set: function (key, val) {
-    return db
+  set: (key, val) =>
+    db
       .prepare("REPLACE INTO kv (key, value) VALUES (?,?)")
-      .run(key, JSON.stringify(val));
-  },
-  del: function (key) {
-    return db.prepare("DELETE FROM kv WHERE key = ?").run(key);
-  },
-  clear: function () {
-    return db.prepare("DELETE FROM kv").run();
-  },
-  keys: async function () {
-    return db.prepare("SELECT keys FROM kv").all();
-  },
-  length: async function () {
+      .run(key, JSON.stringify(val)),
+  del: (key) => db.prepare("DELETE FROM kv WHERE key = ?").run(key),
+  clear: () => db.prepare("DELETE FROM kv").run(),
+  keys: async () => db.prepare("SELECT keys FROM kv").all(),
+  length: async () => {
     const row = db.prepare("SELECT COUNT(*) AS length FROM kv").get();
     return row.length;
   },

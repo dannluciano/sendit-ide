@@ -14,7 +14,7 @@ export default async function verifyUser(username, password, c) {
     {
       body: authFormData,
       method: "POST",
-    }
+    },
   );
   if (response.status !== 403) {
     const authDataJSON = await response.json();
@@ -24,7 +24,7 @@ export default async function verifyUser(username, password, c) {
       c,
       "user_username",
       authDataJSON.user.username,
-      configs.COOKIE_SECRET
+      configs.COOKIE_SECRET,
     );
     log("AUTH", "Success");
     return true;

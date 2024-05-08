@@ -1,7 +1,7 @@
-import ComputerUnit from "./computer_unit.js";
-import { createTempDir } from "./temp_dir.js";
-import { getEnvsFromSettings } from "./envs.js";
 import { log } from "../utils.js";
+import ComputerUnit from "./computer_unit.js";
+import { getEnvsFromSettings } from "./envs.js";
+import { createTempDir } from "./temp_dir.js";
 
 export default class ComputerUnitService {
   constructor(dockerConnection) {
@@ -11,7 +11,7 @@ export default class ComputerUnitService {
   async getOrCreateComputerUnit(computer_unit, settings = {}) {
     try {
       let containerInstance = this.dockerConnection.getContainer(
-        computer_unit.containerId
+        computer_unit.containerId,
       );
       if (containerInstance.Id) {
         log("CPU", "Return Existing Container", containerInstance.Id);
@@ -64,7 +64,7 @@ export default class ComputerUnitService {
       return new ComputerUnit(
         containerInstance,
         tempDirPath,
-        computer_unit.projectId
+        computer_unit.projectId,
       );
     } catch (error) {
       console.error("Error!", error);
@@ -74,7 +74,7 @@ export default class ComputerUnitService {
 
   fromJSON(cuJSON) {
     const containerInstance = this.dockerConnection.getContainer(
-      cuJSON["container-id"]
+      cuJSON["container-id"],
     );
     const tempDirPath = cuJSON["temp-dir-path"];
     const projectId = cuJSON["project-id"];

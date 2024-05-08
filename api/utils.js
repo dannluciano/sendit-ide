@@ -1,10 +1,8 @@
-function log(moduleName = "API", msg) {
+function log(moduleName, msg, ...args) {
   if (msg) {
-    const args = Array.from(arguments);
-    args.shift();
-    console.info(moduleName, "==>", ...args);
+    console.info(moduleName, "==>", args);
   } else {
-    console.info(...arguments);
+    console.info(args);
   }
 }
 
@@ -12,10 +10,9 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function debounce(func, wait, immediate) {
-  var timeout;
+function debounce(func, wait, immediate, ...args) {
+  let timeout;
   return function () {
-    var args = arguments;
     clearTimeout(timeout);
     if (immediate && !timeout) func.apply(this, args);
     timeout = setTimeout(() => {
@@ -35,7 +32,7 @@ function sortTree(treeChildren = [], type = "directory") {
       sortTree(pathObj.children, type);
     }
 
-    if (pathObj.type == type) targetArray.push(pathObj);
+    if (pathObj.type === type) targetArray.push(pathObj);
     else restArray.push(pathObj);
   }
 

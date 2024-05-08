@@ -25,8 +25,8 @@ const HOSTNAME_WHITELIST = [
 
 // The Util Function to hack URLs of intercepted requests
 const getFixedUrl = (req) => {
-  var now = Date.now();
-  var url = new URL(req.url);
+  const now = Date.now();
+  const url = new URL(req.url);
 
   // 1. fixed http URL
   // Just keep syncing with location.protocol
@@ -40,7 +40,7 @@ const getFixedUrl = (req) => {
   // Until cache mode of Fetch API landed, we have to workaround cache-busting with query string.
   // Cache-Control-Bug: https://bugs.chromium.org/p/chromium/issues/detail?id=453190
   if (url.hostname === self.location.hostname) {
-    url.search += (url.search ? "&" : "?") + "cache-bust=" + now;
+    url.search += `${url.search ? "&" : "?"}cache-bust=${now}`;
   }
   return url.href;
 };

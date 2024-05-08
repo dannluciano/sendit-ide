@@ -6,7 +6,10 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"style": {
+				"noUnusedTemplateLiteral": "off"
+			}
 		}
 	},
 	"files": {
@@ -16,5 +19,10 @@
 		"formatter": {
 			"indentStyle": "space"
 		}
+	},
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
 	}
 }

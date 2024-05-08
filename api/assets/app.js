@@ -24,7 +24,7 @@ if (currentURL.searchParams.has("command")) {
   initialCommand = currentURL.searchParams.get("command");
 }
 
-if (isOnMobile) {
+if (isOnMobile()) {
   editorTermSection.classList.add("hidden");
 }
 

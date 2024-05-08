@@ -1,12 +1,13 @@
-#filesystem {
+#filesystem-section {
   width: var(--filesystem-width);
   padding: 0 0;
-  padding-left: 1em;
+
   padding-top: 0.5em;
   border-right: 1px solid #282a36;
 }
 
 #file-system-tree__section {
+  padding-left: 1em;
   min-height: 60vh;
   overflow-y: auto;
 }
@@ -48,6 +49,7 @@ ul li span {
 }
 
 #help {
+  padding-left: 1em;
   height: 40vh;
   overflow-y: auto;
   scroll-behavior: smooth;

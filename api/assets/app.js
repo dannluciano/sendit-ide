@@ -19,15 +19,12 @@ let term;
 let newFileOrNewFolder;
 let initialCommand = "";
 let settings = {};
-const onMobile = window.screen.width <= 991;
-let orientation =
-  window.screen.height > window.screen.width ? "portrait" : "landscape";
 
 if (currentURL.searchParams.has("command")) {
   initialCommand = currentURL.searchParams.get("command");
 }
 
-if (onMobile) {
+if (isOnMobile) {
   editorTermSection.classList.add("hidden");
 }
 
@@ -58,12 +55,23 @@ function terminalResize() {
     );
   }
 }
+
+function getScreenOrientation() {
+  return window.screen.height > window.screen.width ? "portrait" : "landscape";
+}
+
+function isOnMobile() {
+  return window.screen.width <= 991;
+}
+
+function changeOrientatationOfDevice(event) {
+  debug(getScreenOrientation(), isOnMobile(), event);
+
+  setTimeout(terminalResize, 1000);
+}
+
 window.addEventListener("resize", debounce(terminalResize, 1000));
-window.addEventListener("orientationchange", () => {
-  orientation =
-    window.screen.height > window.screen.width ? "portrait" : "landscape";
-  terminalResize();
-});
+window.addEventListener("orientationchange", changeOrientatationOfDevice);
 
 CodeMirror.modeURL = "/assets/vendor/codemirror/mode/%N/%N.js";
 
@@ -1081,24 +1089,26 @@ function toggleFolderIcon(element) {
 }
 
 function toggleFilesystemSidebar() {
-  const filesystem = document.querySelector("#filesystem");
-  const editorTermSection = document.querySelector("#editor-term-section");
-  const element = document.getElementById("file-tray-icon");
+  const filesystem = document.querySelector("#filesystem-section");
+
+  const fileTrayIcon = document.getElementById("file-tray-icon");
 
   if (filesystem.classList.contains("hidden")) {
-    if (!onMobile) {
+    if (!isOnMobile) {
       document.documentElement.style.setProperty("--filesystem-width", "30vw");
     } else {
       document.documentElement.style.setProperty("--filesystem-width", "80vw");
     }
-    editorTermSection.classList.toggle("hidden");
+
     filesystem.classList.toggle("hidden");
-    element.name = "file-tray";
+    fileTrayIcon.name = "file-tray";
   } else {
     document.documentElement.style.setProperty("--filesystem-width", "0vw");
     filesystem.classList.toggle("hidden");
+    fileTrayIcon.name = "file-tray-full";
+  }
+  if (isOnMobile()) {
     editorTermSection.classList.toggle("hidden");
-    element.name = "file-tray-full";
   }
   terminalResize();
 }

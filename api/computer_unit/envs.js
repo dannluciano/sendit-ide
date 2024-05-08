@@ -1,7 +1,3 @@
-function log() {
-  console.info("ENV ==>", ...arguments);
-}
-
 function getEnvsFromSettings(settings) {
   const envsNameFromSettingsMap = {
     name: "GIT_AUTHOR_NAME",

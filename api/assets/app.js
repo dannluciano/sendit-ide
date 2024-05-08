@@ -31,9 +31,9 @@ if (onMobile) {
   editorTermSection.classList.add("hidden");
 }
 
-function debug() {
+function debug(...args) {
   if (debugIsActive) {
-    console.log(...arguments);
+    console.log(args);
   }
 }
 
@@ -91,7 +91,7 @@ function getExtensionIcon(filename, style) {
     md: "book",
   };
   const extension = getFileExtension(filename);
-  let iconName = iconFileLabels["file"];
+  let iconName = iconFileLabels.file;
   try {
     iconName = iconFileLabels[extension] || "document";
     if (filename === "package.json" || filename === "package-lock.json") {
@@ -436,12 +436,12 @@ document.addEventListener("DOMContentLoaded", () => {
     "keyup",
     (event) => {
       if (event.ctrlKey) {
-        if (event.key == "s") saveFile();
-        if (event.key == "r") runCurrentOpenedFile();
+        if (event.key === "s") saveFile();
+        if (event.key === "r") runCurrentOpenedFile();
       }
       if (event.metaKey) {
-        if (event.key == "s") saveFile();
-        if (event.key == "r") runCurrentOpenedFile();
+        if (event.key === "s") saveFile();
+        if (event.key === "r") runCurrentOpenedFile();
       }
     },
     false,
@@ -577,7 +577,9 @@ function duplicateProject() {
     method: "POST",
   })
     .then((res) => res.json())
-    .then((data) => (window.location.pathname = data.path))
+    .then((data) => {
+      window.location.pathname = data.path;
+    })
     .catch((error) => console.error(error));
 }
 
@@ -642,7 +644,10 @@ function setActionFileStyle(text, close) {
 
 function closeFileStyle() {
   const element = document.querySelector(".file-open");
-  element && element.classList.remove("file-open");
+
+  if (element) {
+    element.classList.remove("file-open");
+  }
 }
 
 function renderFilesTabs() {
@@ -748,7 +753,7 @@ function closeTab(event) {
 
   const tabindex = Number.parseInt(event.target.parentNode.dataset.fileindex);
   openedFiles.splice(tabindex, 1);
-  if (openedFiles.length == 0) {
+  if (openedFiles.length === 0) {
     currentOpenTab = -1;
   } else {
     changeCurrentOpenedTabWithFile(openedFiles[openedFiles.length - 1]);
@@ -926,11 +931,11 @@ function sendControl(element) {
     Z: 90,
   };
   const key = element.dataset.key || "";
-  var input = document.getElementsByClassName("xterm-helper-textarea")[0];
-  var keyboard = Keysim.Keyboard.US_ENGLISH;
+  const input = document.getElementsByClassName("xterm-helper-textarea")[0];
+  const keyboard = Keysim.Keyboard.US_ENGLISH;
   const ctrlKey = new Keysim.Keystroke(Keysim.Keystroke.CTRL, mapKey[key]);
   keyboard.dispatchEventsForKeystroke(ctrlKey, input);
-  debug("CTRL" + mapKey[key]);
+  debug(`CTRL${mapKey[key]}`);
 }
 
 function sendTab(element) {
@@ -987,7 +992,7 @@ server.listen(8080, '0.0.0.0', () => {
   saveFile();
 }
 
-var script = document.createElement("script");
+const script = document.createElement("script");
 script.src = "/assets/vendor/keysim/keysim.js";
 document.body.appendChild(script);
 
@@ -1007,9 +1012,8 @@ function tryExecuteFunctionInLoopWithDelay(
       console.log(`Attempt ${i}: ${func.name}`);
       if (typeof func === "function") {
         return func(...args);
-      } else {
-        throw new Error("Provided argument is not a function");
       }
+      throw new Error("Provided argument is not a function");
     } catch (error) {
       console.error(
         `An error occurred during function execution in attempt ${i}:`,
@@ -1029,7 +1033,7 @@ function tryExecuteFunctionInLoopWithDelay(
 }
 
 function formDataToJSON(formData) {
-  var object = {};
+  const object = {};
   formData.forEach((value, key) => {
     // Reflect.has in favor of: object.hasOwnProperty(key)
     if (!Reflect.has(object, key)) {
@@ -1076,12 +1080,10 @@ function toggleFolderIcon(element) {
   }
 }
 
-function toggleFilesystemSidebar(element) {
+function toggleFilesystemSidebar() {
   const filesystem = document.querySelector("#filesystem");
   const editorTermSection = document.querySelector("#editor-term-section");
-  if (!element) {
-    element = document.getElementById("file-tray-icon");
-  }
+  const element = document.getElementById("file-tray-icon");
 
   if (filesystem.classList.contains("hidden")) {
     if (!onMobile) {

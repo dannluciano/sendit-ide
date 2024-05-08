@@ -1,9 +1,6 @@
 import Database from "better-sqlite3";
 import configs from "./configs.js";
-
-function log() {
-  console.log("DB ==>", ...arguments);
-}
+import { log } from "./utils.js";
 
 const db = new Database(configs.DATABASE_NAME, { verbose: log });
 
@@ -35,9 +32,8 @@ const DB = {
       const obj = toObj(row.value);
       if (obj) {
         return obj;
-      } else {
-        return row.value;
       }
+      return row.value;
     }
   },
   set: (key, val) =>

@@ -163,7 +163,7 @@ async function apiWSConnection(ws, req) {
 
   WSDB.set(computerUnit.containerId, ws);
 
-  ws.on("message", async function message(message) {
+  ws.on("message", async (message) => {
     try {
       const cmd = JSON.parse(message);
       if (cmd.type === "resize") {
@@ -270,7 +270,7 @@ async function dockerWSConnection(clientToServerWS, req) {
     );
   });
 
-  serverToDockerWS.on("message", async function message(message) {
+  serverToDockerWS.on("message", async (message) => {
     clientToServerWS.send(message);
   });
 
@@ -279,7 +279,7 @@ async function dockerWSConnection(clientToServerWS, req) {
   });
   serverToDockerWS.on("error", console.error);
 
-  clientToServerWS.on("message", async function message(message) {
+  clientToServerWS.on("message", async (message) => {
     if (serverToDockerWS.readyState === serverToDockerWS.OPEN) {
       serverToDockerWS.send(message);
     }

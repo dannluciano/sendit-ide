@@ -1,6 +1,6 @@
 import * as fs from "node:fs/promises";
-import * as path from "node:path";
 import * as os from "node:os";
+import * as path from "node:path";
 
 import * as chokidar from "chokidar";
 import { default as directoryTree } from "directory-tree";
@@ -41,7 +41,7 @@ function watchTempDir(computerUnit) {
           JSON.stringify({
             type: "fs",
             params: tree,
-          })
+          }),
         );
       }
     }
@@ -54,7 +54,7 @@ function watchTempDir(computerUnit) {
         ignored: /(^|[\/\\])\..|.cache|env|node_modules/,
         ignoreInitial: true,
       })
-      .on("all", function (event, path) {
+      .on("all", (event, path) => {
         sendFileSystemChangesDebouced();
       });
   } catch (error) {

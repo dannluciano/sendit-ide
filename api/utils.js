@@ -15,23 +15,22 @@ function sleep(ms) {
 function debounce(func, wait, immediate) {
   var timeout;
   return function () {
-    var context = this,
-      args = arguments;
+    var args = arguments;
     clearTimeout(timeout);
-    if (immediate && !timeout) func.apply(context, args);
-    timeout = setTimeout(function () {
+    if (immediate && !timeout) func.apply(this, args);
+    timeout = setTimeout(() => {
       timeout = null;
-      if (!immediate) func.apply(context, args);
+      if (!immediate) func.apply(this, args);
     }, wait);
   };
 }
 
 function sortTree(treeChildren = [], type = "directory") {
-  let targetArray = [];
-  let restArray = [];
+  const targetArray = [];
+  const restArray = [];
 
   for (let index = 0; index < treeChildren.length; ++index) {
-    let pathObj = treeChildren[index];
+    const pathObj = treeChildren[index];
     if (pathObj.children?.length) {
       sortTree(pathObj.children, type);
     }
@@ -40,7 +39,7 @@ function sortTree(treeChildren = [], type = "directory") {
     else restArray.push(pathObj);
   }
 
-  let resultTree = [...targetArray, ...restArray];
+  const resultTree = [...targetArray, ...restArray];
   for (let index = 0; index < treeChildren.length; ++index) {
     treeChildren[index] = resultTree[index];
   }

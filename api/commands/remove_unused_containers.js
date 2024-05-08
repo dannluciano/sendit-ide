@@ -16,23 +16,26 @@ try {
   });
 
   const now = new Date();
-  log("NOW: ", now)
+  log("NOW: ", now);
 
   for await (const containerInfo of containers) {
     const container = await dockerConnection.getContainer(containerInfo.Id);
     // const psout = await container.top({ ps_args: "aux" });
     const psout = await container.top();
-    const promises = []
+    const promises = [];
     if (psout.Processes.length === 1) {
       const containerInspect = await container.inspect();
       const startedAt = new Date(containerInspect.State.StartedAt);
-      const diff = Math.abs(now-startedAt);
+      const diff = Math.abs(now - startedAt);
       if (diff > 1000 * 60 * 30) {
-        promises.push(container.stop())
-        log("", `Removing Container ${containerInfo.Id} started at: ${startedAt}`)
+        promises.push(container.stop());
+        log(
+          "",
+          `Removing Container ${containerInfo.Id} started at: ${startedAt}`,
+        );
       }
     }
-    Promise.all(promises)
+    Promise.all(promises);
   }
 } catch (error) {
   console.error(error);

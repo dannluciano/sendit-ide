@@ -21,7 +21,7 @@ class ComputerUnitController {
       }
       computerUnit = await this.computeUnitService.getOrCreateComputerUnit(
         computerUnit,
-        settings
+        settings,
       );
 
       DB.set(computerUnit.containerId, computerUnit.toJSON());
@@ -37,7 +37,7 @@ class ComputerUnitController {
         {
           msg: error.msg,
         },
-        500
+        500,
       );
     }
   }

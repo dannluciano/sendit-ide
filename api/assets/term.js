@@ -21,7 +21,6 @@ const terminalTheme = {
 
 let globalTerm = null;
 
-
 class Term {
   constructor() {
     this.terminalElement = document.getElementById("terminal");
@@ -33,11 +32,11 @@ class Term {
     this.term.loadAddon(this.fitAddon);
     this.term.open(this.terminalElement);
     this.term.write("\x1B[1;3;31mCarregando...\x1B[0m $ ");
-    this.term.onResize(function (evt) {
-      console.log(evt)
+    this.term.onResize((evt) => {
+      console.log(evt);
     });
     globalTerm = this;
-    this.xterm_resize_ob = new ResizeObserver(function (entries) {
+    this.xterm_resize_ob = new ResizeObserver((entries) => {
       try {
         // console.log(entries)
         globalTerm.fit();

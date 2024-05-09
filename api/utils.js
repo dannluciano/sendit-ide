@@ -1,8 +1,8 @@
 function log(moduleName, msg, ...args) {
   if (msg) {
-    console.info(moduleName, "==>", args);
+    console.info(moduleName, "==>", msg, ...args);
   } else {
-    console.info(args);
+    console.info("LOG", "==>", moduleName, ...args);
   }
 }
 

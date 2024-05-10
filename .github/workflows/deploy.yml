@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.ref == 'refs/heads/master' && format('ci-master-{0}', github.sha) || format('ci-{0}', github.ref) }}
+
 jobs:
   deploy:
     runs-on: ubuntu-22.04

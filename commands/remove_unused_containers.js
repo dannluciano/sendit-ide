@@ -1,7 +1,7 @@
 import * as dockerode from "dockerode";
 
-import configs from "../configs.js";
-import { log } from "../utils.js";
+import configs from "../api/configs.js";
+import { log } from "../api/utils.js";
 
 let dockerConnection;
 

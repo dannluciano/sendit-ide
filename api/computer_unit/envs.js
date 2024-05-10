@@ -1,3 +1,5 @@
+import configs from "../configs.js";
+
 function getEnvsFromSettings(settings) {
   const envsNameFromSettingsMap = {
     name: "GIT_AUTHOR_NAME",
@@ -5,7 +7,7 @@ function getEnvsFromSettings(settings) {
     "github-username": "GITHUB_USERNAME",
     "github-auth-token": "GITHUB_TOKEN",
   };
-  const envs = [];
+  const envs = [`SENDIT_IDE_ENV=${configs.ENV}`];
   for (const [key, value] of Object.entries(settings)) {
     try {
       const envName = envsNameFromSettingsMap[key];

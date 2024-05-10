@@ -2,7 +2,7 @@ import Database from "better-sqlite3";
 import configs from "./configs.js";
 import { log } from "./utils.js";
 
-const db = new Database(configs.DATABASE_NAME, { verbose: log });
+const db = new Database(configs.DATABASE_NAME);
 
 db.pragma("journal_mode = WAL");
 db.pragma("busy_timeout = 5000");

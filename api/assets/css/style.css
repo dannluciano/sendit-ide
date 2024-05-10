@@ -120,20 +120,6 @@ dialog {
   border-color: var(--blackTernary);
 }
 
-#settings-button {
-  position: fixed;
-  bottom: 1em;
-  left: 0.5em;
-}
-
-#settings-button {
-  ion-icon:hover {
-    rotate: 270deg;
-    animation: 0.5s;
-    animation-delay: 100ms;
-  }
-}
-
 .close-dialog {
   position: absolute;
   top: 2px;

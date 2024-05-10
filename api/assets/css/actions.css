@@ -53,8 +53,29 @@
   padding-top: 0.2rem !important;
 }
 
+#settings-button {
+  position: fixed;
+  bottom: 1em;
+  left: 0.5em;
+}
+
+#settings-button {
+  ion-icon:hover {
+    rotate: 270deg;
+    animation: 0.5s;
+    animation-delay: 100ms;
+  }
+}
+
+
 @media (max-width: 991px) {
   .actions {
     margin-top: 0.5rem !important;
+  }
+
+  #settings-button {
+    position: fixed;
+    bottom: 1em;
+    left: unset;
   }
 }

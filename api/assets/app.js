@@ -871,7 +871,7 @@ function openFileInTree(event) {
   const filepath = event.target.dataset.path;
   openFile(filepath);
 
-  if (onMobile) {
+  if (isOnMobile()) {
     toggleFilesystemSidebar();
   }
 }
@@ -1094,7 +1094,7 @@ function toggleFilesystemSidebar() {
   const fileTrayIcon = document.getElementById("file-tray-icon");
 
   if (filesystem.classList.contains("hidden")) {
-    if (!isOnMobile) {
+    if (!isOnMobile()) {
       document.documentElement.style.setProperty("--filesystem-width", "30vw");
     } else {
       document.documentElement.style.setProperty("--filesystem-width", "80vw");

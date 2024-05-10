@@ -1,3 +1,4 @@
+import { createWriteStream } from "node:fs";
 import fs from "node:fs/promises";
 import os from "node:os";
 import { Readable } from "node:stream";
@@ -7,6 +8,7 @@ import archiver from "archiver";
 import DB, { WSDB } from "../database.js";
 import { log } from "../utils.js";
 
+import { nanoid } from "nanoid";
 import ComputerUnit from "../computer_unit/computer_unit.js";
 import { createTempDirAndCopyFilesFromPath } from "../computer_unit/temp_dir.js";
 
@@ -15,7 +17,7 @@ function downloadProject(c) {
     log("DOWNLOAD-PROJECT", "Gererating Zip File");
     const projectId = c.req.param("pid");
     const cuJSON = DB.get(projectId);
-    const output = fs.createWriteStream(`${os.tmpdir}/${projectId}.zip`);
+    const output = createWriteStream(`${os.tmpdir}/${projectId}.zip`);
     const archive = archiver("zip", {
       zlib: { level: 9 },
     });
@@ -61,6 +63,7 @@ async function showProject(c) {
 
 async function duplicateProject(c) {
   try {
+    log("DUPLICATE-PROJECT", "Starting");
     const projectId = nanoid();
     const sourceProjectId = c.req.param("pid");
     const sourceTempDir = DB.get(sourceProjectId)["temp-dir-path"];
@@ -68,6 +71,7 @@ async function duplicateProject(c) {
     const computerUnit = new ComputerUnit(null, tempDirPath, projectId);
     DB.set(computerUnit.projectId, computerUnit.toJSON());
 
+    log("DUPLICATE-PROJECT", "Done");
     return c.json({
       path: `/p/${projectId}`,
     });

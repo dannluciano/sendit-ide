@@ -2,7 +2,7 @@ import { getSignedCookie } from "hono/cookie";
 import configs from "../configs.js";
 import { log } from "../utils.js";
 
-export default async function authMiddleware(c, next) {
+export default async function isAuthenticated(c, next) {
   try {
     const username = await getSignedCookie(
       c,

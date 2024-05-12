@@ -73,7 +73,7 @@ async function duplicateProject(c) {
 
     log("DUPLICATE-PROJECT", "Done");
     return c.json({
-      path: `/p/${projectId}`,
+      path: `/api/p/${projectId}`,
     });
   } catch (error) {
     console.error(error);

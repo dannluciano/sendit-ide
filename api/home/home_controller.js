@@ -11,7 +11,7 @@ export default async function home(c) {
     );
     if (username) {
       const projectId = nanoid();
-      return c.redirect(`/p/${projectId}`);
+      return c.redirect(`/api/p/${projectId}`);
     }
     return c.redirect("/pages/signin");
   } catch (error) {

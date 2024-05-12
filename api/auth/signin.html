@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SendIT-IDE Login</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css"
+    />
+  </head>
+
+  <body>
+    <section class="section">
+      <div class="container">
+        <h1 class="title">Entrar no SendIT-IDE</h1>
+
+        <article class="message is-info">
+          <div class="message-body">
+            Você pode usar suas mesmas credenciais do
+            <a href="https://sendit.dannluciano.com.br">SendIT</a>
+          </div>
+        </article>
+
+        <article id="error-section" class="message is-error is-hidden">
+          <div class="message-body">Error: Usuario e/ou Senha Invalida!</div>
+        </article>
+
+        <form id="signin-form">
+          <div class="field">
+            <label class="label is-large">Nome de Usuário:</label>
+            <div class="control">
+              <input
+                id="username-field"
+                name="username"
+                class="input is-large"
+                type="text"
+                placeholder="dannluciano"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label is-large">Senha:</label>
+            <div class="control">
+              <input
+                id="password-field"
+                name="password"
+                class="input is-large"
+                type="password"
+                required
+              />
+            </div>
+          </div>
+
+          <button class="button is-large is-success">Entrar</button>
+
+          <hr />
+
+          <a href="/pages/signup" role="link" class="button is-large is-info">
+            Criar uma nova Conta
+          </a>
+
+          <a
+            href="#"
+            role="button"
+            class="button is-large is-warning"
+            onclick="history.back()"
+            >Voltar</a
+          >
+        </form>
+      </div>
+    </section>
+    <script>
+      const signinForm = document.getElementById("signin-form");
+      signinForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(signinForm);
+        const body = JSON.stringify({
+          username: formData.get("username") || "",
+          password: formData.get("password") || "",
+        });
+
+        fetch("/authenticate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: body,
+        })
+          .then((res) => {
+            return res.json();
+          })
+          .then((data) => {
+            console.log(data.redirect_to);
+            window.location = data.redirect_to || "/";
+          })
+          .catch(function () {
+            document
+              .getElementById("error-section")
+              .classList.remove("is-hidden");
+          });
+      });
+    </script>
+  </body>
+</html>

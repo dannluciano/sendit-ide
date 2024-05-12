@@ -20,8 +20,7 @@ try {
   log("Connecting to Docker Daemon");
   dockerConnection = new dockerode.default(configs.DOCKER_ENGINE_SOCKET);
   const infos = await dockerConnection.version();
-  log("Docker Daemon Connection Info");
-  console.info(infos);
+  log(`Docker Daemon Connection Info ${infos.Version}`);
 } catch (error) {
   console.error(error);
   console.error("==> Cannot Connect to Docker Daemon!");

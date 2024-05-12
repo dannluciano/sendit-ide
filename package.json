@@ -10,7 +10,8 @@
 		"test": "node --test 'api/**/*.test.js'",
 		"test:watch": "node --test 'api/**/*.test.js' --watch",
 		"test:e2e": "cypress run",
-		"test:e2e:open": "cypress open"
+		"test:e2e:open": "cypress open",
+		"seeds": "node commands/seeds.js"
 	},
 	"author": "",
 	"license": "ISC",

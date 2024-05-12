@@ -17,4 +17,10 @@ RUN npm ci --silent --include dev
 
 COPY --chown=root:root . .
 
+RUN mkdir -p /var/storages/sendit-ide/
+
+RUN npm run seeds
+
+# ENTRYPOINT [ "scripts/entrypoint.sh" ]
+
 CMD [ "npm", "start" ]

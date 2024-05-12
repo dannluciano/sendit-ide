@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SendIT-IDE Login</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css"
+    />
+  </head>
+
+  <body>
+    <section class="section">
+      <div class="container">
+        <h1 class="title">Nova Conta no SendIT-IDE</h1>
+
+        <div class="field">
+          <label class="label is-large">Nome de Usuário:</label>
+          <div class="control">
+            <input
+              class="input is-large"
+              type="text"
+              placeholder="dannluciano"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label is-large">E-mail:</label>
+          <div class="control">
+            <input
+              class="input is-large"
+              type="email"
+              placeholder="dannluciano@ifpi.edu.br"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label is-large">Senha:</label>
+          <div class="control">
+            <input class="input is-large" type="password" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label is-large">Confirmar Senha:</label>
+          <div class="control">
+            <input class="input is-large" type="password" required />
+          </div>
+        </div>
+
+        <button class="button is-large is-success">Criar Conta</button>
+        <hr />
+        <a href="/pages/signin" role="button" class="button is-large is-info">
+          Entrar
+        </a>
+        <a
+          href="#"
+          role="button"
+          class="button is-large is-warning"
+          onclick="history.back()"
+        >
+          Voltar
+        </a>
+      </div>
+    </section>
+  </body>
+</html>

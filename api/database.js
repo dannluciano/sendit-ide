@@ -1,6 +1,6 @@
+import { readFileSync } from "node:fs";
 import Database from "better-sqlite3";
 import configs from "./configs.js";
-import { log } from "./utils.js";
 
 const db = new Database(configs.DATABASE_NAME);
 
@@ -14,6 +14,10 @@ db.pragma("temp_store = memory");
 db.exec(
   "CREATE TABLE IF NOT EXISTS kv (key BLOB UNIQUE, value BLOB, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)",
 );
+
+const __dirname = new URL("./", import.meta.url).pathname;
+const schemaContent = readFileSync(`${__dirname}schema.sql`).toString();
+db.exec(schemaContent);
 
 function toObj(str) {
   try {
@@ -50,4 +54,4 @@ const DB = {
 };
 
 export default DB;
-export { DB, WSDB };
+export { DB, WSDB, db };

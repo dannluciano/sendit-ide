@@ -1,10 +1,10 @@
 import { serveStatic } from "@hono/node-server/serve-static";
 
 import { Hono } from "hono";
-import { basicAuth } from "hono/basic-auth";
 import { logger } from "hono/logger";
 
-import verifyUser from "./auth/auth.js";
+import authMiddleware from "./auth/auth_middleware.js";
+import { authenticate, signin, signup } from "./auth/login_controller.js";
 import ComputerUnitController from "./computer_unit/computer_unit_controller.js";
 import { gitClone } from "./git-clone/git_clone_controller.js";
 import home from "./home/home_controller.js";
@@ -24,6 +24,12 @@ function setupRoutes(dockerConnection, computeUnitService) {
 
   app.get("/", home);
 
+  app.use("/pages/*", logger());
+  app.get("/pages/signin", signin);
+  app.get("/pages/signup", signup);
+
+  app.post("/authenticate", authenticate);
+
   app.get("/.well-known/assetlinks.json", assetlinks);
 
   app.get("/p/:pid", showProject);
@@ -34,12 +40,7 @@ function setupRoutes(dockerConnection, computeUnitService) {
   app.post("/public/project/download/:pid", downloadProject);
 
   app.use("/api/*", logger());
-  app.use(
-    "/api/*",
-    basicAuth({
-      verifyUser: verifyUser,
-    }),
-  );
+  app.use("/api/*", authMiddleware);
 
   app.post(
     "/api/container/create/:pid",

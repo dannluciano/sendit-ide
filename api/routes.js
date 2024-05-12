@@ -3,7 +3,7 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 
-import authMiddleware from "./auth/auth_middleware.js";
+import isAuthenticated from "./auth/auth_middleware.js";
 import { authenticate, signin, signup } from "./auth/login_controller.js";
 import ComputerUnitController from "./computer_unit/computer_unit_controller.js";
 import { gitClone } from "./git-clone/git_clone_controller.js";
@@ -32,15 +32,15 @@ function setupRoutes(dockerConnection, computeUnitService) {
 
   app.get("/.well-known/assetlinks.json", assetlinks);
 
-  app.get("/p/:pid", showProject);
-
-  app.get("/c/*", gitClone);
-
   app.use("/public/*", logger());
   app.post("/public/project/download/:pid", downloadProject);
 
   app.use("/api/*", logger());
-  app.use("/api/*", authMiddleware);
+  app.use("/api/*", isAuthenticated);
+
+  app.get("/api/p/:pid", showProject);
+
+  app.get("/api/c/*", gitClone);
 
   app.post(
     "/api/container/create/:pid",

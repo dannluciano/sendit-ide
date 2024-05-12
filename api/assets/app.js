@@ -7,7 +7,7 @@ const filesystemSection = document.getElementById("filesystem");
 const editorTermSection = document.getElementById("editor-term-section");
 const filenameDialog = document.getElementById("filename-dialog");
 const loadingDialog = document.getElementById("loading-dialog");
-let projectId = currentURL.pathname.replace("/p/", "");
+let projectId = currentURL.pathname.replace("/api/p/", "");
 let containerId;
 let tempDirPath;
 let editor;

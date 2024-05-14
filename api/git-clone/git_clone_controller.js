@@ -5,6 +5,7 @@ const execP = promisify(exec);
 
 import { nanoid } from "nanoid";
 
+import { HTTPException } from "hono/http-exception";
 import ComputerUnit from "../computer_unit/computer_unit.js";
 import { createTempDir } from "../computer_unit/temp_dir.js";
 import DB from "../database.js";
@@ -13,7 +14,7 @@ import { log } from "../utils.js";
 async function gitClone(c) {
   try {
     const url = new URL(c.req.url);
-    const repositoryUrl = new URL(url.pathname.substring(3));
+    const repositoryUrl = new URL(url.pathname.substring(7));
     const projectId = nanoid();
     const tempDir = await createTempDir();
 
@@ -27,9 +28,10 @@ async function gitClone(c) {
 
     DB.set(computerUnit.projectId, computerUnit.toJSON());
 
-    return c.redirect(`/p/${projectId}`);
+    return c.redirect(`/api/p/${projectId}`);
   } catch (error) {
     console.error(error);
+    throw new HTTPException(400, { message: "Invalid URL" });
   }
 }
 

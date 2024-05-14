@@ -17,13 +17,18 @@
 
         <article class="message is-info">
           <div class="message-body">
-            Você pode usar suas mesmas credenciais do
-            <a href="https://sendit.dannluciano.com.br">SendIT</a>
+            Você pode importar sua credenciais do
+            <a href="https://sendit.dannluciano.com.br/export/sendit-ide">
+              SendIT
+            </a>
           </div>
         </article>
 
-        <article id="error-section" class="message is-error is-hidden">
-          <div class="message-body">Error: Usuario e/ou Senha Invalida!</div>
+        <article id="error-section" class="message is-danger is-hidden">
+          <div class="message-header">Erro de Autenticação</div>
+          <div class="message-body">
+            <p>Nome de Usuário e/ou Senha Invalidos!</p>
+          </div>
         </article>
 
         <form id="signin-form">
@@ -54,21 +59,37 @@
             </div>
           </div>
 
-          <button class="button is-large is-success">Entrar</button>
+          <div class="buttons"></div>
+
+          <div class="field is-grouped">
+            <p class="control">
+              <button class="button is-large is-success">Entrar</button>
+            </p>
+            <p class="control">
+              <button
+                id="resert-password-button"
+                class="button is-large is-warning is-hidden"
+              >
+                Mudar Senha
+              </button>
+            </p>
+          </div>
 
           <hr />
 
-          <a href="/pages/signup" role="link" class="button is-large is-info">
-            Criar uma nova Conta
-          </a>
+          <div class="buttons">
+            <a href="/pages/signup" role="link" class="button is-large is-info">
+              Criar uma nova Conta
+            </a>
 
-          <a
-            href="#"
-            role="button"
-            class="button is-large is-warning"
-            onclick="history.back()"
-            >Voltar</a
-          >
+            <a
+              href="#"
+              role="button"
+              class="button is-large"
+              onclick="history.back()"
+              >Voltar</a
+            >
+          </div>
         </form>
       </div>
     </section>
@@ -100,6 +121,10 @@
           .catch(function () {
             document
               .getElementById("error-section")
+              .classList.remove("is-hidden");
+
+            document
+              .getElementById("resert-password-button")
               .classList.remove("is-hidden");
           });
       });

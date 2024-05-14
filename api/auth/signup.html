@@ -15,58 +15,151 @@
       <div class="container">
         <h1 class="title">Nova Conta no SendIT-IDE</h1>
 
-        <div class="field">
-          <label class="label is-large">Nome de Usuário:</label>
-          <div class="control">
-            <input
-              class="input is-large"
-              type="text"
-              placeholder="dannluciano"
-              required
-            />
+        <article class="message is-info">
+          <div class="message-body">
+            Você pode importar sua credenciais do
+            <a href="https://sendit.dannluciano.com.br/export/sendit-ide">
+              SendIT
+            </a>
           </div>
-        </div>
+        </article>
 
-        <div class="field">
-          <label class="label is-large">E-mail:</label>
-          <div class="control">
-            <input
-              class="input is-large"
-              type="email"
-              placeholder="dannluciano@ifpi.edu.br"
-              required
-            />
+        <article id="error-section" class="message is-danger is-hidden">
+          <div class="message-header">
+            <p>Erro na Criação de uma Conta:</p>
           </div>
-        </div>
-
-        <div class="field">
-          <label class="label is-large">Senha:</label>
-          <div class="control">
-            <input class="input is-large" type="password" required />
+          <div class="message-body">
+            <ul id="error-messages"></ul>
           </div>
-        </div>
+        </article>
 
-        <div class="field">
-          <label class="label is-large">Confirmar Senha:</label>
-          <div class="control">
-            <input class="input is-large" type="password" required />
+        <form id="signup-form">
+          <div class="field">
+            <label class="label is-large">Nome de Usuário:</label>
+            <div class="control">
+              <input
+                name="username"
+                class="input is-large"
+                type="text"
+                placeholder="dannluciano"
+              />
+            </div>
           </div>
-        </div>
 
-        <button class="button is-large is-success">Criar Conta</button>
-        <hr />
-        <a href="/pages/signin" role="button" class="button is-large is-info">
-          Entrar
-        </a>
-        <a
-          href="#"
-          role="button"
-          class="button is-large is-warning"
-          onclick="history.back()"
-        >
-          Voltar
-        </a>
+          <div class="field">
+            <label class="label is-large">E-mail:</label>
+            <div class="control">
+              <input
+                name="email"
+                class="input is-large"
+                type="email"
+                placeholder="dannluciano@ifpi.edu.br"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label is-large">Senha:</label>
+            <div class="control">
+              <input
+                name="password"
+                class="input is-large"
+                type="password"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label is-large">Confirmar Senha:</label>
+            <div class="control">
+              <input
+                name="password_confirmation"
+                class="input is-large"
+                type="password"
+                required
+              />
+            </div>
+          </div>
+
+          <button class="button is-large is-success">Criar Conta</button>
+
+          <hr />
+
+          <div class="buttons">
+            <a
+              href="/pages/signin"
+              role="button"
+              class="button is-large is-info"
+            >
+              Entrar
+            </a>
+            <a
+              href="#"
+              role="button"
+              class="button is-large"
+              onclick="history.back()"
+            >
+              Voltar
+            </a>
+          </div>
+        </form>
       </div>
     </section>
+    <script>
+      const signupForm = document.getElementById("signup-form");
+      signupForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(signupForm);
+        const body = JSON.stringify({
+          username: formData.get("username") || "",
+          email: formData.get("email") || "",
+          password: formData.get("password") || "",
+          password_confirmation: formData.get("password_confirmation") || "",
+        });
+
+        fetch("/users/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: body,
+        })
+          .then((res) => {
+            return res.json();
+          })
+          .then((data) => {
+            if (data.errors) {
+              const errorSection = document.getElementById("error-section");
+              const errorsList = document.getElementById("error-messages");
+
+              errorsList.replaceChildren();
+
+              data.errors.forEach((errorMessage) => {
+                const errorItem = document.createElement("li");
+                errorItem.textContent = errorMessage;
+                errorsList.appendChild(errorItem);
+              });
+
+              data.fields.forEach((fiedlName) => {
+                document
+                  .querySelector(`[name=${fiedlName}]`)
+                  .classList.add("is-danger");
+              });
+
+              errorSection.classList.remove("is-hidden");
+            } else {
+              window.location = data.redirect_to;
+            }
+          })
+          .catch(function (data) {
+            const errorSection = document.getElementById("error-section");
+            if (data.error) console.error(data.error);
+            errorSection.classList.remove("is-hidden");
+          });
+      });
+    </script>
   </body>
 </html>

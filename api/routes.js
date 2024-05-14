@@ -4,7 +4,13 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 
 import isAuthenticated from "./auth/auth_middleware.js";
-import { authenticate, signin, signup } from "./auth/login_controller.js";
+import {
+  createUser,
+  logIn,
+  logOut,
+  signin,
+  signup,
+} from "./auth/login_controller.js";
 import ComputerUnitController from "./computer_unit/computer_unit_controller.js";
 import { gitClone } from "./git-clone/git_clone_controller.js";
 import home from "./home/home_controller.js";
@@ -28,7 +34,12 @@ function setupRoutes(dockerConnection, computeUnitService) {
   app.get("/pages/signin", signin);
   app.get("/pages/signup", signup);
 
-  app.post("/authenticate", authenticate);
+  app.use("/users/create", logger());
+  app.post("/users/create", createUser);
+  app.use("/authenticate", logger());
+  app.post("/authenticate", logIn);
+  app.use("/logout", logger());
+  app.post("/logout", logOut("/"));
 
   app.get("/.well-known/assetlinks.json", assetlinks);
 

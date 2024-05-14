@@ -427,6 +427,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const settingsButton = document.getElementById("settings-button");
   settingsButton.addEventListener("click", openOrCloseSettings);
 
+  const logOutForm = document.getElementById("logout-form");
+  logOutForm.addEventListener("submit", logOut);
+
   const saveSettingsButton = document.getElementById("save-settings-button");
   saveSettingsButton.addEventListener("click", saveSettings);
 
@@ -832,6 +835,27 @@ function renderFile(child) {
   span.dataset.path = child.path;
   span.onclick = openFileInTree;
   return li;
+}
+
+function logOut(event) {
+  event.preventDefault();
+  fetch("/logout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .then((data) => {
+      if (data.redirect_to) {
+        window.location = data.redirect_to;
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 }
 
 function openOrCloseSettings(event) {

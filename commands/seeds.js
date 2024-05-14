@@ -3,11 +3,12 @@ import { generatePasswordHash } from "../api/auth/password_hash_utils.js";
 import { db } from "../api/database.js";
 
 const stmt = db.prepare(
-  "INSERT INTO users (uuid, username, email, password_hash, is_admin) VALUES (?, ?, ?, ?, ?)",
+  "INSERT INTO users (id, uuid, username, email, password_hash, is_admin) VALUES (?, ?, ?, ?, ?, ?)",
 );
 
 try {
   stmt.run(
+    1,
     nanoid(),
     "admin",
     "dannluciano@ifpi.edu.br",
@@ -20,5 +21,12 @@ try {
   const password_hash = generatePasswordHash("dlcorpdlcorp");
   console.info(password_hash);
 
-  stmt.run(nanoid(), "dannluciano", "dannluciano@gmail.com", password_hash, 1);
+  stmt.run(
+    2,
+    nanoid(),
+    "dannluciano",
+    "dannluciano@gmail.com",
+    password_hash,
+    1,
+  );
 } catch {}

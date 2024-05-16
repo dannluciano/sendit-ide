@@ -1,20 +1,32 @@
 import fs from "node:fs/promises";
 import { deleteCookie, getSignedCookie, setSignedCookie } from "hono/cookie";
 import { HTTPException } from "hono/http-exception";
+import Mailgun from "mailgun.js";
 import { nanoid } from "nanoid";
 import configs from "../configs.js";
 import { db } from "../database.js";
 import { log } from "../utils.js";
 import { generatePasswordHash, verifyPassword } from "./password_hash_utils.js";
 
-async function render(filename) {
+async function render(filename, contextData = undefined) {
   const __dirname = new URL("./", import.meta.url).pathname;
   const filepath = `${__dirname}${filename}`;
   const content = await fs.readFile(filepath);
+
+  if (contextData) {
+    let contentOut = content.toString();
+    for (const key in contextData) {
+      if (Object.hasOwnProperty.call(contextData, key)) {
+        const value = contextData[key];
+        contentOut = contentOut.replaceAll(`\${${key}}`, value);
+      }
+    }
+    return contentOut;
+  }
   return content;
 }
 
-async function signin(c) {
+async function signInPage(c) {
   const current_user = await getSignedCookie(
     c,
     configs.COOKIE_SECRET,
@@ -26,7 +38,7 @@ async function signin(c) {
   return c.html(render("signin.html"));
 }
 
-async function signup(c) {
+async function signUpPage(c) {
   const current_user = await getSignedCookie(
     c,
     configs.COOKIE_SECRET,
@@ -135,4 +147,119 @@ function logOut(redirectTo) {
   };
 }
 
-export { createUser, logIn, logOut, signin, signup };
+function resetPasswordPage(c) {
+  return c.html(render("reset_password.html"));
+}
+
+function resetPasswordConfirmationPage(c) {
+  return c.html(render("reset_password_confirmation.html"));
+}
+
+function resetPasswordFormPage(c) {
+  const uuid = c.req.param("uuid");
+  return c.html(render("reset_password_form.html", { uuid }));
+}
+
+function sendResetPasswordLink(redirectTo) {
+  return async (c) => {
+    log("AUTH", "Reset Password Started");
+    const credentials = await c.req.json();
+
+    const stmt = db.prepare(
+      "SELECT email, uuid FROM users WHERE email = ? LIMIT 1",
+    );
+    const user = stmt.get(credentials.email);
+    if (user && user.email === credentials.email) {
+      try {
+        const mailgun = new Mailgun(FormData);
+        const mg = mailgun.client({
+          username: "api",
+          key: configs.MAILGUN_API_KEY,
+        });
+
+        const htmlContent = await render("reset_password_mail_template.html", {
+          "sendit-ide-url": configs.SENDIT_IDE_URL,
+          uuid: user.uuid,
+        });
+
+        mg.messages.create(configs.MAILGUN_DOMAIN, {
+          from: configs.MAILGUN_FROM_EMAIL,
+          to: user.email,
+          subject: "Redefinir Senha",
+          html: htmlContent,
+        });
+      } catch (error) {
+        log("AUTH", "Erro on send e-mail");
+        console.error(error);
+      }
+
+      log("AUTH", "Reset Password Done");
+      return c.json({
+        redirect_to: `${redirectTo}?email=${user.email}`,
+      });
+    }
+    log("AUTH", "Reset Password Failure");
+    return c.json(
+      {
+        errors: ["Usuário não entrontrado e/ou não cadastrado!"],
+        fields: ["email"],
+      },
+      403,
+    );
+  };
+}
+
+async function resetPassword(c) {
+  log("AUTH", "Reset Password Started via link");
+  const credentials = await c.req.json();
+
+  const stmt = db.prepare("SELECT uuid FROM users WHERE uuid = ? LIMIT 1");
+  const user = stmt.get(credentials.uuid);
+
+  const errors = [];
+  const fields = [];
+
+  if (user && user.uuid === credentials.uuid) {
+    if (credentials.password !== credentials.password_confirmation) {
+      log("AUTH", "Passwords Don't Mismatch");
+      errors.push("Senhas Diferentes!");
+      fields.push("password", "password_confirmation");
+    }
+
+    const password_hash = generatePasswordHash(credentials.password);
+
+    const stmt = db.prepare(
+      "UPDATE users SET password_hash = ? WHERE uuid = ?",
+    );
+    stmt.run(password_hash, user.uuid);
+
+    if (errors.length === 0) {
+      log("AUTH", "Reset Password Done");
+      return c.json({
+        redirect_to: `/`,
+      });
+    }
+    log("AUTH", "Reset Password Failure");
+  }
+
+  return c.json(
+    {
+      errors: errors,
+      fields: fields,
+    },
+    403,
+  );
+}
+
+export {
+  createUser,
+  logIn,
+  logOut,
+  resetPassword,
+  sendResetPasswordLink,
+  resetPasswordConfirmationPage,
+  resetPasswordFormPage,
+  resetPasswordPage,
+  signInPage,
+  signUpPage,
+};

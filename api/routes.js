@@ -8,8 +8,13 @@ import {
   createUser,
   logIn,
   logOut,
-  signin,
-  signup,
+  resetPassword,
+  resetPasswordConfirmationPage,
+  resetPasswordFormPage,
+  resetPasswordPage,
+  sendResetPasswordLink,
+  signInPage,
+  signUpPage,
 } from "./auth/login_controller.js";
 import ComputerUnitController from "./computer_unit/computer_unit_controller.js";
 import { gitClone } from "./git-clone/git_clone_controller.js";
@@ -31,11 +36,20 @@ function setupRoutes(dockerConnection, computeUnitService) {
   app.get("/", home);
 
   app.use("/pages/*", logger());
-  app.get("/pages/signin", signin);
-  app.get("/pages/signup", signup);
+  app.get("/pages/signin", signInPage);
+  app.get("/pages/signup", signUpPage);
+  app.get("/pages/reset/password", resetPasswordPage);
+  app.get("/pages/reset/password/confirmation", resetPasswordConfirmationPage);
 
-  app.use("/users/create", logger());
+  app.use("/users/*", logger());
   app.post("/users/create", createUser);
+  app.post(
+    "/users/password/reset",
+    sendResetPasswordLink("/pages/reset/password/confirmation"),
+  );
+  app.get("/users/:uuid/password/reset", resetPasswordFormPage);
+  app.post("/users/:uuid/password/reset", resetPassword);
+
   app.use("/authenticate", logger());
   app.post("/authenticate", logIn);
   app.use("/logout", logger());

@@ -24,6 +24,7 @@
 		"directory-tree": "^3.5.1",
 		"dockerode": "^4.0.2",
 		"hono": "^4.2.7",
+		"mailgun.js": "^10.2.1",
 		"nanoid": "5.0.6",
 		"ws": "^8.16.0"
 	},

@@ -8,25 +8,14 @@ export default class ComputerUnitService {
     this.dockerConnection = dockerConnection;
   }
 
-  async getOrCreateComputerUnit(computer_unit, settings = {}) {
+  async getOrCreateComputerUnit(project, settings = {}) {
     try {
-      let containerInstance = this.dockerConnection.getContainer(
-        computer_unit.containerId,
-      );
-      if (containerInstance.Id) {
-        log("CPU", "Return Existing Container", containerInstance.Id);
-        return computer_unit;
-      }
-
-      let tempDirPath = computer_unit.tempDirPath;
-      if (!tempDirPath) {
-        tempDirPath = await createTempDir();
-      }
+      const tempDirPath = await createTempDir(project.temp_dir);
 
       const envs = getEnvsFromSettings(settings);
 
-      log("Creating container");
-      containerInstance = await this.dockerConnection.createContainer({
+      log("CPU", "Creating container");
+      const containerInstance = await this.dockerConnection.createContainer({
         Image: "sendit-ide-vm",
         AttachStdin: false,
         AttachStdout: false,
@@ -64,7 +53,8 @@ export default class ComputerUnitService {
       return new ComputerUnit(
         containerInstance,
         tempDirPath,
-        computer_unit.projectId,
+        project.uuid,
+        project.owner_id,
       );
     } catch (error) {
       console.error("Error!", error);
@@ -78,7 +68,13 @@ export default class ComputerUnitService {
     );
     const tempDirPath = cuJSON["temp-dir-path"];
     const projectId = cuJSON["project-id"];
-    return new ComputerUnit(containerInstance, tempDirPath, projectId);
+    const ownerUUID = cuJSON["owner-uuid"];
+    return new ComputerUnit(
+      containerInstance,
+      tempDirPath,
+      projectId,
+      ownerUUID,
+    );
   }
 
   async removeComputerUnits() {

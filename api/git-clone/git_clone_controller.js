@@ -17,14 +17,13 @@ async function gitClone(c) {
     const repositoryUrl = new URL(url.pathname.substring(7));
     const projectId = nanoid();
     const tempDir = await createTempDir();
-
-    log(tempDir);
+    const ownerUUID = c.get("user-uuid");
 
     log("GIT CLONE", "Running git clone");
     await runCommand(`git clone ${repositoryUrl.toString()} .`, tempDir);
     log("GIT CLONE", "Done");
 
-    const computerUnit = new ComputerUnit(null, tempDir, projectId);
+    const computerUnit = new ComputerUnit(null, tempDir, projectId, ownerUUID);
 
     DB.set(computerUnit.projectId, computerUnit.toJSON());
 

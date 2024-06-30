@@ -14,7 +14,7 @@ export default class ComputerUnit {
    * @param {string} tempDirPath
    * @param {string} projectId
    */
-  constructor(containerInstance, tempDirPath, projectId) {
+  constructor(containerInstance, tempDirPath, projectId, ownerUUID) {
     if (containerInstance) {
       this.id = containerInstance.id;
       this.containerId = containerInstance.id;
@@ -22,6 +22,7 @@ export default class ComputerUnit {
     }
     this.tempDirPath = tempDirPath;
     this.projectId = projectId;
+    this.ownerUUID = ownerUUID;
   }
 
   /**
@@ -32,6 +33,7 @@ export default class ComputerUnit {
       "container-id": this.containerId,
       "temp-dir-path": this.tempDirPath,
       "project-id": this.projectId,
+      "owner-uuid": this.ownerUUID,
     };
   }
 }

@@ -12,17 +12,15 @@ class ComputerUnitController {
 
   async createComputerUnit(c) {
     try {
-      const projectId = c.req.param("pid");
-      const settings = await c.req.json();
-      const cuJSON = DB.get(projectId);
-      let computerUnit = new ComputerUnit(null, null, projectId);
-      if (cuJSON) {
-        computerUnit = this.computeUnitService.fromJSON(cuJSON);
-      }
-      computerUnit = await this.computeUnitService.getOrCreateComputerUnit(
-        computerUnit,
-        settings,
-      );
+      const payload = await c.req.json();
+      const settings = payload.settings;
+      const project = payload.project;
+
+      const computerUnit =
+        await this.computeUnitService.getOrCreateComputerUnit(
+          project,
+          settings,
+        );
 
       DB.set(computerUnit.containerId, computerUnit.toJSON());
       DB.set(computerUnit.projectId, computerUnit.toJSON());

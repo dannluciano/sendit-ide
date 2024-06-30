@@ -18,6 +18,7 @@ export default function apiWSConnection(dockerConnection, computeUnitService) {
     if (cuJSON) {
       computerUnit = computeUnitService.fromJSON(cuJSON);
     } else {
+      console.error(`ERROR: Dont find computerUnit with id: ${containerId}`);
       return;
     }
 
@@ -33,14 +34,29 @@ export default function apiWSConnection(dockerConnection, computeUnitService) {
           await container.resize(cmd.params);
         }
         if (cmd.type === "write") {
-          const { filename, source } = cmd.params;
-          const tempDirPath = computerUnit.tempDirPath;
-          const path = `${tempDirPath}/${filename}`;
-          await fs.writeFile(path, source);
+          const { filename, source, ownerUUID } = cmd.params;
+          const cu = DB.get(containerId);
+          if (cu["owner-uuid"] === ownerUUID) {
+            const tempDirPath = computerUnit.tempDirPath;
+            const path = `${tempDirPath}/${filename}`;
+            await fs.writeFile(path, source);
+          }
         }
         if (cmd.type === "writeInPath") {
-          const { filepath, source } = cmd.params;
-          await fs.writeFile(filepath, source);
+          const { filepath, source, ownerUUID } = cmd.params;
+          const cu = DB.get(containerId);
+          if (cu["owner-uuid"] === ownerUUID) {
+            await fs.writeFile(filepath, source);
+          } else {
+            ws.send(
+              JSON.stringify({
+                type: "authorization-error",
+                params: {
+                  msg: "You is not Owner of Project",
+                },
+              }),
+            );
+          }
         }
         if (cmd.type === "mkdir") {
           const { folderpath } = cmd.params;

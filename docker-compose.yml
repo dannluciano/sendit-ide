@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   vm:
     container_name: vm
@@ -25,15 +24,6 @@ services:
         - action: rebuild
           path: package.json
     command: npm run dev
-
-  seeds:
-    container_name: seeds
-    build: .
-    volumes:
-      - ./api:/app/api
-      - db-data:/var/storages/sendit-ide
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: npm run seeds
 
 volumes:
   db-data:

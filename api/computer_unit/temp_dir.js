@@ -8,9 +8,11 @@ import { default as directoryTree } from "directory-tree";
 import { WSDB } from "../database.js";
 import { debounce, log } from "../utils.js";
 
-async function createTempDir() {
+async function createTempDir(tempDir) {
   log("TMP", "Creating Temp Folder");
-  const tempDirPath = await fs.mkdtemp(path.join(os.tmpdir(), "ide-vm-home-"));
+
+  const tempDirPath = `${os.tmpdir()}/ide-vm-home-${tempDir}`;
+  await fs.mkdir(tempDirPath, { recursive: true });
   log("TMP", `Created Temp Folder: ${tempDirPath}`);
   return tempDirPath;
 }

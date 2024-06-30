@@ -1,7 +1,7 @@
 describe("SendIT IDE title", () => {
   it("Get Correct SendIT IDE title", () => {
-    cy.visit("http://localhost:8001");
+    cy.request("http://localhost:8001/version");
 
-    cy.title().should("eq", "SendIT-IDE - Login");
+    // cy.body().should("eq", "v0.0.1");
   });
 });

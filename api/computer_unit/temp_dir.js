@@ -11,7 +11,7 @@ import { debounce, log } from "../utils.js";
 async function createTempDir(tempDir) {
   log("TMP", "Creating Temp Folder");
 
-  const tempDirPath = `${os.tmpdir()}/ide-vm-home-${tempDir}`;
+  const tempDirPath = `/home/sendit/ide-vm-home-${tempDir}`;
   await fs.mkdir(tempDirPath, { recursive: true });
   log("TMP", `Created Temp Folder: ${tempDirPath}`);
   return tempDirPath;

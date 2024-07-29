@@ -37,12 +37,13 @@ export default class ComputerUnitService {
           Binds: [`${tempDirPath}:/root`],
           AutoRemove: true,
           PublishAllPorts: true,
+          Memory: 512 * 1024 * 1024,
+          StorageOpt: {
+            size: "1G",
+          },
         },
         Labels: {
           "com.docker.instances.service": "vm",
-        },
-        StorageOpt: {
-          "dm.basesize": "2G",
         },
       });
 

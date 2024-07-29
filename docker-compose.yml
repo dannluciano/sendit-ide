@@ -14,7 +14,7 @@ services:
       - ./api:/app/api
       - db-data:/var/storages/sendit-ide
       - /var/run/docker.sock:/var/run/docker.sock
-      - /tmp:/tmp
+      - /tmp:/home/sendit
     extra_hosts:
       - "host.docker.internal:host-gateway"
     develop:

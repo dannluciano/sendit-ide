@@ -41,6 +41,10 @@ export default class ComputerUnitService {
           StorageOpt: {
             size: "1G",
           },
+          Ulimits: [
+            { Name: "nofile", Soft: 1024, Hard: 1048 },
+            { Name: "fsize", Soft: 1024 * 1024, Hard: 1048 * 1024 },
+          ],
         },
         Labels: {
           "com.docker.instances.service": "vm",

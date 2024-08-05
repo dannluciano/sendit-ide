@@ -39,7 +39,7 @@ export default class ComputerUnitService {
           PublishAllPorts: true,
           Memory: 512 * 1024 * 1024,
           StorageOpt: {
-            size: "1G",
+            size: "2G",
           },
           Ulimits: [
             { Name: "nofile", Soft: 1024, Hard: 1048 },

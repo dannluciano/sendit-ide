@@ -43,7 +43,7 @@ export default class ComputerUnitService {
           },
           Ulimits: [
             { Name: "nofile", Soft: 1024, Hard: 1048 },
-            { Name: "fsize", Soft: 1024 * 1024, Hard: 1048 * 1024 },
+            { Name: "fsize", Soft: 10 * 1024 * 1024, Hard: 12 * 1048 * 1024 },
           ],
         },
         Labels: {

@@ -84,7 +84,8 @@ export default function apiWSConnection(dockerConnection, computeUnitService) {
           if (computerUnit.tempDirPath) {
             const tree = directoryTree(computerUnit.tempDirPath, {
               attributes: ["type"],
-              exclude: /\.npm|\.cache|env|\.node_repl_history|\.vscode/,
+              exclude:
+                /\.npm|\.cache|env|\.node_repl_history|\.vscode|\.sqlite_history/,
             });
             if (tree.children) {
               const sortedChildren = sortTree(tree.children);

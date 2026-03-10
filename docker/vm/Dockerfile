@@ -35,8 +35,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 
 COPY ./bin/ /usr/local/bin
 
-ENV PORT 8080
-ENV HOST 0.0.0.0
-ENV PIP_BREAK_SYSTEM_PACKAGES 1
+ENV PORT=8080
+ENV HOST=0.0.0.0
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
 CMD ["bash"]

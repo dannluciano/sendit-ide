@@ -19,6 +19,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
     python3-pip \
     python3-venv \
     openjdk-21-jdk-headless \
+    php-cli \
     # Database
     sqlite3 \
     # Editors

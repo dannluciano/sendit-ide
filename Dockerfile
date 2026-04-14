@@ -13,7 +13,7 @@ EXPOSE $PORT
 
 COPY package.json .
 COPY package-lock.json .
-RUN npm ci --silent --include dev
+RUN npm ci --silent
 
 COPY --chown=root:root . .
 

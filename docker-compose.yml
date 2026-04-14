@@ -5,7 +5,9 @@ services:
 
   api:
     container_name: api
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
     environment:
       - PORT=8001
     ports:
